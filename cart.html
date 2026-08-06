@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart | Hasbunallahu Store</title>
+
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/cart.css">
+
+<script defer src="js/main.js"></script>
+<script defer src="js/cart.js"></script>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <h2 class="logo">Hasbunallahu Store</h2>
+
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="cart.html" class="active">
+                    Cart <span id="cart-count">0</span>
+                </a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Cart -->
+    <main class="cart-page">
+
+        <h1>Shopping Cart</h1>
+
+        <table class="cart-table">
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody id="cart-items">
+                <!-- JavaScript will load cart items here -->
+            </tbody>
+
+        </table>
+
+        <div class="cart-summary">
+
+            <h2>Order Summary</h2>
+
+            <p>Total Items:
+                <span id="total-items">0</span>
+            </p>
+
+            <p>Total Price:
+                <strong id="total-price">₦0.00</strong>
+            </p>
+
+            <button id="clear-cart">
+                Clear Cart
+            </button>
+
+            <a href="checkout.html">
+                <button id="checkout-btn">
+                    Proceed to Checkout
+                </button>
+            </a>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+
+        <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
+
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Hasbunallahu Store</title>
+
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/checkout.css">
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script defer src="js/main.js"></script>
+<script defer src="js/checkout.js"></script>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <h2 class="logo">Hasbunallahu Store</h2>
+
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="cart.html">Cart</a></li>
+                <li><a href="checkout.html" class="active">Checkout</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Checkout -->
+    <main class="checkout-page">
+
+        <h1>Checkout</h1>
+
+        <div class="checkout-container">
+
+            <!-- Customer Details -->
+            <section class="customer-details">
+
+                <h2>Customer Information</h2>
+
+                <form id="checkout-form">
+
+                    <label>Full Name</label>
+                    <input type="text" id="kabir abdulazeez" required>
+
+                    <label>Phone Number</label>
+                    <input type="tel" id="07019154961" required>
+
+                    <label>Email Address</label>
+                    <input type="kabirabdulazeez45@gmail.com" id="email">
+
+                    <label>Delivery Address</label>
+                    <textarea id="abuja, karu site" rows="4" required></textarea>
+
+                    <label>State</label>
+                    <input type="text" id="abuja" required>
+
+                    <label>City</label>
+                    <input type="text" id="Nigeria" required>
+
+                    <label>Payment Method</label>
+                    <select id="payment-method">
+                        <option>Cash on Delivery</option>
+                        <option>Bank Transfer</option>
+                        <option value="paystack">Paystack</option>
+                        <option>Flutterwave (Coming Soon)</option>
+                    </select>
+
+                </form>
+
+            </section>
+
+            <!-- Order Summary -->
+            <aside class="order-summary">
+
+                <h2>Order Summary</h2>
+
+                <div id="checkout-items">
+                    <!-- Products will be inserted here -->
+                </div>
+
+                <h3>Total: <span id="checkout-total">₦0.00</span></h3>
+
+                <button id="place-order">
+                    Place Order
+                </button>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
+    </footer>
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+<script src="js/checkout.js"></script>
+</body>
+</html>
