@@ -32,7 +32,7 @@ document.getElementById("place-order").addEventListener("click", function(e){
 
     let handler = PaystackPop.setup({
 
-        key: "pk_test_1234567890abcdef,
+        key: "pk_test_17d80f52a39fb05435d5898b29744b5b034d85a9",
 
         email: email,
 
