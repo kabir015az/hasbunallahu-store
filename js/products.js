@@ -121,7 +121,6 @@ function displayProducts(productList) {
 <button onclick="addToWishlist(${product.id})">
     ❤️ Wishlist
 </button>
-                </button>
 
             </div>
 

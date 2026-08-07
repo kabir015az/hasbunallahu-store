@@ -1,3 +1,21 @@
+// Display Order Summary
+document.addEventListener("DOMContentLoaded", function () {
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    let total = 0;
+
+    cart.forEach(item => {
+        total += item.price * item.quantity;
+    });
+
+  const totalElement = document.getElementById("checkout-total");
+
+    if (totalElement) {
+        totalElement.textContent = "₦" + total.toLocaleString();
+    }
+
+});
 // Hasbunallahu Store - Checkout & Paystack
 
 document.getElementById("place-order").addEventListener("click", function(e){
@@ -55,14 +73,29 @@ document.getElementById("place-order").addEventListener("click", function(e){
             ]
         },
 
-        callback: function(response){
+callback: function(response){
 
-            alert("Payment successful! Reference: " + response.reference);
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
-            localStorage.removeItem("cart");
+    orders.push({
 
-            window.location.href = "success.html";
-        },
+        fullname: fullname,
+        email: email,
+        phone: phone,
+        total: total,
+        reference: response.reference
+
+    });
+
+    localStorage.setItem("orders", JSON.stringify(orders));
+
+    alert("Payment successful! Reference: " + response.reference);
+
+    localStorage.removeItem("cart");
+
+    window.location.href = "success.html";
+
+}
 
 
         onClose: function(){

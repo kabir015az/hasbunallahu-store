@@ -44,29 +44,22 @@
                 <form id="checkout-form">
 
                     <label>Full Name</label>
-                    <input type="text" id="kabir abdulazeez" required>
+<input type="text" id="fullname" required>
 
-                    <label>Phone Number</label>
-                    <input type="tel" id="07019154961" required>
+<label>Phone Number</label>
+<input type="tel" id="phone" required>
 
-                    <label>Email Address</label>
-                    <input type="kabirabdulazeez45@gmail.com" id="email">
+<label>Email Address</label>
+<input type="email" id="email" required>
 
-                    <label>Delivery Address</label>
-                    <textarea id="abuja, karu site" rows="4" required></textarea>
+<label>Delivery Address</label>
+<textarea id="address" rows="4" required></textarea>
 
-                    <label>State</label>
-                    <input type="text" id="abuja" required>
+<label>State</label>
+<input type="text" id="state" required>
 
-                    <label>City</label>
-                    <input type="text" id="Nigeria" required>
-
-                    <label>Payment Method</label>
-                    <select id="payment-method">
-                        <option>Cash on Delivery</option>
-                        <option>Bank Transfer</option>
-                        <option value="paystack">Paystack</option>
-                        <option>Flutterwave (Coming Soon)</option>
+<label>City</label>
+<input type="text" id="city" required>
                     </select>
 
                 </form>
@@ -78,15 +71,15 @@
 
                 <h2>Order Summary</h2>
 
-                <div id="checkout-items">
-                    <!-- Products will be inserted here -->
-                </div>
+<div id="checkout-items">
+    <!-- Products will be inserted here -->
+</div>
 
-                <h3>Total: <span id="checkout-total">₦0.00</span></h3>
+<h3>Total: <span id="checkout-total">₦0.00</span></h3>
 
-                <button id="place-order">
-                    Place Order
-                </button>
+<button id="place-order">
+    Place Order
+</button>
 
             </aside>
 
@@ -98,7 +91,6 @@
     <footer>
         <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
     </footer>
-    <script src="https://js.paystack.co/v1/inline.js"></script>
-<script src="js/checkout.js"></script>
+    
 </body>
 </html>
