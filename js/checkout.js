@@ -1,11 +1,11 @@
-alert("checkout.js loaded");
+// ==========================================
+// Hasbunallahu Store - Checkout & Paystack
+// ==========================================
+
 // Display Order Summary
 document.addEventListener("DOMContentLoaded", function () {
 
-    alert("Checkout JS loaded");
-
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
     let total = 0;
 
     cart.forEach(item => {
@@ -20,24 +20,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-    let total = 0;
-
-    cart.forEach(item => {
-        total += item.price * item.quantity;
-    });
-
-  const totalElement = document.getElementById("checkout-total");
-
-    if (totalElement) {
-        totalElement.textContent = "₦" + total.toLocaleString();
-    }
-
-});
-// Hasbunallahu Store - Checkout & Paystack
-
-document.getElementById("place-order").addEventListener("click", function(e){
+// Place Order
+document.getElementById("place-order").addEventListener("click", function (e) {
 
     e.preventDefault();
 
@@ -45,7 +30,6 @@ document.getElementById("place-order").addEventListener("click", function(e){
     let email = document.getElementById("email").value;
     let phone = document.getElementById("phone").value;
 
-    // Get cart total
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
     let total = 0;
@@ -54,18 +38,15 @@ document.getElementById("place-order").addEventListener("click", function(e){
         total += item.price * item.quantity;
     });
 
-
-    if(fullname === "" || email === "" || phone === ""){
-        alert("Please fill all customer details");
+    if (fullname === "" || email === "" || phone === "") {
+        alert("Please fill all customer details.");
         return;
     }
 
-
-    if(total === 0){
-        alert("Your cart is empty");
+    if (total === 0) {
+        alert("Your cart is empty.");
         return;
     }
-
 
     let handler = PaystackPop.setup({
 
@@ -92,37 +73,35 @@ document.getElementById("place-order").addEventListener("click", function(e){
             ]
         },
 
-callback: function(response){
+        callback: function (response) {
 
-    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+            let orders = JSON.parse(localStorage.getItem("orders")) || [];
 
-    orders.push({
+            orders.push({
+                fullname: fullname,
+                email: email,
+                phone: phone,
+                total: total,
+                reference: response.reference
+            });
 
-        fullname: fullname,
-        email: email,
-        phone: phone,
-        total: total,
-        reference: response.reference
+            localStorage.setItem("orders", JSON.stringify(orders));
 
-    });
+            localStorage.removeItem("cart");
 
-    localStorage.setItem("orders", JSON.stringify(orders));
+            alert("Payment successful!\nReference: " + response.reference);
 
-    alert("Payment successful! Reference: " + response.reference);
+            window.location.href = "success.html";
 
-    localStorage.removeItem("cart");
+        },
 
-    window.location.href = "success.html";
+        onClose: function () {
 
-}
+            alert("Payment cancelled.");
 
-
-        onClose: function(){
-            alert("Payment cancelled");
         }
 
     });
-
 
     handler.openIframe();
 
