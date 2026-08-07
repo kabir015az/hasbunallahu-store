@@ -12,80 +12,90 @@ const products = [
     name:"Luxury Gift Box",
     price:12000,
     category:"Gift Items",
-    image:"images/gift-box.jpg"
-},
+  <a href="product.html?id=${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+</a>
 
 {
     id:2,
     name:"Prayer Rug",
     price:18000,
     category:"Rugs",
-    image:"images/prayer-rug.jpg"
-},
+  <a href="product.html?id=${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+</a>
 
 {
     id:3,
     name:"Coffee Mug",
     price:4500,
     category:"Mugs",
-    image:"images/coffee-mug.jpg"
-},
+ <a href="product.html?id=${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+</a>
 
 {
     id:4,
     name:"Stainless Spoon Set",
     price:7000,
     category:"Kitchen",
-    image:"images/spoon-set.jpg"
-},
+  <a href="product.html?id=${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+</a>
 
 {
     id:5,
     name:"Baby Clothes Set",
     price:13500,
     category:"Baby",
-    image:"images/baby-clothes.jpg"
-},
+  <a href="product.html?id=${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+</a>
 
 {
     id:6,
     name:"School Bag",
     price:16000,
     category:"School",
-    image:"images/school-bag.jpg"
-},
+ <a href="product.html?id=${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+</a>
 
 {
     id:7,
     name:"Lunch Box",
     price:6500,
     category:"School",
-    image:"images/lunch-box.jpg"
-},
+  <a href="product.html?id=${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+</a>
 
 {
     id:8,
     name:"Toy Teddy Bear",
     price:8500,
     category:"Toys",
-    image:"images/teddy.jpg"
-},
+    <a href="product.html?id=${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+</a>
 
 {
     id:9,
     name:"Wall Clock",
     price:9500,
     category:"Home",
-    image:"images/wall-clock.jpg"
-},
+    <a href="product.html?id=${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+</a>
 
 {
     id:10,
     name:"Water Bottle",
     price:4000,
     category:"School",
-    image:"images/water-bottle.jpg"
-}
+  <a href="product.html?id=${product.id}">
+    <img src="${product.image}" alt="${product.name}">
+</a>
 
 ];
 // ==========================================
@@ -110,7 +120,11 @@ function displayProducts(productList) {
 
             <div class="product-info">
 
-                <h3>${product.name}</h3>
+                <h3>
+    <a href="product.html?id=${product.id}">
+        ${product.name}
+    </a>
+</h3>
 
                 <p>₦${product.price.toLocaleString()}</p>
 

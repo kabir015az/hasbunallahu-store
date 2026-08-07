@@ -1,5 +1,24 @@
+alert("checkout.js loaded");
 // Display Order Summary
 document.addEventListener("DOMContentLoaded", function () {
+
+    alert("Checkout JS loaded");
+
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    let total = 0;
+
+    cart.forEach(item => {
+        total += item.price * item.quantity;
+    });
+
+    const totalElement = document.getElementById("checkout-total");
+
+    if (totalElement) {
+        totalElement.textContent = "₦" + total.toLocaleString();
+    }
+
+});
 
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
