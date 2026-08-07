@@ -5,96 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products | Hasbunallahu Store</title>
 
-  <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/products.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/products.css">
 
-<script defer src="js/main.js"></script>
-<script defer src="js/products.js"></script>
+    <script defer src="js/main.js"></script>
+    <script defer src="js/products.js"></script>
 </head>
+
 <body>
 
-    <!-- Header -->
-    <header>
-        <nav class="navbar">
-            <h2 class="logo">Hasbunallahu Store</h2>
+<header>
+    <nav class="navbar">
 
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="products.html" class="active">Products</a></li>
-                <li><a href="products.html" class="active">Products</a></li>
-<li><a href="wishlist.html">Wishlist <span id="wishlist-count">0</span></a></li>
-<li><a href="cart.html">Cart <span id="cart-count">0</span></a></li>
-                <li><a href="cart.html">Cart <span id="cart-count">0</span></a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+        <h2 class="logo">Hasbunallahu Store</h2>
 
-    <!-- Page Banner -->
-    <section class="page-banner">
-        <h1>Our Products</h1>
-        <p>Find quality products at affordable prices.</p>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html" class="active">Products</a></li>
+            <li><a href="wishlist.html">
+                Wishlist <span id="wishlist-count">0</span>
+            </a></li>
+            <li><a href="cart.html">
+                Cart <span id="cart-count">0</span>
+            </a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+
+    </nav>
+</header>
+
+<section class="page-banner">
+
+    <h1>Our Products</h1>
+
+    <p>Find quality products at affordable prices.</p>
+
+</section>
+
+<section class="product-tools">
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search products...">
+
+    <select id="categoryFilter">
+
+        <option value="all">All Categories</option>
+        <option value="Gift Items">Gift Items</option>
+        <option value="Rugs">Rugs</option>
+        <option value="Mugs">Mugs</option>
+        <option value="Kitchen">Kitchen</option>
+        <option value="Baby">Baby Clothes</option>
+        <option value="School">School Supplies</option>
+        <option value="Toys">Toys</option>
+        <option value="Home">Home</option>
+
+    </select>
+
+</section>
+
+<main>
+
+    <section
+        class="products-grid"
+        id="products-container">
+
     </section>
 
-    <!-- Search & Filter -->
-    <section class="product-tools">
+</main>
 
-        <input
-            type="text"
-            id="searchInput"
-            placeholder="Search products...">
+<footer>
 
-        <select id="categoryFilter">
-            <option value="all">All Categories</option>
-            <option value="Gift Items">Gift Items</option>
-            <option value="Rugs">Rugs</option>
-            <option value="Mugs">Mugs</option>
-            <option value="Kitchen">Kitchen</option>
-            <option value="Baby">Baby Clothes</option>
-            <option value="School">School Supplies</option>
-            <option value="Toys">Toys</option>
-        </select>
+    <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
 
-    </section>
-
-    <!-- Products -->
-    <main>
-
-        <section class="products-grid" id="products-container">
-
-            <!-- Product cards will be loaded with JavaScript -->
-
-        </section>
-
-    </main>
-
-    <!-- Pagination (Optional) -->
-    <section class="pagination">
-        <button>Previous</button>
-        <button>1</button>
-        <button>2</button>
-        <button>Next</button>
-    </section>
-
-    <!-- Footer -->
-    <footer>
-
-        <div class="footer-content">
-
-            <h3>Hasbunallahu Store</h3>
-
-            <p>Your trusted online shopping destination.</p>
-
-            <p>Email: support@hasbunallahustore.com</p>
-
-            <p>Phone: +234 XXX XXX XXXX</p>
-
-            <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
-
-        </div>
-
-    </footer>
+</footer>
 
 </body>
 </html>

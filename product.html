@@ -5,81 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details | Hasbunallahu Store</title>
 
-  <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/products.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/products.css">
 
-<script defer src="js/main.js"></script>
-<script defer src="js/product.js"></script>
-<script defer src="js/products.js"></script>
+    <script defer src="js/main.js"></script>
+    <script defer src="js/products.js"></script>
+    <script defer src="js/product.js"></script>
 </head>
+
 <body>
 
-    <!-- Header -->
-    <header>
-        <nav class="navbar">
-            <h2 class="logo">Hasbunallahu Store</h2>
+<header>
 
-            <ul class="nav-links">
-    <li><a href="index.html">Home</a></li>
-    <li><a href="products.html">Products</a></li>
-    <li><a href="wishlist.html">Wishlist <span id="wishlist-count">0</span></a></li>
-    <li><a href="cart.html">Cart <span id="cart-count">0</span></a></li>
-    <li><a href="about.html">About</a></li>
-    <li><a href="contact.html">Contact</a></li>
-</ul>
-    </header>
+    <nav class="navbar">
 
-    <!-- Product Details -->
-    <main class="product-details">
+        <h2 class="logo">Hasbunallahu Store</h2>
 
-        <div class="product-image">
-            <img id="product-image" src="images/placeholder.jpg" alt="Product Image">
-        </div>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Products</a></li>
+            <li><a href="wishlist.html">
+                Wishlist <span id="wishlist-count">0</span>
+            </a></li>
+            <li><a href="cart.html">
+                Cart <span id="cart-count">0</span>
+            </a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
 
-        <div class="product-info">
+    </nav>
 
-            <h1 id="product-name">Product Name</h1>
+</header>
 
-            <p class="price" id="product-price">₦0.00</p>
-            <p><strong>Category:</strong> <span id="product-category"></span></p>
+<main class="product-details">
 
-            <p id="product-description">
-                Product description will appear here.
-            </p>
+    <div class="product-image">
 
-            <label for="quantity">Quantity</label>
+        <img
+            id="product-image"
+            src="images/placeholder.jpg"
+            alt="Product Image">
 
-            <input
-                type="number"
-                id="quantity"
-                value="1"
-                min="1">
+    </div>
 
-            <button id="add-to-cart-btn">
-                Add to Cart
-            </button>
+    <div class="product-info">
 
-        </div>
+        <h1 id="product-name">Loading...</h1>
 
-    </main>
+        <p class="price" id="product-price">₦0.00</p>
 
-    <!-- Related Products -->
-    <section class="related-products">
+        <p>
+            <strong>Category:</strong>
+            <span id="product-category"></span>
+        </p>
 
-        <h2>You May Also Like</h2>
+        <p id="product-description">
+            Product description...
+        </p>
 
-        <div id="related-products-container">
-            <!-- Related products will load here -->
-        </div>
+        <label>Quantity</label>
 
-    </section>
+        <input
+            type="number"
+            id="quantity"
+            value="1"
+            min="1">
 
-    <!-- Footer -->
-    <footer>
+        <button id="add-to-cart-btn">
+            Add To Cart
+        </button>
 
-        <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
+    </div>
 
-    </footer>
+</main>
+
+<footer>
+
+    <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
+
+</footer>
 
 </body>
 </html>

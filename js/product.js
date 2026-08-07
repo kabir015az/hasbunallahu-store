@@ -1,34 +1,55 @@
 // ==========================================
 // Hasbunallahu Store
-// Product Details
+// product.js
 // ==========================================
 
 // Get product ID from URL
 const params = new URLSearchParams(window.location.search);
 const productId = parseInt(params.get("id"));
 
-// Find the product
+alert("Product ID = " + productId);
+
+// Find the selected product
 const product = products.find(item => item.id === productId);
 
-if (product) {
+// If product doesn't exist
+if (!product) {
 
+    document.getElementById("product-name").textContent = "Product Not Found";
+
+} else {
+
+    // Display product details
     document.getElementById("product-image").src = product.image;
+
+    document.getElementById("product-image").alt = product.name;
+
     document.getElementById("product-name").textContent = product.name;
+
     document.getElementById("product-price").textContent =
         "₦" + product.price.toLocaleString();
+
+    document.getElementById("product-category").textContent =
+        product.category;
+
     document.getElementById("product-description").textContent =
         product.description;
 
 }
 // ==========================================
-// Add Product To Cart
+// Add Selected Product To Cart
 // ==========================================
 
 const addToCartBtn = document.getElementById("add-to-cart-btn");
 
-if (addToCartBtn && product) {
+if (addToCartBtn) {
 
     addToCartBtn.addEventListener("click", function () {
+
+        if (!product) {
+            alert("Product not found!");
+            return;
+        }
 
         let quantity = parseInt(document.getElementById("quantity").value) || 1;
 
@@ -60,4 +81,4 @@ if (addToCartBtn && product) {
 
     });
 
-}
+}0

@@ -128,7 +128,7 @@ function displayProducts(productList) {
                     </a>
                 </h3>
 
-                <p>₦${product.price.toLocaleString()}</p>
+                <p class="price">₦${product.price.toLocaleString()}</p>
 
                 <button onclick="addToCart(${product.id})">
                     Add to Cart
@@ -148,8 +148,10 @@ function displayProducts(productList) {
 
 }
 
-// Load products
-displayProducts(products);
+// Load products only if products-container exists
+if (productsContainer) {
+    displayProducts(products);
+}
 
 
 // ==========================================
@@ -164,11 +166,11 @@ if (searchInput) {
 
         const keyword = searchInput.value.toLowerCase();
 
-        const filtered = products.filter(product =>
+        const filteredProducts = products.filter(product =>
             product.name.toLowerCase().includes(keyword)
         );
 
-        displayProducts(filtered);
+        displayProducts(filteredProducts);
 
     });
 
@@ -188,18 +190,15 @@ if (categoryFilter) {
         const category = categoryFilter.value;
 
         if (category === "all") {
-
             displayProducts(products);
-
             return;
-
         }
 
-        const filtered = products.filter(product =>
+        const filteredProducts = products.filter(product =>
             product.category === category
         );
 
-        displayProducts(filtered);
+        displayProducts(filteredProducts);
 
     });
 
@@ -219,11 +218,8 @@ function addToCart(productId) {
     const existingItem = cart.find(item => item.id === productId);
 
     if (existingItem) {
-
         existingItem.quantity++;
-
     } else {
-
         cart.push({
             id: product.id,
             name: product.name,
@@ -231,7 +227,6 @@ function addToCart(productId) {
             image: product.image,
             quantity: 1
         });
-
     }
 
     saveCart(cart);
