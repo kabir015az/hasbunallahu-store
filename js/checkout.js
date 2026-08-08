@@ -1,108 +1,285 @@
 // ==========================================
-// Hasbunallahu Store - Checkout & Paystack
+// Hasbunallahu Store - Checkout & Paystack v2
 // ==========================================
 
-// Display Order Summary
 document.addEventListener("DOMContentLoaded", function () {
 
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
     let total = 0;
 
     cart.forEach(item => {
         total += item.price * item.quantity;
     });
 
-    const totalElement = document.getElementById("checkout-total");
+    const totalElement =
+        document.getElementById("checkout-total");
 
     if (totalElement) {
-        totalElement.textContent = "₦" + total.toLocaleString();
+        totalElement.textContent =
+            "₦" + total.toLocaleString();
     }
 
-});
 
+    // ==========================================
+    // Place Order Button
+    // ==========================================
 
-// Place Order
-document.getElementById("place-order").addEventListener("click", function (e) {
+    const placeOrderButton =
+        document.getElementById("place-order");
 
-    e.preventDefault();
-
-    let fullname = document.getElementById("fullname").value;
-    let email = document.getElementById("email").value;
-    let phone = document.getElementById("phone").value;
-
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    let total = 0;
-
-    cart.forEach(item => {
-        total += item.price * item.quantity;
-    });
-
-    if (fullname === "" || email === "" || phone === "") {
-        alert("Please fill all customer details.");
+    if (!placeOrderButton) {
         return;
     }
 
-    if (total === 0) {
-        alert("Your cart is empty.");
-        return;
-    }
 
-    let handler = PaystackPop.setup({
+    placeOrderButton.addEventListener("click", function (e) {
 
-        key: "pk_test_17d80f52a39fb05435d5898b29744b5b034d85a9",
+        e.preventDefault();
 
-        email: email,
 
-        amount: total * 100,
+        // Customer details
+        const fullname =
+            document.getElementById("fullname").value.trim();
 
-        currency: "NGN",
+        const email =
+            document.getElementById("email").value.trim();
 
-        metadata: {
-            custom_fields: [
-                {
-                    display_name: "Customer Name",
-                    variable_name: "name",
-                    value: fullname
-                },
-                {
-                    display_name: "Phone Number",
-                    variable_name: "phone",
-                    value: phone
-                }
-            ]
-        },
+        const phone =
+            document.getElementById("phone").value.trim();
 
-        callback: function (response) {
+        const address =
+            document.getElementById("address").value.trim();
 
-            let orders = JSON.parse(localStorage.getItem("orders")) || [];
+        const state =
+            document.getElementById("state").value.trim();
 
-            orders.push({
-                fullname: fullname,
-                email: email,
-                phone: phone,
-                total: total,
-                reference: response.reference
-            });
+        const city =
+            document.getElementById("city").value.trim();
 
-            localStorage.setItem("orders", JSON.stringify(orders));
 
-            localStorage.removeItem("cart");
+        // Get cart
+        cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-            alert("Payment successful!\nReference: " + response.reference);
 
-            window.location.href = "success.html";
+        // Calculate total
+        total = 0;
 
-        },
+        cart.forEach(item => {
+            total += item.price * item.quantity;
+        });
 
-        onClose: function () {
 
-            alert("Payment cancelled.");
-
+        // Validate details
+        if (
+            fullname === "" ||
+            email === "" ||
+            phone === "" ||
+            address === "" ||
+            state === "" ||
+            city === ""
+        ) {
+            alert("Please fill all customer details.");
+            return;
         }
 
-    });
 
-    handler.openIframe();
+        // Check cart
+        if (cart.length === 0 || total === 0) {
+            alert("Your cart is empty.");
+            return;
+        }
+
+
+        // Check Paystack
+        if (typeof PaystackPop === "undefined") {
+
+            alert(
+                "Paystack is still loading. Please refresh the page and try again."
+            );
+
+            return;
+        }
+
+
+        // ==========================================
+        // Paystack v2
+        // ==========================================
+
+        const popup = new PaystackPop();
+
+        popup.newTransaction({
+
+            key:
+                "pk_test_17d80f52a39fb05435d5898b29744b5b034d85a9",
+
+            email:
+                email,
+
+            amount:
+                total * 100,
+
+            currency:
+                "NGN",
+
+            metadata: {
+
+                custom_fields: [
+
+                    {
+                        display_name: "Customer Name",
+                        variable_name: "name",
+                        value: fullname
+                    },
+
+                    {
+                        display_name: "Phone Number",
+                        variable_name: "phone",
+                        value: phone
+                    },
+
+                    {
+                        display_name: "Address",
+                        variable_name: "address",
+                        value: address
+                    },
+
+                    {
+                        display_name: "State",
+                        variable_name: "state",
+                        value: state
+                    },
+
+                    {
+                        display_name: "City",
+                        variable_name: "city",
+                        value: city
+                    }
+
+                ]
+
+            },
+
+
+            // ==========================================
+            // Successful Payment
+            // ==========================================
+
+            onSuccess: function (transaction) {
+
+                let orders =
+                    JSON.parse(
+                        localStorage.getItem("orders")
+                    ) || [];
+
+
+                const orderNumber =
+                    "HSB-" + Date.now();
+
+
+                const orderDate =
+                    new Date().toLocaleString();
+
+
+                const newOrder = {
+
+                    orderNumber:
+                        orderNumber,
+
+                    fullname:
+                        fullname,
+
+                    email:
+                        email,
+
+                    phone:
+                        phone,
+
+                    address:
+                        address,
+
+                    state:
+                        state,
+
+                    city:
+                        city,
+
+                    total:
+                        total,
+
+                    reference:
+                        transaction.reference,
+
+                    date:
+                        orderDate,
+
+                    status:
+                        "Paid",
+
+                    items:
+                        cart.map(item => ({
+
+                            id:
+                                item.id,
+
+                            name:
+                                item.name,
+
+                            price:
+                                item.price,
+
+                            image:
+                                item.image,
+
+                            quantity:
+                                item.quantity
+
+                        }))
+
+                };
+
+
+                // Save order
+                orders.push(newOrder);
+
+                localStorage.setItem(
+                    "orders",
+                    JSON.stringify(orders)
+                );
+
+
+                // Clear cart
+                localStorage.removeItem("cart");
+
+
+                alert(
+                    "Payment successful!\n\n" +
+                    "Order: " +
+                    orderNumber +
+                    "\nReference: " +
+                    transaction.reference
+                );
+
+
+                // Go to success page
+                window.location.href =
+                    "success.html";
+
+            },
+
+
+            // ==========================================
+            // Payment Cancelled
+            // ==========================================
+
+            onCancel: function () {
+
+                alert("Payment cancelled.");
+
+            }
+
+        });
+
+    });
 
 });
