@@ -1,48 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
     <title>Wishlist | Hasbunallahu Store</title>
 
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/products.css">
 
     <script defer src="js/main.js"></script>
+    <script defer src="js/products.js"></script>
     <script defer src="js/wishlist.js"></script>
 </head>
+
 <body>
 
-<header>
-    <nav class="navbar">
-        <h2 class="logo">Hasbunallahu Store</h2>
+    <!-- Header -->
+    <header>
 
-        <ul class="nav-links">
-            <li><a href="index.html">Home</a></li>
-            <li><a href="products.html">Products</a></li>
-            <li><a href="wishlist.html" class="active">
-                Wishlist <span id="wishlist-count">0</span>
-            </a></li>
-            <li><a href="cart.html">
-                Cart <span id="cart-count">0</span>
-            </a></li>
-        </ul>
-    </nav>
-</header>
+        <nav class="navbar">
 
-<main style="padding:40px 8%;">
+            <h2 class="logo">
+                Hasbunallahu Store
+            </h2>
 
-    <h1>My Wishlist ❤️</h1>
+            <ul class="nav-links">
 
-    <div id="wishlist-container" class="products-grid">
+                <li>
+                    <a href="index.html">
+                        Home
+                    </a>
+                </li>
 
-    </div>
+                <li>
+                    <a href="products.html">
+                        Products
+                    </a>
+                </li>
 
-</main>
+                <li>
+                    <a href="wishlist.html" class="active">
+                        Wishlist
+                        <span id="wishlist-count">0</span>
+                    </a>
+                </li>
 
-<footer>
-    <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
-</footer>
+                <li>
+                    <a href="cart.html">
+                        Cart
+                        <span id="cart-count">0</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="about.html">
+                        About
+                    </a>
+                </li>
+
+                <li>
+                    <a href="contact.html">
+                        Contact
+                    </a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </header>
+
+
+    <!-- Page Banner -->
+    <section class="page-banner">
+
+        <h1>
+            My Wishlist ❤️
+        </h1>
+
+        <p>
+            Products you saved for later.
+        </p>
+
+    </section>
+
+
+    <!-- Wishlist -->
+    <main>
+
+        <section
+            class="products-grid"
+            id="wishlist-container"
+        >
+
+            <!-- Wishlist products will appear here -->
+
+        </section>
+
+    </main>
+
+
+    <!-- Footer -->
+    <footer>
+
+        <p>
+            &copy; 2026 Hasbunallahu Store.
+            All Rights Reserved.
+        </p>
+
+    </footer>
 
 </body>
+
 </html>

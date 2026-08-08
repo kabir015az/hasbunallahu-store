@@ -1,6 +1,6 @@
 // ==========================================
 // Hasbunallahu Store
-// wishlist.js - Part 1
+// Wishlist System
 // ==========================================
 
 // Get wishlist
@@ -18,108 +18,46 @@ function updateWishlistCount() {
 
     const wishlist = getWishlist();
 
-    const count = wishlist.length;
-
     const countElement = document.getElementById("wishlist-count");
 
     if (countElement) {
-        countElement.textContent = count;
+        countElement.textContent = wishlist.length;
     }
-
 }
 
-// Run when page loads
-document.addEventListener("DOMContentLoaded", updateWishlistCount);
-// ==========================================
-// Add To Wishlist
-// ==========================================
-
+// Add product to wishlist
 function addToWishlist(productId) {
-
-    let wishlist = getWishlist();
 
     const product = products.find(item => item.id === productId);
 
-    if (!product) return;
+    if (!product) {
+        return;
+    }
+
+    let wishlist = getWishlist();
 
     const exists = wishlist.find(item => item.id === productId);
 
     if (exists) {
-
-        alert("This product is already in your wishlist.");
+        alert(product.name + " is already in your wishlist!");
         return;
-
     }
 
-    wishlist.push(product);
+    wishlist.push({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        image: product.image
+    });
 
     saveWishlist(wishlist);
 
     updateWishlistCount();
 
-    alert(product.name + " added to your wishlist ❤️");
-
-}
-// ==========================================
-// Display Wishlist
-// ==========================================
-
-function loadWishlist() {
-
-    const container = document.getElementById("wishlist-container");
-
-    if (!container) return;
-
-    const wishlist = getWishlist();
-
-    container.innerHTML = "";
-
-    if (wishlist.length === 0) {
-
-        container.innerHTML = `
-            <p>Your wishlist is empty.</p>
-        `;
-
-        return;
-    }
-
-    wishlist.forEach(product => {
-
-        container.innerHTML += `
-
-        <div class="product-card">
-
-            <img src="${product.image}" alt="${product.name}">
-
-            <div class="product-info">
-
-                <h3>${product.name}</h3>
-
-                <p>₦${product.price.toLocaleString()}</p>
-
-                <button onclick="addToCart(${product.id})">
-                    Add to Cart
-                </button>
-
-                <button onclick="removeFromWishlist(${product.id})">
-                    Remove
-                </button>
-
-            </div>
-
-        </div>
-
-        `;
-
-    });
-
+    alert(product.name + " added to wishlist!");
 }
 
-document.addEventListener("DOMContentLoaded", loadWishlist);
-// ==========================================
-// Remove From Wishlist
-// ==========================================
-
+// Remove product from wishlist
 function removeFromWishlist(productId) {
 
     let wishlist = getWishlist();
@@ -130,6 +68,68 @@ function removeFromWishlist(productId) {
 
     updateWishlistCount();
 
-    loadWishlist();
-
+    displayWishlist();
 }
+
+// Display wishlist
+function displayWishlist() {
+
+    const container =
+        document.getElementById("wishlist-container");
+
+    if (!container) {
+        return;
+    }
+
+    const wishlist = getWishlist();
+
+    if (wishlist.length === 0) {
+
+        container.innerHTML = `
+            <p>Your wishlist is empty.</p>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    wishlist.forEach(product => {
+
+        container.innerHTML += `
+
+            <div class="product-card">
+
+                <img
+                    src="${product.image}"
+                    alt="${product.name}"
+                >
+
+                <h3>${product.name}</h3>
+
+                <p>
+                    ₦${product.price.toLocaleString()}
+                </p>
+
+                <button onclick="removeFromWishlist(${product.id})">
+                    Remove
+                </button>
+
+                <button onclick="addToCart(${product.id})">
+                    Add to Cart
+                </button>
+
+            </div>
+
+        `;
+    });
+}
+
+// Load wishlist
+document.addEventListener("DOMContentLoaded", function () {
+
+    updateWishlistCount();
+
+    displayWishlist();
+
+});
