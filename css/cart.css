@@ -1,0 +1,133 @@
+/* ==========================================
+   Hasbunallahu Store
+   cart.css - Part 1
+========================================== */
+
+.cart-page{
+    padding:60px 8%;
+}
+
+.cart-page h1{
+    text-align:center;
+    margin-bottom:30px;
+    font-size:40px;
+}
+
+.cart-table{
+    width:100%;
+    border-collapse:collapse;
+    background:#fff;
+    box-shadow:0 4px 10px rgba(0,0,0,.1);
+    border-radius:10px;
+    overflow:hidden;
+}
+
+.cart-table thead{
+    background:#0d6efd;
+    color:#fff;
+}
+
+.cart-table th,
+.cart-table td{
+    padding:15px;
+    text-align:center;
+    border-bottom:1px solid #eee;
+}
+
+.cart-table img{
+    width:80px;
+    height:80px;
+    object-fit:cover;
+    border-radius:8px;
+}
+
+.cart-table input{
+    width:60px;
+    padding:8px;
+    text-align:center;
+    border:1px solid #ccc;
+    border-radius:6px;
+}
+
+.remove-btn{
+    background:#dc3545;
+    color:#fff;
+    border:none;
+    padding:10px 15px;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.remove-btn:hover{
+    background:#bb2d3b;
+}
+/* ==========================================
+   Order Summary
+========================================== */
+
+.cart-summary{
+    margin-top:40px;
+    margin-left:auto;
+    max-width:350px;
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,.1);
+}
+
+.cart-summary h2{
+    margin-bottom:20px;
+}
+
+.cart-summary p{
+    display:flex;
+    justify-content:space-between;
+    margin:15px 0;
+    font-size:18px;
+}
+
+#clear-cart,
+#checkout-btn{
+    width:100%;
+    padding:14px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
+    margin-top:15px;
+}
+
+#clear-cart{
+    background:#dc3545;
+    color:#fff;
+}
+
+#clear-cart:hover{
+    background:#bb2d3b;
+}
+
+#checkout-btn{
+    background:#0d6efd;
+    color:#fff;
+}
+
+#checkout-btn:hover{
+    background:#084298;
+}
+
+/* ==========================================
+   Responsive
+========================================== */
+
+@media(max-width:768px){
+
+.cart-table{
+    display:block;
+    overflow-x:auto;
+}
+
+.cart-summary{
+    max-width:100%;
+}
+
+}

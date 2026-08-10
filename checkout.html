@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout | Hasbunallahu Store</title>
+
+  <link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/checkout.css">
+
+<script src="https://js.paystack.co/v2/inline.js"></script>
+<script defer src="js/main.js"></script>
+<script defer src="js/checkout.js"></script>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <nav class="navbar">
+            <h2 class="logo">Hasbunallahu Store</h2>
+<button class="menu-toggle" id="menu-toggle">
+    ☰
+</button>
+            <ul class="nav-links">
+
+    <li>
+        <a href="index.html">Home</a>
+    </li>
+
+    <li>
+        <a href="products.html">Products</a>
+    </li>
+
+    <li>
+        <a href="wishlist.html">
+            Wishlist ❤️
+            <span id="wishlist-count">0</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="cart.html">
+            Cart 🛒
+            <span id="cart-count">0</span>
+        </a>
+    </li>
+
+    <li>
+        <a href="orders.html">
+            My Orders 📦
+        </a>
+    </li>
+
+    <li>
+        <a href="about.html">About</a>
+    </li>
+
+    <li>
+        <a href="contact.html">Contact</a>
+    </li>
+
+</ul>
+        </nav>
+    </header>
+
+    <!-- Checkout -->
+    <main class="checkout-page">
+
+        <h1>Checkout</h1>
+
+        <div class="checkout-container">
+
+            <!-- Customer Details -->
+            <section class="customer-details">
+
+                <h2>Customer Information</h2>
+
+                <form id="checkout-form">
+
+                    <label>Full Name</label>
+<input type="text" id="fullname" required>
+
+<label>Phone Number</label>
+<input type="tel" id="phone" required>
+
+<label>Email Address</label>
+<input type="email" id="email" required>
+
+<label>Delivery Address</label>
+<textarea id="address" rows="4" required></textarea>
+
+<label>State</label>
+<input type="text" id="state" required>
+
+<label>City</label>
+<input type="text" id="city" required>
+
+                </form>
+
+            </section>
+
+            <!-- Order Summary -->
+            <aside class="order-summary">
+
+                <h2>Order Summary</h2>
+
+<div id="checkout-items">
+    <!-- Products will be inserted here -->
+</div>
+<!-- Discount Coupon -->
+
+<div class="coupon-section">
+
+    <h3>🎟️ Discount Coupon</h3>
+
+    <input
+        type="text"
+        id="coupon-code"
+        placeholder="Enter coupon code"
+    >
+
+    <button type="button" id="apply-coupon">
+        Apply Coupon
+    </button>
+
+    <p id="coupon-message"></p>
+
+</div>
+<h3>Total: <span id="checkout-total">₦0.00</span></h3>
+
+<button id="place-order">
+    Place Order
+</button>
+
+            </aside>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
+    </footer>
+    
+</body>
+</html>

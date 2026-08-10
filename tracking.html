@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Track Order | Hasbunallahu Store</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css">
+
+</head>
+
+<body>
+
+<header>
+
+    <nav class="navbar">
+
+        <h2 class="logo">
+            Hasbunallahu Store
+        </h2>
+
+        <ul class="nav-links">
+
+            <li>
+                <a href="index.html">
+                    Home
+                </a>
+            </li>
+
+            <li>
+                <a href="products.html">
+                    Products
+                </a>
+            </li>
+
+            <li>
+                <a href="orders.html">
+                    My Orders 📦
+                </a>
+            </li>
+
+            <li>
+                <a href="tracking.html">
+                    Track Order 🚚
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+</header>
+
+
+<main class="tracking-page">
+
+    <h1>
+        🚚 Track Your Order
+    </h1>
+
+    <p>
+        Enter your order number to check your delivery status.
+    </p>
+
+
+    <div class="tracking-form">
+
+        <input
+            type="text"
+            id="tracking-order-number"
+            placeholder="Enter Order Number">
+
+        <button
+            type="button"
+            id="track-order">
+
+            Track Order
+
+        </button>
+
+    </div>
+
+
+    <p id="tracking-message"></p>
+
+
+    <div
+        id="tracking-result"
+        style="display:none;">
+
+        <h2>
+            Order Details
+        </h2>
+
+        <p>
+            <strong>Order Number:</strong>
+            <span id="track-order-number">
+            </span>
+        </p>
+
+        <p>
+            <strong>Customer:</strong>
+            <span id="track-customer">
+            </span>
+        </p>
+
+        <p>
+            <strong>Total:</strong>
+            ₦<span id="track-total">
+            </span>
+        </p>
+
+        <div class="tracking-progress">
+
+    <div class="tracking-step" id="step-paid">
+        <span>💳</span>
+        <p>Paid</p>
+    </div>
+
+    <div class="tracking-line"></div>
+
+    <div class="tracking-step" id="step-processing">
+        <span>📦</span>
+        <p>Processing</p>
+    </div>
+
+    <div class="tracking-line"></div>
+
+    <div class="tracking-step" id="step-shipped">
+        <span>🚚</span>
+        <p>Shipped</p>
+    </div>
+
+    <div class="tracking-line"></div>
+
+    <div class="tracking-step" id="step-delivery">
+        <span>🏠</span>
+        <p>Out for Delivery</p>
+    </div>
+
+    <div class="tracking-line"></div>
+
+    <div class="tracking-step" id="step-delivered">
+        <span>✅</span>
+        <p>Delivered</p>
+    </div>
+
+</div>
+
+<p>
+    <strong>Current Status:</strong>
+    <span id="track-status"></span>
+</p>
+
+    </div>
+
+</main>
+
+
+<footer>
+
+    <p>
+        &copy; 2026 Hasbunallahu Store.
+        All Rights Reserved.
+    </p>
+
+</footer>
+
+
+<script src="js/tracking.js"></script>
+
+</body>
+
+</html>

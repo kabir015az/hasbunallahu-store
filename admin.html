@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Admin Login | Hasbunallahu Store</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Admin Login -->
+    <main id="admin-login" style="padding: 30px; max-width: 450px; margin: auto;">
+
+        <h1>🔐 Admin Login</h1>
+
+        <p>Hasbunallahu Store</p>
+
+        <form id="admin-login-form">
+
+            <label for="admin-username">
+                Username
+            </label>
+
+            <input
+                type="text"
+                id="admin-username"
+                placeholder="Enter username"
+                required
+            >
+
+            <br><br>
+
+            <label for="admin-password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="admin-password"
+                placeholder="Enter password"
+                required
+            >
+
+            <br><br>
+
+            <button type="submit">
+                Login
+            </button>
+
+            <p id="login-message"></p>
+
+        </form>
+
+    </main>
+
+
+    <!-- Admin Dashboard -->
+    <main
+        id="admin-dashboard"
+        style="padding:20px; display:none;"
+    >
+
+        <header>
+            <h1>
+                Hasbunallahu Store - Admin Dashboard
+            </h1>
+        </header>
+<!-- Admin Statistics -->
+<section class="admin-statistics">
+
+    <h2>Store Statistics 📊</h2>
+
+    <div class="stats-container">
+
+        <div class="stat-card">
+            <h3>Total Orders</h3>
+            <p id="total-orders">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Total Sales</h3>
+            <p id="total-sales">₦0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Total Customers</h3>
+            <p id="total-customers">0</p>
+        </div>
+
+        <div class="stat-card">
+            <h3>Total Products</h3>
+            <p id="total-products">0</p>
+        </div>
+
+    </div>
+
+</section>
+<!-- Recent Orders -->
+<section class="recent-orders">
+
+    <h2>Recent Orders 📦</h2>
+
+    <div id="recent-orders-container">
+        <p>No recent orders yet.</p>
+    </div>
+
+</section>
+        <h2>Customer Orders</h2>
+
+        <button id="admin-logout">
+            Logout
+        </button>
+
+        <br><br>
+
+        <table
+            border="1"
+            width="100%"
+            cellpadding="10"
+        >
+
+            <thead>
+
+ <tr>
+    <th>Customer</th>
+    <th>Email</th>
+    <th>Phone</th>
+    <th>Total</th>
+    <th>Reference</th>
+    <th>Status</th>
+    <th>Details</th>
+ </tr>
+
+            </thead>
+
+            <tbody id="orders-table">
+
+                <tr>
+                    <td colspan="5">
+                        No orders yet.
+                    </td>
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </main>
+ 
+ <script src="js/products.js"></script>
+ <script src="js/admin.js"></script>
+
+</body>
+
+</html>
