@@ -278,8 +278,10 @@ function sendOrderEmail(orderData) {
                 ).toLocaleString(),
 
             reference:
-                orderData.reference
+                orderData.reference,
 
+status:
+    "Paid"
         }
 
     );
