@@ -28,11 +28,31 @@ body{
     top:0;
     z-index:1000;
 }
-
-.logo{
+  .logo{
     color:#fff;
     font-size:28px;
     font-weight:bold;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.logo img{
+    width:200px;
+    height:200px;
+    object-fit:contain;
+}
+
+/* Small logo on phones */
+@media (max-width:768px){
+    .logo img{
+        width:100px;
+        height:100px;
+    }
+
+    .logo{
+        font-size:22px;
+    }
 }
 
 .nav-links{
