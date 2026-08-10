@@ -1,8 +1,22 @@
 // ==========================================
-// Hasbunallahu Store - Checkout & Paystack
+// Hasbunallahu Store - Checkout
+// Paystack v2 + EmailJS
 // ==========================================
 
 let couponDiscount = 0;
+
+
+// ==========================================
+// Get Cart
+// ==========================================
+
+function getCheckoutCart() {
+
+    return JSON.parse(
+        localStorage.getItem("cart")
+    ) || [];
+
+}
 
 
 // ==========================================
@@ -11,12 +25,11 @@ let couponDiscount = 0;
 
 function getCheckoutCartTotal() {
 
-    const cart =
-        JSON.parse(localStorage.getItem("cart")) || [];
+    const cart = getCheckoutCart();
 
     let total = 0;
 
-    cart.forEach(item => {
+    cart.forEach(function (item) {
 
         total +=
             Number(item.price) *
@@ -25,6 +38,7 @@ function getCheckoutCartTotal() {
     });
 
     return total;
+
 }
 
 
@@ -42,10 +56,13 @@ function updateCheckoutTotal() {
         (couponDiscount / 100);
 
     const finalTotal =
-        originalTotal - discountAmount;
+        originalTotal -
+        discountAmount;
 
     const totalElement =
-        document.getElementById("checkout-total");
+        document.getElementById(
+            "checkout-total"
+        );
 
     if (totalElement) {
 
@@ -56,25 +73,12 @@ function updateCheckoutTotal() {
     }
 
     return finalTotal;
+
 }
 
 
 // ==========================================
-// Display Order Total
-// ==========================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        updateCheckoutTotal();
-
-    }
-);
-
-
-// ==========================================
-// Discount Coupons
+// Coupons
 // ==========================================
 
 const coupons = {
@@ -90,80 +94,75 @@ const coupons = {
 // Apply Coupon
 // ==========================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+function setupCoupon() {
 
-        const applyCoupon =
-            document.getElementById(
-                "apply-coupon"
-            );
+    const applyCoupon =
+        document.getElementById(
+            "apply-coupon"
+        );
 
-        if (!applyCoupon) return;
+    if (!applyCoupon) return;
 
 
-        applyCoupon.addEventListener(
-            "click",
-            function () {
+    applyCoupon.addEventListener(
+        "click",
+        function () {
 
-                const couponInput =
-                    document.getElementById(
-                        "coupon-code"
-                    );
+            const couponInput =
+                document.getElementById(
+                    "coupon-code"
+                );
 
-                const couponMessage =
-                    document.getElementById(
-                        "coupon-message"
-                    );
+            const couponMessage =
+                document.getElementById(
+                    "coupon-message"
+                );
 
-
-                const code =
-                    couponInput.value
-                        .trim()
-                        .toUpperCase();
-
-
-                if (code === "") {
-
-                    couponMessage.textContent =
-                        "Please enter a coupon code.";
-
-                    return;
-
-                }
+            const code =
+                couponInput.value
+                    .trim()
+                    .toUpperCase();
 
 
-                if (!coupons[code]) {
-
-                    couponDiscount = 0;
-
-                    couponMessage.textContent =
-                        "❌ Invalid coupon code.";
-
-                    updateCheckoutTotal();
-
-                    return;
-
-                }
-
-
-                couponDiscount =
-                    coupons[code];
-
+            if (code === "") {
 
                 couponMessage.textContent =
-                    "✅ Coupon applied! " +
-                    couponDiscount +
-                    "% discount.";
+                    "Please enter a coupon code.";
 
+                return;
+
+            }
+
+
+            if (!coupons[code]) {
+
+                couponDiscount = 0;
+
+                couponMessage.textContent =
+                    "❌ Invalid coupon code.";
 
                 updateCheckoutTotal();
 
-            }
-        );
+                return;
 
-    }
-);
+            }
+
+
+            couponDiscount =
+                coupons[code];
+
+
+            couponMessage.textContent =
+                "✅ Coupon applied! " +
+                couponDiscount +
+                "% discount.";
+
+            updateCheckoutTotal();
+
+        }
+    );
+
+}
 
 
 // ==========================================
@@ -187,7 +186,6 @@ function sendOrderEmail(orderData) {
     }
 
 
-    // Product list
     let itemsHTML = "";
 
 
@@ -201,23 +199,35 @@ function sendOrderEmail(orderData) {
 
             itemsHTML += `
                 <div style="
-                    padding: 8px 0;
-                    border-bottom: 1px solid #ddd;
+                    padding:10px 0;
+                    border-bottom:1px solid #ddd;
                 ">
-                    <strong>${item.name}</strong><br>
-                    Quantity: ${item.quantity}<br>
-                    Price: ₦${Number(item.price).toLocaleString()}<br>
-                    Subtotal: ₦${itemTotal.toLocaleString()}
+
+                    <strong>
+                        ${item.name}
+                    </strong>
+
+                    <br>
+
+                    Quantity:
+                    ${item.quantity}
+
+                    <br>
+
+                    Price:
+                    ₦${Number(item.price).toLocaleString()}
+
+                    <br>
+
+                    Subtotal:
+                    ₦${itemTotal.toLocaleString()}
+
                 </div>
             `;
 
         }
     );
 
-
-    // ==========================================
-    // EmailJS
-    // ==========================================
 
     return emailjs.send(
 
@@ -278,373 +288,410 @@ function sendOrderEmail(orderData) {
 
 
 // ==========================================
-// Place Order
+// Save Order
 // ==========================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
+function saveOrder(orderData) {
 
-        const placeOrder =
-            document.getElementById(
-                "place-order"
-            );
+    let orders =
+        JSON.parse(
+            localStorage.getItem("orders")
+        ) || [];
 
 
-        if (!placeOrder) return;
+    orders.push(orderData);
 
 
-        placeOrder.addEventListener(
-            "click",
-            function (e) {
+    localStorage.setItem(
+        "orders",
+        JSON.stringify(orders)
+    );
 
-                e.preventDefault();
+}
+
+
+// ==========================================
+// Start Checkout
+// ==========================================
+
+function setupCheckout() {
+
+    const placeOrder =
+        document.getElementById(
+            "place-order"
+        );
+
+    if (!placeOrder) return;
+
+
+    placeOrder.addEventListener(
+        "click",
+        async function (e) {
+
+            e.preventDefault();
+
+
+            // ==========================================
+            // Customer Details
+            // ==========================================
+
+            const fullname =
+                document.getElementById(
+                    "fullname"
+                ).value.trim();
+
+
+            const email =
+                document.getElementById(
+                    "email"
+                ).value.trim();
+
+
+            const phone =
+                document.getElementById(
+                    "phone"
+                ).value.trim();
+
+
+            const address =
+                document.getElementById(
+                    "address"
+                ).value.trim();
+
+
+            const state =
+                document.getElementById(
+                    "state"
+                ).value.trim();
+
+
+            const city =
+                document.getElementById(
+                    "city"
+                ).value.trim();
+
+
+            // ==========================================
+            // Cart
+            // ==========================================
+
+            const cart =
+                getCheckoutCart();
+
+
+            const subtotal =
+                getCheckoutCartTotal();
+
+
+            const discountAmount =
+                subtotal *
+                (couponDiscount / 100);
+
+
+            const total =
+                subtotal -
+                discountAmount;
+
+
+            // ==========================================
+            // Validate Customer
+            // ==========================================
+
+            if (
+                fullname === "" ||
+                email === "" ||
+                phone === "" ||
+                address === "" ||
+                state === "" ||
+                city === ""
+            ) {
+
+                alert(
+                    "Please fill all customer details."
+                );
+
+                return;
+
+            }
+
+
+            // ==========================================
+            // Validate Cart
+            // ==========================================
+
+            if (
+                cart.length === 0 ||
+                subtotal <= 0
+            ) {
+
+                alert(
+                    "Your cart is empty."
+                );
+
+                return;
+
+            }
+
+
+            // ==========================================
+            // Check Paystack v2
+            // ==========================================
+
+            if (
+                typeof PaystackPop ===
+                "undefined"
+            ) {
+
+                alert(
+                    "Paystack could not load. Please refresh the page and check your Internet connection."
+                );
+
+                console.error(
+                    "PaystackPop is not available."
+                );
+
+                return;
+
+            }
+
+
+            // ==========================================
+            // Disable Button
+            // ==========================================
+
+            placeOrder.disabled = true;
+
+            placeOrder.textContent =
+                "Opening Payment...";
+
+
+            try {
+
+                // ==========================================
+                // Create Paystack v2 Instance
+                // ==========================================
+
+                const paystack =
+                    new PaystackPop();
 
 
                 // ==========================================
-                // Customer Details
+                // Start Paystack Transaction
                 // ==========================================
 
-                const fullname =
-                    document.getElementById(
-                        "fullname"
-                    ).value.trim();
+                paystack.newTransaction({
 
+                    key:
+                        "pk_test_17d80f52a39fb05435d5898b29744b5b034d85a9",
 
-                const email =
-                    document.getElementById(
-                        "email"
-                    ).value.trim();
+                    email:
+                        email,
 
+                    amount:
+                        Math.round(
+                            total * 100
+                        ),
 
-                const phone =
-                    document.getElementById(
-                        "phone"
-                    ).value.trim();
+                    currency:
+                        "NGN",
 
 
-                const address =
-                    document.getElementById(
-                        "address"
-                    ).value.trim();
+                    metadata: {
 
+                        custom_fields: [
 
-                const state =
-                    document.getElementById(
-                        "state"
-                    ).value.trim();
+                            {
+                                display_name:
+                                    "Customer Name",
 
+                                variable_name:
+                                    "name",
 
-                const city =
-                    document.getElementById(
-                        "city"
-                    ).value.trim();
+                                value:
+                                    fullname
+                            },
 
+                            {
+                                display_name:
+                                    "Phone Number",
 
-                // ==========================================
-                // Get Cart
-                // ==========================================
+                                variable_name:
+                                    "phone",
 
-                const cart =
-                    JSON.parse(
-                        localStorage.getItem("cart")
-                    ) || [];
+                                value:
+                                    phone
+                            },
 
+                            {
+                                display_name:
+                                    "Delivery Address",
 
-                // ==========================================
-                // Calculate Totals
-                // ==========================================
+                                variable_name:
+                                    "address",
 
-                const originalTotal =
-                    getCheckoutCartTotal();
+                                value:
+                                    address
+                            },
 
+                            {
+                                display_name:
+                                    "State",
 
-                const discountAmount =
-                    originalTotal *
-                    (couponDiscount / 100);
+                                variable_name:
+                                    "state",
 
+                                value:
+                                    state
+                            },
 
-                const total =
-                    originalTotal -
-                    discountAmount;
+                            {
+                                display_name:
+                                    "City",
 
+                                variable_name:
+                                    "city",
 
-                // ==========================================
-                // Validate Customer Details
-                // ==========================================
+                                value:
+                                    city
+                            },
 
-                if (
-                    fullname === "" ||
-                    email === "" ||
-                    phone === "" ||
-                    address === "" ||
-                    state === "" ||
-                    city === ""
-                ) {
+                            {
+                                display_name:
+                                    "Discount",
 
-                    alert(
-                        "Please fill all customer details."
-                    );
+                                variable_name:
+                                    "discount",
 
-                    return;
+                                value:
+                                    couponDiscount +
+                                    "%"
+                            }
 
-                }
+                        ]
 
+                    },
 
-                // ==========================================
-                // Check Cart
-                // ==========================================
 
-                if (
-                    cart.length === 0 ||
-                    originalTotal <= 0
-                ) {
+                    // ==========================================
+                    // Successful Payment
+                    // ==========================================
 
-                    alert(
-                        "Your cart is empty."
-                    );
+                    onSuccess:
+                        async function (response) {
 
-                    return;
+                            console.log(
+                                "Payment successful:",
+                                response
+                            );
 
-                }
 
+                            // ==========================================
+                            // Order Number
+                            // ==========================================
 
-                // ==========================================
-                // Check Paystack
-                // ==========================================
+                            const orderNumber =
+                                "HSB-" +
+                                Date.now();
 
-                if (
-                    typeof PaystackPop ===
-                    "undefined"
-                ) {
 
-                    alert(
-                        "Paystack could not load. Please check your Internet connection and refresh the page."
-                    );
+                            const orderDate =
+                                new Date()
+                                    .toLocaleString();
 
-                    return;
 
-                }
+                            // ==========================================
+                            // Create Order
+                            // ==========================================
 
+                            const newOrder = {
 
-                // ==========================================
-                // Open Paystack
-                // ==========================================
+                                orderNumber:
+                                    orderNumber,
 
-                const handler =
-                    PaystackPop.setup({
+                                orderDate:
+                                    orderDate,
 
-                        key:
-                            "pk_test_17d80f52a39fb05435d5898b29744b5b034d85a9",
+                                fullname:
+                                    fullname,
 
-                        email:
-                            email,
+                                email:
+                                    email,
 
-                        amount:
-                            Math.round(
-                                total * 100
-                            ),
+                                phone:
+                                    phone,
 
-                        currency:
-                            "NGN",
+                                address:
+                                    address,
 
-                        metadata: {
+                                state:
+                                    state,
 
-                            custom_fields: [
+                                city:
+                                    city,
 
-                                {
-                                    display_name:
-                                        "Customer Name",
+                                subtotal:
+                                    subtotal,
 
-                                    variable_name:
-                                        "name",
+                                discount:
+                                    couponDiscount,
 
-                                    value:
-                                        fullname
-                                },
+                                total:
+                                    total,
 
-                                {
-                                    display_name:
-                                        "Phone Number",
+                                reference:
+                                    response.reference,
 
-                                    variable_name:
-                                        "phone",
+                                date:
+                                    orderDate,
 
-                                    value:
-                                        phone
-                                },
+                                status:
+                                    "Paid",
 
-                                {
-                                    display_name:
-                                        "Delivery Address",
+                                items:
+                                    cart.map(
+                                        function (item) {
 
-                                    variable_name:
-                                        "address",
+                                            return {
 
-                                    value:
-                                        address
-                                },
+                                                id:
+                                                    item.id,
 
-                                {
-                                    display_name:
-                                        "State",
+                                                name:
+                                                    item.name,
 
-                                    variable_name:
-                                        "state",
+                                                price:
+                                                    item.price,
 
-                                    value:
-                                        state
-                                },
+                                                image:
+                                                    item.image,
 
-                                {
-                                    display_name:
-                                        "City",
+                                                quantity:
+                                                    item.quantity
 
-                                    variable_name:
-                                        "city",
+                                            };
 
-                                    value:
-                                        city
-                                },
-
-                                {
-                                    display_name:
-                                        "Discount",
-
-                                    variable_name:
-                                        "discount",
-
-                                    value:
-                                        couponDiscount +
-                                        "%"
-                                }
-
-                            ]
-
-                        },
-
-
-                        // ==========================================
-                        // Successful Payment
-                        // ==========================================
-
-                        callback:
-                            function (response) {
-
-                                // ==========================================
-                                // Create Order
-                                // ==========================================
-
-                                const orderNumber =
-                                    "HSB-" +
-                                    Date.now();
-
-
-                                const orderDate =
-                                    new Date()
-                                        .toLocaleString();
-
-
-                                const newOrder = {
-
-                                    orderNumber:
-                                        orderNumber,
-
-                                    fullname:
-                                        fullname,
-
-                                    email:
-                                        email,
-
-                                    phone:
-                                        phone,
-
-                                    address:
-                                        address,
-
-                                    state:
-                                        state,
-
-                                    city:
-                                        city,
-
-                                    subtotal:
-                                        originalTotal,
-
-                                    total:
-                                        total,
-
-                                    discount:
-                                        couponDiscount,
-
-                                    reference:
-                                        response.reference,
-
-                                    date:
-                                        orderDate,
-
-                                    status:
-                                        "Paid",
-
-                                    items:
-                                        cart.map(
-                                            function (item) {
-
-                                                return {
-
-                                                    id:
-                                                        item.id,
-
-                                                    name:
-                                                        item.name,
-
-                                                    price:
-                                                        item.price,
-
-                                                    image:
-                                                        item.image,
-
-                                                    quantity:
-                                                        item.quantity
-
-                                                };
-
-                                            }
-                                        )
-
-                                };
-
-
-                                // ==========================================
-                                // Save Order
-                                // ==========================================
-
-                                let orders =
-                                    JSON.parse(
-                                        localStorage.getItem(
-                                            "orders"
-                                        )
-                                    ) || [];
-
-
-                                orders.push(
-                                    newOrder
-                                );
-
-
-                                localStorage.setItem(
-                                    "orders",
-                                    JSON.stringify(
-                                        orders
+                                        }
                                     )
-                                );
+
+                            };
 
 
-                                // ==========================================
-                                // Send Email
-                                // ==========================================
+                            // ==========================================
+                            // Save Order
+                            // ==========================================
 
-                                sendOrderEmail({
+                            saveOrder(
+                                newOrder
+                            );
+
+
+                            // ==========================================
+                            // Send Email
+                            // ==========================================
+
+                            try {
+
+                                await sendOrderEmail({
 
                                     orderNumber:
                                         orderNumber,
@@ -674,7 +721,7 @@ document.addEventListener(
                                         cart,
 
                                     subtotal:
-                                        originalTotal,
+                                        subtotal,
 
                                     discount:
                                         couponDiscount,
@@ -685,104 +732,143 @@ document.addEventListener(
                                     reference:
                                         response.reference
 
-                                })
-
-                                .then(
-                                    function () {
-
-                                        console.log(
-                                            "Order email sent successfully."
-                                        );
+                                });
 
 
-                                        alert(
-
-                                            "Payment successful!\n\n" +
-
-                                            "Order: " +
-                                            orderNumber +
-
-                                            "\nReference: " +
-                                            response.reference +
-
-                                            "\n\nOrder confirmation sent."
-
-                                        );
-
-
-                                        // Clear cart
-                                        localStorage.removeItem(
-                                            "cart"
-                                        );
-
-
-                                        // Go to success page
-                                        window.location.href =
-                                            "success.html";
-
-                                    }
-                                )
-
-                                .catch(
-                                    function (error) {
-
-                                        console.error(
-                                            "EmailJS error:",
-                                            error
-                                        );
-
-
-                                        alert(
-
-                                            "Payment was successful, but the order email could not be sent.\n\n" +
-
-                                            "Order: " +
-                                            orderNumber +
-
-                                            "\nReference: " +
-                                            response.reference +
-
-                                            "\n\nPlease contact the store."
-
-                                        );
-
-
-                                        // Clear cart
-                                        localStorage.removeItem(
-                                            "cart"
-                                        );
-
-
-                                        // Go to success page
-                                        window.location.href =
-                                            "success.html";
-
-                                    }
+                                console.log(
+                                    "Order email sent successfully."
                                 );
 
-                            },
-
-
-                        // ==========================================
-                        // Payment Cancelled
-                        // ==========================================
-
-                        onClose:
-                            function () {
 
                                 alert(
-                                    "Payment cancelled."
+
+                                    "Payment successful!\n\n" +
+
+                                    "Order: " +
+                                    orderNumber +
+
+                                    "\nReference: " +
+                                    response.reference +
+
+                                    "\n\nOrder confirmation sent."
+
                                 );
 
                             }
 
-                    });
+                            catch (emailError) {
+
+                                console.error(
+                                    "EmailJS error:",
+                                    emailError
+                                );
 
 
-                handler.openIframe();
+                                alert(
+
+                                    "Payment was successful, but the order email could not be sent.\n\n" +
+
+                                    "Order: " +
+                                    orderNumber +
+
+                                    "\nReference: " +
+                                    response.reference +
+
+                                    "\n\nPlease contact the store."
+
+                                );
+
+                            }
+
+
+                            // ==========================================
+                            // Clear Cart
+                            // ==========================================
+
+                            localStorage.removeItem(
+                                "cart"
+                            );
+
+
+                            // ==========================================
+                            // Go To Success Page
+                            // ==========================================
+
+                            window.location.href =
+                                "success.html";
+
+                        },
+
+
+                    // ==========================================
+                    // Payment Cancelled
+                    // ==========================================
+
+                    onCancel:
+                        function () {
+
+                            console.log(
+                                "Payment cancelled."
+                            );
+
+
+                            alert(
+                                "Payment cancelled."
+                            );
+
+
+                            placeOrder.disabled =
+                                false;
+
+                            placeOrder.textContent =
+                                "Place Order";
+
+                        }
+
+                });
 
             }
-        );
+
+            catch (error) {
+
+                console.error(
+                    "Paystack error:",
+                    error
+                );
+
+
+                alert(
+                    "Unable to open Paystack. Please refresh the page and try again."
+                );
+
+
+                placeOrder.disabled =
+                    false;
+
+                placeOrder.textContent =
+                    "Place Order";
+
+            }
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// Page Ready
+// ==========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        updateCheckoutTotal();
+
+        setupCoupon();
+
+        setupCheckout();
 
     }
 );
