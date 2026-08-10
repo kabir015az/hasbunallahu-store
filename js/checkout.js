@@ -2,11 +2,6 @@
 // Hasbunallahu Store - Checkout & Paystack
 // ==========================================
 
-
-// ==========================================
-// Variables
-// ==========================================
-
 let couponDiscount = 0;
 
 
@@ -85,9 +80,7 @@ document.addEventListener(
 const coupons = {
 
     SAVE10: 10,
-
     SAVE20: 20,
-
     WELCOME: 5
 
 };
@@ -174,6 +167,117 @@ document.addEventListener(
 
 
 // ==========================================
+// Send Order Email
+// ==========================================
+
+function sendOrderEmail(orderData) {
+
+    if (
+        typeof emailjs === "undefined"
+    ) {
+
+        console.error(
+            "EmailJS is not loaded."
+        );
+
+        return Promise.reject(
+            "EmailJS is not loaded."
+        );
+
+    }
+
+
+    // Product list
+    let itemsHTML = "";
+
+
+    orderData.items.forEach(
+        function (item) {
+
+            const itemTotal =
+                Number(item.price) *
+                Number(item.quantity);
+
+
+            itemsHTML += `
+                <div style="
+                    padding: 8px 0;
+                    border-bottom: 1px solid #ddd;
+                ">
+                    <strong>${item.name}</strong><br>
+                    Quantity: ${item.quantity}<br>
+                    Price: ₦${Number(item.price).toLocaleString()}<br>
+                    Subtotal: ₦${itemTotal.toLocaleString()}
+                </div>
+            `;
+
+        }
+    );
+
+
+    // ==========================================
+    // EmailJS
+    // ==========================================
+
+    return emailjs.send(
+
+        "service_x0frozt",
+
+        "template_3wqeitu",
+
+        {
+
+            orderNumber:
+                orderData.orderNumber,
+
+            orderDate:
+                orderData.orderDate,
+
+            fullname:
+                orderData.fullname,
+
+            email:
+                orderData.email,
+
+            phone:
+                orderData.phone,
+
+            address:
+                orderData.address,
+
+            state:
+                orderData.state,
+
+            city:
+                orderData.city,
+
+            items:
+                itemsHTML,
+
+            subtotal:
+                Number(
+                    orderData.subtotal
+                ).toLocaleString(),
+
+            discount:
+                orderData.discount,
+
+            total:
+                Number(
+                    orderData.total
+                ).toLocaleString(),
+
+            reference:
+                orderData.reference
+
+        }
+
+    );
+
+}
+
+
+// ==========================================
 // Place Order
 // ==========================================
 
@@ -197,7 +301,10 @@ document.addEventListener(
                 e.preventDefault();
 
 
-                // Customer details
+                // ==========================================
+                // Customer Details
+                // ==========================================
+
                 const fullname =
                     document.getElementById(
                         "fullname"
@@ -234,19 +341,24 @@ document.addEventListener(
                     ).value.trim();
 
 
-                // Get cart
+                // ==========================================
+                // Get Cart
+                // ==========================================
+
                 const cart =
                     JSON.parse(
                         localStorage.getItem("cart")
                     ) || [];
 
 
-                // Original total
+                // ==========================================
+                // Calculate Totals
+                // ==========================================
+
                 const originalTotal =
                     getCheckoutCartTotal();
 
 
-                // Final total after discount
                 const discountAmount =
                     originalTotal *
                     (couponDiscount / 100);
@@ -257,7 +369,10 @@ document.addEventListener(
                     discountAmount;
 
 
-                // Validate customer details
+                // ==========================================
+                // Validate Customer Details
+                // ==========================================
+
                 if (
                     fullname === "" ||
                     email === "" ||
@@ -276,7 +391,10 @@ document.addEventListener(
                 }
 
 
-                // Check cart
+                // ==========================================
+                // Check Cart
+                // ==========================================
+
                 if (
                     cart.length === 0 ||
                     originalTotal <= 0
@@ -291,7 +409,10 @@ document.addEventListener(
                 }
 
 
+                // ==========================================
                 // Check Paystack
+                // ==========================================
+
                 if (
                     typeof PaystackPop ===
                     "undefined"
@@ -307,7 +428,7 @@ document.addEventListener(
 
 
                 // ==========================================
-                // Paystack
+                // Open Paystack
                 // ==========================================
 
                 const handler =
@@ -316,18 +437,16 @@ document.addEventListener(
                         key:
                             "pk_test_17d80f52a39fb05435d5898b29744b5b034d85a9",
 
-
                         email:
                             email,
 
-
                         amount:
-                            Math.round(total * 100),
-
+                            Math.round(
+                                total * 100
+                            ),
 
                         currency:
                             "NGN",
-
 
                         metadata: {
 
@@ -412,13 +531,9 @@ document.addEventListener(
                         callback:
                             function (response) {
 
-                                let orders =
-                                    JSON.parse(
-                                        localStorage.getItem(
-                                            "orders"
-                                        )
-                                    ) || [];
-
+                                // ==========================================
+                                // Create Order
+                                // ==========================================
 
                                 const orderNumber =
                                     "HSB-" +
@@ -453,6 +568,9 @@ document.addEventListener(
                                     city:
                                         city,
 
+                                    subtotal:
+                                        originalTotal,
+
                                     total:
                                         total,
 
@@ -470,30 +588,45 @@ document.addEventListener(
 
                                     items:
                                         cart.map(
-                                            item => ({
+                                            function (item) {
 
-                                                id:
-                                                    item.id,
+                                                return {
 
-                                                name:
-                                                    item.name,
+                                                    id:
+                                                        item.id,
 
-                                                price:
-                                                    item.price,
+                                                    name:
+                                                        item.name,
 
-                                                image:
-                                                    item.image,
+                                                    price:
+                                                        item.price,
 
-                                                quantity:
-                                                    item.quantity
+                                                    image:
+                                                        item.image,
 
-                                            })
+                                                    quantity:
+                                                        item.quantity
+
+                                                };
+
+                                            }
                                         )
 
                                 };
 
 
-                                // Save order
+                                // ==========================================
+                                // Save Order
+                                // ==========================================
+
+                                let orders =
+                                    JSON.parse(
+                                        localStorage.getItem(
+                                            "orders"
+                                        )
+                                    ) || [];
+
+
                                 orders.push(
                                     newOrder
                                 );
@@ -507,23 +640,125 @@ document.addEventListener(
                                 );
 
 
-                                // Clear cart
-                                localStorage.removeItem(
-                                    "cart"
+                                // ==========================================
+                                // Send Email
+                                // ==========================================
+
+                                sendOrderEmail({
+
+                                    orderNumber:
+                                        orderNumber,
+
+                                    orderDate:
+                                        orderDate,
+
+                                    fullname:
+                                        fullname,
+
+                                    email:
+                                        email,
+
+                                    phone:
+                                        phone,
+
+                                    address:
+                                        address,
+
+                                    state:
+                                        state,
+
+                                    city:
+                                        city,
+
+                                    items:
+                                        cart,
+
+                                    subtotal:
+                                        originalTotal,
+
+                                    discount:
+                                        couponDiscount,
+
+                                    total:
+                                        total,
+
+                                    reference:
+                                        response.reference
+
+                                })
+
+                                .then(
+                                    function () {
+
+                                        console.log(
+                                            "Order email sent successfully."
+                                        );
+
+
+                                        alert(
+
+                                            "Payment successful!\n\n" +
+
+                                            "Order: " +
+                                            orderNumber +
+
+                                            "\nReference: " +
+                                            response.reference +
+
+                                            "\n\nOrder confirmation sent."
+
+                                        );
+
+
+                                        // Clear cart
+                                        localStorage.removeItem(
+                                            "cart"
+                                        );
+
+
+                                        // Go to success page
+                                        window.location.href =
+                                            "success.html";
+
+                                    }
+                                )
+
+                                .catch(
+                                    function (error) {
+
+                                        console.error(
+                                            "EmailJS error:",
+                                            error
+                                        );
+
+
+                                        alert(
+
+                                            "Payment was successful, but the order email could not be sent.\n\n" +
+
+                                            "Order: " +
+                                            orderNumber +
+
+                                            "\nReference: " +
+                                            response.reference +
+
+                                            "\n\nPlease contact the store."
+
+                                        );
+
+
+                                        // Clear cart
+                                        localStorage.removeItem(
+                                            "cart"
+                                        );
+
+
+                                        // Go to success page
+                                        window.location.href =
+                                            "success.html";
+
+                                    }
                                 );
-
-
-                                alert(
-                                    "Payment successful!\n\n" +
-                                    "Order: " +
-                                    orderNumber +
-                                    "\nReference: " +
-                                    response.reference
-                                );
-
-
-                                window.location.href =
-                                    "success.html";
 
                             },
 
