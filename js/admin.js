@@ -1,25 +1,164 @@
 // ==========================================
 // Hasbunallahu Store - Admin Dashboard
-// Supabase Order Management
 // ==========================================
 
 const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "12345";
 
-const loginForm =
-    document.getElementById("admin-login-form");
 
-const loginSection =
-    document.getElementById("admin-login");
+// ==========================================
+// Start when page is ready
+// ==========================================
 
-const dashboard =
-    document.getElementById("admin-dashboard");
+document.addEventListener("DOMContentLoaded", function () {
 
-const loginMessage =
-    document.getElementById("login-message");
+    const loginForm =
+        document.getElementById("admin-login-form");
 
-const logoutButton =
-    document.getElementById("admin-logout");
+    const loginSection =
+        document.getElementById("admin-login");
+
+    const dashboard =
+        document.getElementById("admin-dashboard");
+
+    const loginMessage =
+        document.getElementById("login-message");
+
+    const logoutButton =
+        document.getElementById("admin-logout");
+
+
+    console.log("Admin JS loaded");
+
+
+    // ==========================================
+    // Check Existing Login
+    // ==========================================
+
+    if (
+        localStorage.getItem("adminLoggedIn") === "true"
+    ) {
+
+        loginSection.style.display = "none";
+
+        dashboard.style.display = "block";
+
+        displayAdminOrders();
+
+        updateAdminStatistics();
+
+    }
+
+
+    // ==========================================
+    // Login
+    // ==========================================
+
+    if (loginForm) {
+
+        loginForm.addEventListener(
+            "submit",
+            async function (e) {
+
+                e.preventDefault();
+
+                const username =
+                    document
+                        .getElementById("admin-username")
+                        .value
+                        .trim();
+
+                const password =
+                    document
+                        .getElementById("admin-password")
+                        .value;
+
+
+                console.log(
+                    "Login attempted:",
+                    username
+                );
+
+
+                if (
+                    username === ADMIN_USERNAME &&
+                    password === ADMIN_PASSWORD
+                ) {
+
+                    localStorage.setItem(
+                        "adminLoggedIn",
+                        "true"
+                    );
+
+
+                    loginSection.style.display =
+                        "none";
+
+
+                    dashboard.style.display =
+                        "block";
+
+
+                    loginMessage.textContent =
+                        "";
+
+
+                    console.log(
+                        "Admin login successful"
+                    );
+
+
+                    displayAdminOrders();
+
+                    updateAdminStatistics();
+
+                }
+
+                else {
+
+                    loginMessage.textContent =
+                        "❌ Incorrect username or password.";
+
+                }
+
+            }
+        );
+
+    }
+
+
+    // ==========================================
+    // Logout
+    // ==========================================
+
+    if (logoutButton) {
+
+        logoutButton.addEventListener(
+            "click",
+            function () {
+
+                localStorage.removeItem(
+                    "adminLoggedIn"
+                );
+
+
+                dashboard.style.display =
+                    "none";
+
+
+                loginSection.style.display =
+                    "block";
+
+
+                loginMessage.textContent =
+                    "";
+
+            }
+        );
+
+    }
+
+});
 
 
 // ==========================================
@@ -30,6 +169,7 @@ async function displayAdminOrders() {
 
     const ordersTable =
         document.getElementById("orders-table");
+
 
     if (!ordersTable) return;
 
@@ -42,7 +182,7 @@ async function displayAdminOrders() {
         ordersTable.innerHTML = `
             <tr>
                 <td colspan="9">
-                    ❌ Supabase connection not available.
+                    ❌ Supabase is not connected.
                 </td>
             </tr>
         `;
@@ -63,7 +203,10 @@ async function displayAdminOrders() {
 
     try {
 
-        const { data: orders, error } =
+        const {
+            data: orders,
+            error
+        } =
             await supabaseClient
                 .from("orders")
                 .select("*")
@@ -78,9 +221,10 @@ async function displayAdminOrders() {
         if (error) {
 
             console.error(
-                "Supabase orders error:",
+                "Supabase error:",
                 error
             );
+
 
             ordersTable.innerHTML = `
                 <tr>
@@ -118,9 +262,9 @@ async function displayAdminOrders() {
         ordersTable.innerHTML = "";
 
 
-        orders.forEach(order => {
+        orders.forEach(function (order) {
 
-            const currentStatus =
+            const status =
                 order.status || "Paid";
 
 
@@ -129,9 +273,7 @@ async function displayAdminOrders() {
                 <tr>
 
                     <td>
-                        <strong>
-                            ${order.order_number || "N/A"}
-                        </strong>
+                        ${order.order_number || "N/A"}
                     </td>
 
                     <td>
@@ -159,44 +301,33 @@ async function displayAdminOrders() {
                         >
 
                             <option value="Paid"
-                                ${currentStatus === "Paid"
-                                    ? "selected"
-                                    : ""}>
+                                ${status === "Paid" ? "selected" : ""}>
                                 Paid
                             </option>
 
                             <option value="Processing"
-                                ${currentStatus === "Processing"
-                                    ? "selected"
-                                    : ""}>
+                                ${status === "Processing" ? "selected" : ""}>
                                 Processing
                             </option>
 
                             <option value="Shipped"
-                                ${currentStatus === "Shipped"
-                                    ? "selected"
-                                    : ""}>
+                                ${status === "Shipped" ? "selected" : ""}>
                                 Shipped
                             </option>
 
                             <option value="Out for Delivery"
-                                ${currentStatus === "Out for Delivery"
-                                    ? "selected"
-                                    : ""}>
+                                ${status === "Out for Delivery" ? "selected" : ""}>
                                 Out for Delivery
                             </option>
 
                             <option value="Delivered"
-                                ${currentStatus === "Delivered"
-                                    ? "selected"
-                                    : ""}>
+                                ${status === "Delivered" ? "selected" : ""}>
                                 Delivered
                             </option>
 
                         </select>
 
                     </td>
-
 
                     <td>
 
@@ -209,25 +340,21 @@ async function displayAdminOrders() {
 
                     </td>
 
-
                     <td>
 
                         <textarea
                             id="note-${order.order_number}"
-                            placeholder="Delivery note"
                             rows="2"
+                            placeholder="Delivery note"
                         >${order.delivery_note || ""}</textarea>
 
                     </td>
-
 
                     <td>
 
                         <button
                             type="button"
-                            onclick="saveOrderUpdate(
-                                '${order.order_number}'
-                            )"
+                            onclick="saveOrderUpdate('${order.order_number}')"
                         >
                             💾 Save
                         </button>
@@ -248,9 +375,10 @@ async function displayAdminOrders() {
     catch (error) {
 
         console.error(
-            "Admin orders error:",
+            "Order loading error:",
             error
         );
+
 
         ordersTable.innerHTML = `
             <tr>
@@ -287,16 +415,24 @@ async function saveOrderUpdate(orderNumber) {
         );
 
 
-    if (!statusElement) return;
+    if (!statusElement) {
+
+        alert("Order information not found.");
+
+        return;
+
+    }
 
 
     const newStatus =
         statusElement.value;
 
+
     const trackingNumber =
         trackingElement
             ? trackingElement.value.trim()
             : "";
+
 
     const deliveryNote =
         noteElement
@@ -306,7 +442,9 @@ async function saveOrderUpdate(orderNumber) {
 
     try {
 
-        const { error } =
+        const {
+            error
+        } =
             await supabaseClient
                 .from("orders")
                 .update({
@@ -335,8 +473,10 @@ async function saveOrderUpdate(orderNumber) {
                 error
             );
 
+
             alert(
-                "❌ Failed to update order."
+                "❌ Failed to update order.\n\n" +
+                error.message
             );
 
             return;
@@ -345,9 +485,7 @@ async function saveOrderUpdate(orderNumber) {
 
 
         alert(
-            "✅ Order " +
-            orderNumber +
-            " updated successfully."
+            "✅ Order updated successfully."
         );
 
 
@@ -358,12 +496,14 @@ async function saveOrderUpdate(orderNumber) {
     catch (error) {
 
         console.error(
-            "Save order error:",
+            "Save error:",
             error
         );
 
+
         alert(
-            "❌ Something went wrong while updating the order."
+            "❌ Failed to update order.\n\n" +
+            error.message
         );
 
     }
@@ -378,11 +518,11 @@ async function saveOrderUpdate(orderNumber) {
 function updateAdminStatistics(orders) {
 
     if (!orders) {
+
         orders = [];
+
     }
 
-
-    // Total Orders
 
     const totalOrders =
         document.getElementById(
@@ -398,12 +538,10 @@ function updateAdminStatistics(orders) {
     }
 
 
-    // Total Sales
-
     let totalSales = 0;
 
 
-    orders.forEach(order => {
+    orders.forEach(function (order) {
 
         totalSales +=
             Number(order.total) || 0;
@@ -426,12 +564,10 @@ function updateAdminStatistics(orders) {
     }
 
 
-    // Total Customers
-
     const customers = [];
 
 
-    orders.forEach(order => {
+    orders.forEach(function (order) {
 
         if (
             order.customer_email &&
@@ -463,8 +599,6 @@ function updateAdminStatistics(orders) {
     }
 
 
-    // Total Products
-
     const totalProducts =
         document.getElementById(
             "total-products"
@@ -491,160 +625,5 @@ function updateAdminStatistics(orders) {
         }
 
     }
-
-}
-
-
-// ==========================================
-// Check Existing Login
-// ==========================================
-
-if (
-    localStorage.getItem(
-        "adminLoggedIn"
-    ) === "true"
-) {
-
-    if (loginSection) {
-
-        loginSection.style.display =
-            "none";
-
-    }
-
-
-    if (dashboard) {
-
-        dashboard.style.display =
-            "block";
-
-    }
-
-
-    displayAdminOrders();
-
-}
-
-
-// ==========================================
-// Login
-// ==========================================
-
-if (loginForm) {
-
-    loginForm.addEventListener(
-        "submit",
-        function (e) {
-
-            e.preventDefault();
-
-
-            const username =
-                document
-                    .getElementById(
-                        "admin-username"
-                    )
-                    .value
-                    .trim();
-
-
-            const password =
-                document
-                    .getElementById(
-                        "admin-password"
-                    )
-                    .value;
-
-
-            if (
-                username ===
-                    ADMIN_USERNAME &&
-                password ===
-                    ADMIN_PASSWORD
-            ) {
-
-                localStorage.setItem(
-                    "adminLoggedIn",
-                    "true"
-                );
-
-
-                if (loginSection) {
-
-                    loginSection.style.display =
-                        "none";
-
-                }
-
-
-                if (dashboard) {
-
-                    dashboard.style.display =
-                        "block";
-
-                }
-
-
-                displayAdminOrders();
-
-            }
-
-            else {
-
-                if (loginMessage) {
-
-                    loginMessage.textContent =
-                        "❌ Incorrect username or password.";
-
-                }
-
-            }
-
-        }
-    );
-
-}
-
-
-// ==========================================
-// Logout
-// ==========================================
-
-if (logoutButton) {
-
-    logoutButton.addEventListener(
-        "click",
-        function () {
-
-            localStorage.removeItem(
-                "adminLoggedIn"
-            );
-
-
-            if (dashboard) {
-
-                dashboard.style.display =
-                    "none";
-
-            }
-
-
-            if (loginSection) {
-
-                loginSection.style.display =
-                    "block";
-
-            }
-
-
-            if (loginMessage) {
-
-                loginMessage.textContent =
-                    "";
-
-            }
-
-        }
-    );
 
 }

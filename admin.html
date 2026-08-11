@@ -10,7 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Admin Login | Hasbunallahu Store</title>
+    <title>Admin Dashboard | Hasbunallahu Store</title>
 
     <link rel="stylesheet" href="css/style.css">
 
@@ -18,11 +18,17 @@
 
 <body>
 
-    <!-- Admin Login -->
+    <!-- ==========================================
+         ADMIN LOGIN
+    =========================================== -->
 
     <main
         id="admin-login"
-        style="padding:30px; max-width:450px; margin:auto;"
+        style="
+            padding:30px;
+            max-width:450px;
+            margin:50px auto;
+        "
     >
 
         <h1>🔐 Admin Login</h1>
@@ -68,23 +74,38 @@
     </main>
 
 
-    <!-- Admin Dashboard -->
+    <!-- ==========================================
+         ADMIN DASHBOARD
+    =========================================== -->
 
     <main
         id="admin-dashboard"
-        style="padding:20px; display:none;"
+        style="
+            padding:20px;
+            display:none;
+        "
     >
 
         <header>
 
             <h1>
-                Hasbunallahu Store - Admin Dashboard
+                Hasbunallahu Store
+                - Admin Dashboard
             </h1>
+
+            <button
+                type="button"
+                id="admin-logout"
+            >
+                Logout
+            </button>
 
         </header>
 
 
-        <!-- Admin Statistics -->
+        <!-- ==========================================
+             STATISTICS
+        =========================================== -->
 
         <section class="admin-statistics">
 
@@ -96,7 +117,9 @@
 
                 <div class="stat-card">
 
-                    <h3>Total Orders</h3>
+                    <h3>
+                        Total Orders
+                    </h3>
 
                     <p id="total-orders">
                         0
@@ -107,7 +130,9 @@
 
                 <div class="stat-card">
 
-                    <h3>Total Sales</h3>
+                    <h3>
+                        Total Sales
+                    </h3>
 
                     <p id="total-sales">
                         ₦0
@@ -118,7 +143,9 @@
 
                 <div class="stat-card">
 
-                    <h3>Total Customers</h3>
+                    <h3>
+                        Total Customers
+                    </h3>
 
                     <p id="total-customers">
                         0
@@ -129,7 +156,9 @@
 
                 <div class="stat-card">
 
-                    <h3>Total Products</h3>
+                    <h3>
+                        Total Products
+                    </h3>
 
                     <p id="total-products">
                         0
@@ -142,7 +171,9 @@
         </section>
 
 
-        <!-- Customer Orders -->
+        <!-- ==========================================
+             CUSTOMER ORDERS
+        =========================================== -->
 
         <section class="recent-orders">
 
@@ -150,14 +181,11 @@
                 Customer Orders 📦
             </h2>
 
-            <button id="admin-logout">
-                Logout
-            </button>
-
-            <br><br>
-
-
-            <div style="overflow-x:auto;">
+            <div
+                style="
+                    overflow-x:auto;
+                "
+            >
 
                 <table
                     border="1"
@@ -215,7 +243,7 @@
                         <tr>
 
                             <td colspan="9">
-                                Loading orders...
+                                Please login to view orders.
                             </td>
 
                         </tr>
@@ -231,7 +259,10 @@
     </main>
 
 
-    <!-- Supabase -->
+    <!-- ==========================================
+         SUPABASE
+         LOAD ONLY ONCE
+    =========================================== -->
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -241,10 +272,8 @@
         const SUPABASE_URL =
             "https://qreliegujlmmsnyewtaq.supabase.co";
 
-
         const SUPABASE_KEY =
             "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
 
         const supabaseClient =
             window.supabase.createClient(
@@ -255,12 +284,18 @@
     </script>
 
 
-    <!-- Store Scripts -->
+    <!-- ==========================================
+         PRODUCTS
+    =========================================== -->
 
     <script src="js/products.js"></script>
 
-    <script src="js/admin.js"></script>
 
+    <!-- ==========================================
+         ADMIN JAVASCRIPT
+    =========================================== -->
+
+    <script src="js/admin.js"></script>
 
 </body>
 
