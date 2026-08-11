@@ -17,6 +17,18 @@
     emailjs.init({
         publicKey: "zDU17Xd3CuZ3fJztk"
     });
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const SUPABASE_URL = "https://qreliegujlmmsnvewtaq.supabase.co";
+
+    const SUPABASE_KEY = "sb_publishable_0jKVGlMUTtJqTv4H_nh2fQ_afnl9G6Y";
+
+    const supabaseClient = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 </script>
 
 <script defer src="js/main.js"></script>

@@ -1,6 +1,6 @@
 // ==========================================
 // Hasbunallahu Store - Checkout
-// Paystack v2 + EmailJS
+// Paystack v2 + EmailJS + Supabase
 // ==========================================
 
 let couponDiscount = 0;
@@ -280,8 +280,9 @@ function sendOrderEmail(orderData) {
             reference:
                 orderData.reference,
 
-status:
-    "Paid"
+            status:
+                "Paid"
+
         }
 
     );
@@ -290,7 +291,7 @@ status:
 
 
 // ==========================================
-// Save Order
+// Save Order Locally
 // ==========================================
 
 function saveOrder(orderData) {
@@ -308,6 +309,97 @@ function saveOrder(orderData) {
         "orders",
         JSON.stringify(orders)
     );
+
+}
+
+
+// ==========================================
+// SAVE ORDER TO SUPABASE
+// ==========================================
+
+async function saveOrderToSupabase(orderData) {
+
+    // Check Supabase
+    if (
+        typeof supabaseClient === "undefined"
+    ) {
+
+        console.error(
+            "Supabase client is not loaded."
+        );
+
+        throw new Error(
+            "Supabase client is not loaded."
+        );
+
+    }
+
+
+    const { data, error } =
+        await supabaseClient
+            .from("orders")
+            .insert([
+
+                {
+
+                    order_number:
+                        orderData.orderNumber,
+
+                    customer_name:
+                        orderData.fullname,
+
+                    customer_email:
+                        orderData.email,
+
+                    phone:
+                        orderData.phone,
+
+                    address:
+                        orderData.address,
+
+                    city:
+                        orderData.city,
+
+                    state:
+                        orderData.state,
+
+                    total:
+                        orderData.total,
+
+                    status:
+                        "Paid",
+
+                    tracking_number:
+                        "",
+
+                    delivery_note:
+                        ""
+
+                }
+
+            ])
+            .select();
+
+
+    if (error) {
+
+        console.error(
+            "Supabase error:",
+            error
+        );
+
+        throw error;
+
+    }
+
+
+    console.log(
+        "Order saved to Supabase:",
+        data
+    );
+
+
+    return data;
 
 }
 
@@ -436,7 +528,7 @@ function setupCheckout() {
 
 
             // ==========================================
-            // Check Paystack v2
+            // Check Paystack
             // ==========================================
 
             if (
@@ -470,16 +562,12 @@ function setupCheckout() {
             try {
 
                 // ==========================================
-                // Create Paystack v2 Instance
+                // Paystack
                 // ==========================================
 
                 const paystack =
                     new PaystackPop();
 
-
-                // ==========================================
-                // Start Paystack Transaction
-                // ==========================================
 
                 paystack.newTransaction({
 
@@ -575,7 +663,7 @@ function setupCheckout() {
 
 
                     // ==========================================
-                    // Successful Payment
+                    // Payment Successful
                     // ==========================================
 
                     onSuccess:
@@ -679,12 +767,49 @@ function setupCheckout() {
 
 
                             // ==========================================
-                            // Save Order
+                            // Save Local Order
                             // ==========================================
 
                             saveOrder(
                                 newOrder
                             );
+
+
+                            // ==========================================
+                            // Save To Supabase
+                            // ==========================================
+
+                            let supabaseSaved =
+                                false;
+
+
+                            try {
+
+                                await saveOrderToSupabase(
+                                    newOrder
+                                );
+
+
+                                supabaseSaved =
+                                    true;
+
+
+                                console.log(
+                                    "Order saved to Supabase successfully."
+                                );
+
+                            }
+
+                            catch (
+                                supabaseError
+                            ) {
+
+                                console.error(
+                                    "Supabase save failed:",
+                                    supabaseError
+                                );
+
+                            }
 
 
                             // ==========================================
@@ -741,6 +866,25 @@ function setupCheckout() {
                                     "Order email sent successfully."
                                 );
 
+                            }
+
+                            catch (emailError) {
+
+                                console.error(
+                                    "EmailJS error:",
+                                    emailError
+                                );
+
+                            }
+
+
+                            // ==========================================
+                            // Final Message
+                            // ==========================================
+
+                            if (
+                                supabaseSaved
+                            ) {
 
                                 alert(
 
@@ -752,23 +896,17 @@ function setupCheckout() {
                                     "\nReference: " +
                                     response.reference +
 
-                                    "\n\nOrder confirmation sent."
+                                    "\n\nYour order has been received."
 
                                 );
 
                             }
 
-                            catch (emailError) {
-
-                                console.error(
-                                    "EmailJS error:",
-                                    emailError
-                                );
-
+                            else {
 
                                 alert(
 
-                                    "Payment was successful, but the order email could not be sent.\n\n" +
+                                    "Payment successful!\n\n" +
 
                                     "Order: " +
                                     orderNumber +
@@ -776,7 +914,7 @@ function setupCheckout() {
                                     "\nReference: " +
                                     response.reference +
 
-                                    "\n\nPlease contact the store."
+                                    "\n\nYour order was saved locally, but online tracking could not be activated."
 
                                 );
 
