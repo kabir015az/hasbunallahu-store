@@ -26,20 +26,26 @@ function getCheckoutCart() {
 function getCheckoutCartTotal() {
 
     const cart =
-        JSON.parse(localStorage.getItem("cart")) || [];
+        JSON.parse(
+            localStorage.getItem("cart")
+        ) || [];
 
     let total = 0;
 
     cart.forEach(function (item) {
 
-        const price = Number(item.price) || 0;
-        const quantity = Number(item.quantity) || 1;
+        const price =
+            Number(item.price) || 0;
+
+        const quantity =
+            Number(item.quantity) || 1;
 
         total += price * quantity;
 
     });
 
     return total;
+
 }
 
 
@@ -53,13 +59,17 @@ function updateCheckoutTotal() {
         getCheckoutCartTotal();
 
     const discountAmount =
-        originalTotal * (couponDiscount / 100);
+        originalTotal *
+        (couponDiscount / 100);
 
     const finalTotal =
-        originalTotal - discountAmount;
+        originalTotal -
+        discountAmount;
 
     const totalElement =
-        document.getElementById("checkout-total");
+        document.getElementById(
+            "checkout-total"
+        );
 
     if (totalElement) {
 
@@ -70,6 +80,7 @@ function updateCheckoutTotal() {
     }
 
     return finalTotal;
+
 }
 
 
@@ -80,7 +91,9 @@ function updateCheckoutTotal() {
 const coupons = {
 
     SAVE10: 10,
+
     SAVE20: 20,
+
     WELCOME: 5
 
 };
@@ -162,13 +175,144 @@ function setupCoupon() {
 
 
 // ==========================================
-// Send Order Email
+// Create Products HTML
 // ==========================================
 
-function sendOrderEmail(orderData) {
+function createItemsHTML(items) {
+
+    let itemsHTML = "";
+
+
+    if (!items || items.length === 0) {
+
+        return "No products.";
+
+    }
+
+
+    items.forEach(function (item) {
+
+        const itemTotal =
+            Number(item.price) *
+            Number(item.quantity);
+
+
+        itemsHTML += `
+
+            <div style="
+                padding:10px 0;
+                border-bottom:1px solid #ddd;
+            ">
+
+                <strong>
+                    ${item.name}
+                </strong>
+
+                <br>
+
+                Quantity:
+                ${item.quantity}
+
+                <br>
+
+                Price:
+                ₦${Number(
+                    item.price
+                ).toLocaleString()}
+
+                <br>
+
+                Subtotal:
+                ₦${itemTotal.toLocaleString()}
+
+            </div>
+
+        `;
+
+    });
+
+
+    return itemsHTML;
+
+}
+
+
+// ==========================================
+// Email Data
+// ==========================================
+
+function createEmailData(orderData) {
+
+    return {
+
+        orderNumber:
+            orderData.orderNumber,
+
+        orderDate:
+            orderData.orderDate,
+
+        fullname:
+            orderData.fullname,
+
+        email:
+            orderData.email,
+
+        phone:
+            orderData.phone,
+
+        address:
+            orderData.address,
+
+        state:
+            orderData.state,
+
+        city:
+            orderData.city,
+
+        items:
+            createItemsHTML(
+                orderData.items
+            ),
+
+        subtotal:
+            Number(
+                orderData.subtotal
+            ).toLocaleString(),
+
+        discount:
+            orderData.discount + "%",
+
+        total:
+            Number(
+                orderData.total
+            ).toLocaleString(),
+
+        reference:
+            orderData.reference,
+
+        status:
+            orderData.status || "Paid"
+
+    };
+
+}
+
+
+// ==========================================
+// Send New Order Email
+// ==========================================
+//
+// Template:
+// template_3wqeitu
+//
+// This email is for the STORE/ADMIN.
+// ==========================================
+
+function sendNewOrderEmail(orderData) {
 
     if (
-        typeof emailjs === "undefined"
+        typeof emailjs ===
+        "undefined"
     ) {
 
         console.error(
@@ -176,52 +320,22 @@ function sendOrderEmail(orderData) {
         );
 
         return Promise.reject(
-            "EmailJS is not loaded."
+            new Error(
+                "EmailJS is not loaded."
+            )
         );
 
     }
 
 
-    let itemsHTML = "";
+    const emailData =
+        createEmailData(
+            orderData
+        );
 
 
-    orderData.items.forEach(
-        function (item) {
-
-            const itemTotal =
-                Number(item.price) *
-                Number(item.quantity);
-
-
-            itemsHTML += `
-                <div style="
-                    padding:10px 0;
-                    border-bottom:1px solid #ddd;
-                ">
-
-                    <strong>
-                        ${item.name}
-                    </strong>
-
-                    <br>
-
-                    Quantity:
-                    ${item.quantity}
-
-                    <br>
-
-                    Price:
-                    ₦${Number(item.price).toLocaleString()}
-
-                    <br>
-
-                    Subtotal:
-                    ₦${itemTotal.toLocaleString()}
-
-                </div>
-            `;
-
-        }
+    console.log(
+        "Sending new order email..."
     );
 
 
@@ -231,55 +345,63 @@ function sendOrderEmail(orderData) {
 
         "template_3wqeitu",
 
-        {
+        emailData
 
-            orderNumber:
-                orderData.orderNumber,
+    );
 
-            orderDate:
-                orderData.orderDate,
+}
 
-            fullname:
-                orderData.fullname,
 
-            email:
-                orderData.email,
+// ==========================================
+// Send Customer Confirmation Email
+// ==========================================
+//
+// Template:
+// template_mo5bvrd
+//
+// This email is sent to the CUSTOMER.
+// ==========================================
 
-            phone:
-                orderData.phone,
+function sendCustomerConfirmationEmail(
+    orderData
+) {
 
-            address:
-                orderData.address,
+    if (
+        typeof emailjs ===
+        "undefined"
+    ) {
 
-            state:
-                orderData.state,
+        console.error(
+            "EmailJS is not loaded."
+        );
 
-            city:
-                orderData.city,
+        return Promise.reject(
+            new Error(
+                "EmailJS is not loaded."
+            )
+        );
 
-            items:
-                itemsHTML,
+    }
 
-            subtotal:
-                Number(
-                    orderData.subtotal
-                ).toLocaleString(),
 
-            discount:
-                orderData.discount,
+    const emailData =
+        createEmailData(
+            orderData
+        );
 
-            total:
-                Number(
-                    orderData.total
-                ).toLocaleString(),
 
-            reference:
-                orderData.reference,
+    console.log(
+        "Sending customer confirmation email..."
+    );
 
-            status:
-                "Paid"
 
-        }
+    return emailjs.send(
+
+        "service_x0frozt",
+
+        "template_mo5bvrd",
+
+        emailData
 
     );
 
@@ -294,57 +416,87 @@ function saveOrder(orderData) {
 
     let orders =
         JSON.parse(
-            localStorage.getItem("orders")
+            localStorage.getItem(
+                "orders"
+            )
         ) || [];
 
 
-    orders.push(orderData);
+    orders.push(
+        orderData
+    );
 
 
     localStorage.setItem(
         "orders",
-        JSON.stringify(orders)
+        JSON.stringify(
+            orders
+        )
     );
 
 }
 
 
-// ORDER TO SUPABASE
-//
 // ==========================================
 // Save Order To Supabase
 // ==========================================
 
-async function saveOrderToSupabase(orderData) {
+async function saveOrderToSupabase(
+    orderData
+) {
 
-    const { error } = await supabaseClient
-        .from("orders")
-        .insert([{
+    if (
+        typeof supabaseClient ===
+        "undefined"
+    ) {
 
-            order_number: orderData.orderNumber,
+        throw new Error(
+            "Supabase is not connected."
+        );
 
-            customer_name: orderData.fullname,
+    }
 
-            customer_email: orderData.email,
 
-            phone: orderData.phone,
+    const { error } =
+        await supabaseClient
+            .from("orders")
+            .insert([{
 
-            address: orderData.address,
+                order_number:
+                    orderData.orderNumber,
 
-            city: orderData.city,
+                customer_name:
+                    orderData.fullname,
 
-            state: orderData.state,
+                customer_email:
+                    orderData.email,
 
-            total: orderData.total,
+                phone:
+                    orderData.phone,
 
-            status: orderData.status,
+                address:
+                    orderData.address,
 
-            tracking_number: null,
+                city:
+                    orderData.city,
 
-            delivery_note:
-                "Order received. Preparing for delivery."
+                state:
+                    orderData.state,
 
-        }]);
+                total:
+                    orderData.total,
+
+                status:
+                    orderData.status,
+
+                tracking_number:
+                    null,
+
+                delivery_note:
+                    "Order received. Preparing for delivery."
+
+            }]);
+
 
     if (error) {
 
@@ -357,10 +509,13 @@ async function saveOrderToSupabase(orderData) {
 
     }
 
+
     console.log(
         "Order successfully saved to Supabase."
     );
+
 }
+
 
 // ==========================================
 // Start Checkout
@@ -511,7 +666,8 @@ function setupCheckout() {
             // Disable Button
             // ==========================================
 
-            placeOrder.disabled = true;
+            placeOrder.disabled =
+                true;
 
             placeOrder.textContent =
                 "Opening Payment...";
@@ -557,6 +713,7 @@ function setupCheckout() {
 
                                 value:
                                     fullname
+
                             },
 
                             {
@@ -568,6 +725,7 @@ function setupCheckout() {
 
                                 value:
                                     phone
+
                             },
 
                             {
@@ -579,6 +737,7 @@ function setupCheckout() {
 
                                 value:
                                     address
+
                             },
 
                             {
@@ -590,6 +749,7 @@ function setupCheckout() {
 
                                 value:
                                     state
+
                             },
 
                             {
@@ -601,6 +761,7 @@ function setupCheckout() {
 
                                 value:
                                     city
+
                             },
 
                             {
@@ -613,6 +774,7 @@ function setupCheckout() {
                                 value:
                                     couponDiscount +
                                     "%"
+
                             }
 
                         ]
@@ -625,7 +787,9 @@ function setupCheckout() {
                     // ==========================================
 
                     onSuccess:
-                        async function (response) {
+                        async function (
+                            response
+                        ) {
 
                             console.log(
                                 "Payment successful:",
@@ -697,7 +861,9 @@ function setupCheckout() {
 
                                 items:
                                     cart.map(
-                                        function (item) {
+                                        function (
+                                            item
+                                        ) {
 
                                             return {
 
@@ -758,78 +924,148 @@ function setupCheckout() {
 
                             }
 
-                            catch (supabaseError) {
+                            catch (
+                                supabaseError
+                            ) {
 
-    console.error("Supabase save failed:", supabaseError);
-
-    alert(
-        "Supabase Error:\n\n" +
-        (supabaseError.message || JSON.stringify(supabaseError))
-    );
-
-                            }
+                                console.error(
+                                    "Supabase save failed:",
+                                    supabaseError
+                                );
 
 
-                            // ==========================================
-                            // Send Email
-                            // ==========================================
-
-                            try {
-
-                                await sendOrderEmail({
-
-                                    orderNumber:
-                                        orderNumber,
-
-                                    orderDate:
-                                        orderDate,
-
-                                    fullname:
-                                        fullname,
-
-                                    email:
-                                        email,
-
-                                    phone:
-                                        phone,
-
-                                    address:
-                                        address,
-
-                                    state:
-                                        state,
-
-                                    city:
-                                        city,
-
-                                    items:
-                                        cart,
-
-                                    subtotal:
-                                        subtotal,
-
-                                    discount:
-                                        couponDiscount,
-
-                                    total:
-                                        total,
-
-                                    reference:
-                                        response.reference
-
-                                });
-
-
-                                console.log(
-                                    "Order email sent successfully."
+                                alert(
+                                    "Supabase Error:\n\n" +
+                                    (
+                                        supabaseError.message ||
+                                        JSON.stringify(
+                                            supabaseError
+                                        )
+                                    )
                                 );
 
                             }
 
-                            catch (emailError) {
+
+                            // ==========================================
+                            // Prepare Email Data
+                            // ==========================================
+
+                            const emailOrderData = {
+
+                                orderNumber:
+                                    orderNumber,
+
+                                orderDate:
+                                    orderDate,
+
+                                fullname:
+                                    fullname,
+
+                                email:
+                                    email,
+
+                                phone:
+                                    phone,
+
+                                address:
+                                    address,
+
+                                state:
+                                    state,
+
+                                city:
+                                    city,
+
+                                items:
+                                    cart,
+
+                                subtotal:
+                                    subtotal,
+
+                                discount:
+                                    couponDiscount,
+
+                                total:
+                                    total,
+
+                                reference:
+                                    response.reference,
+
+                                status:
+                                    "Paid"
+
+                            };
+
+
+                            // ==========================================
+                            // Send New Order Email
+                            // ==========================================
+
+                            let adminEmailSent =
+                                false;
+
+
+                            try {
+
+                                await sendNewOrderEmail(
+                                    emailOrderData
+                                );
+
+
+                                adminEmailSent =
+                                    true;
+
+
+                                console.log(
+                                    "New order email sent successfully."
+                                );
+
+                            }
+
+                            catch (
+                                emailError
+                            ) {
 
                                 console.error(
-                                    "EmailJS error:",
+                                    "New order EmailJS error:",
+                                    emailError
+                                );
+
+                            }
+
+
+                            // ==========================================
+                            // Send Customer Confirmation Email
+                            // ==========================================
+
+                            let customerEmailSent =
+                                false;
+
+
+                            try {
+
+                                await sendCustomerConfirmationEmail(
+                                    emailOrderData
+                                );
+
+
+                                customerEmailSent =
+                                    true;
+
+
+                                console.log(
+                                    "Customer confirmation email sent successfully."
+                                );
+
+                            }
+
+                            catch (
+                                emailError
+                            ) {
+
+                                console.error(
+                                    "Customer confirmation EmailJS error:",
                                     emailError
                                 );
 
@@ -840,43 +1076,53 @@ function setupCheckout() {
                             // Final Message
                             // ==========================================
 
+                            let message =
+                                "Payment successful!\n\n" +
+
+                                "Order: " +
+                                orderNumber +
+
+                                "\nReference: " +
+                                response.reference +
+
+                                "\n\nYour order has been received.";
+
+
                             if (
-                                supabaseSaved
+                                customerEmailSent
                             ) {
 
-                                alert(
-
-                                    "Payment successful!\n\n" +
-
-                                    "Order: " +
-                                    orderNumber +
-
-                                    "\nReference: " +
-                                    response.reference +
-
-                                    "\n\nYour order has been received."
-
-                                );
+                                message +=
+                                    "\n\n📧 A confirmation email has been sent to " +
+                                    email +
+                                    ".";
 
                             }
 
-                            else {
 
-                                alert(
+                            if (
+                                !customerEmailSent
+                            ) {
 
-                                    "Payment successful!\n\n" +
-
-                                    "Order: " +
-                                    orderNumber +
-
-                                    "\nReference: " +
-                                    response.reference +
-
-                                    "\n\nYour order was saved locally, but online tracking could not be activated."
-
-                                );
+                                message +=
+                                    "\n\n⚠️ We could not send the confirmation email, but your order was received.";
 
                             }
+
+
+                            if (
+                                !supabaseSaved
+                            ) {
+
+                                message +=
+                                    "\n\n⚠️ Online order tracking could not be activated.";
+
+                            }
+
+
+                            alert(
+                                message
+                            );
 
 
                             // ==========================================

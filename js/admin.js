@@ -4,7 +4,85 @@
 
 const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "12345";
+// ==========================================
+// EmailJS Status Notification
+// ==========================================
 
+async function sendStatusUpdateEmail(order, newStatus, trackingNumber, deliveryNote) {
+
+    if (typeof emailjs === "undefined") {
+
+        console.error("EmailJS is not loaded.");
+
+        return false;
+
+    }
+
+    if (!order.customer_email) {
+
+        console.error("Customer email is missing.");
+
+        return false;
+
+    }
+
+
+    try {
+
+        await emailjs.send(
+
+            "service_x0frozt",
+
+            "template_mo5bvrd",
+
+            {
+
+                fullname:
+                    order.customer_name || "Customer",
+
+                email:
+                    order.customer_email,
+
+                orderNumber:
+                    order.order_number,
+
+                status:
+                    newStatus,
+
+                trackingNumber:
+                    trackingNumber || "Not assigned",
+
+                deliveryNote:
+                    deliveryNote ||
+                    "Order received. Preparing for delivery."
+
+            }
+
+        );
+
+
+        console.log(
+            "Status update email sent successfully."
+        );
+
+
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Status email error:",
+            error
+        );
+
+
+        return false;
+
+    }
+
+}
 
 // ==========================================
 // Start when page is ready
@@ -354,39 +432,169 @@ async function displayAdminOrders() {
 
                         <button
                             type="button"
-                            onclick="saveOrderUpdate('${order.order_number}')"
-                        >
-                            💾 Save
-                        </button>
+                            async function saveOrderUpdate(orderNumber) {
 
-                    </td>
+    const statusElement =
+        document.getElementById(
+            "status-" + orderNumber
+        );
 
-                </tr>
+    const trackingElement =
+        document.getElementById(
+            "tracking-" + orderNumber
+        );
 
-            `;
+    const noteElement =
+        document.getElementById(
+            "note-" + orderNumber
+        );
 
-        });
+
+    if (!statusElement) {
+
+        alert("Order information not found.");
+
+        return;
+
+    }
 
 
-        updateAdminStatistics(orders);
+    const newStatus =
+        statusElement.value;
+
+    const trackingNumber =
+        trackingElement
+            ? trackingElement.value.trim()
+            : "";
+
+    const deliveryNote =
+        noteElement
+            ? noteElement.value.trim()
+            : "";
+
+
+    try {
+
+        // Get customer information
+        const {
+            data: order,
+            error: fetchError
+        } =
+            await supabaseClient
+                .from("orders")
+                .select(
+                    "order_number, customer_name, customer_email"
+                )
+                .eq(
+                    "order_number",
+                    orderNumber
+                )
+                .single();
+
+
+        if (fetchError) {
+
+            console.error(
+                "Order fetch error:",
+                fetchError
+            );
+
+            alert(
+                "❌ Could not find order."
+            );
+
+            return;
+
+        }
+
+
+        // Update Supabase
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("orders")
+                .update({
+
+                    status:
+                        newStatus,
+
+                    tracking_number:
+                        trackingNumber || null,
+
+                    delivery_note:
+                        deliveryNote ||
+                        "Order received. Preparing for delivery."
+
+                })
+                .eq(
+                    "order_number",
+                    orderNumber
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Update error:",
+                error
+            );
+
+            alert(
+                "❌ Failed to update order.\n\n" +
+                error.message
+            );
+
+            return;
+
+        }
+
+
+        // Send email
+        const emailSent =
+            await sendStatusUpdateEmail(
+                order,
+                newStatus,
+                trackingNumber,
+                deliveryNote
+            );
+
+
+        if (emailSent) {
+
+            alert(
+                "✅ Order updated successfully.\n\n" +
+                "📧 Customer notification email sent."
+            );
+
+        }
+
+        else {
+
+            alert(
+                "✅ Order updated successfully.\n\n" +
+                "⚠️ Customer email could not be sent."
+            );
+
+        }
+
+
+        // Reload orders
+        displayAdminOrders();
 
     }
 
     catch (error) {
 
         console.error(
-            "Order loading error:",
+            "Save error:",
             error
         );
 
-
-        ordersTable.innerHTML = `
-            <tr>
-                <td colspan="9">
-                    ❌ Unable to load orders.
-                </td>
-            </tr>
-        `;
+        alert(
+            "❌ Failed to update order.\n\n" +
+            error.message
+        );
 
     }
 
@@ -484,12 +692,48 @@ async function saveOrderUpdate(orderNumber) {
         }
 
 
-        alert(
-            "✅ Order updated successfully."
-        );
+        // ==========================================
+// Send Status Update Email
+// ==========================================
+
+const emailSent =
+    await sendStatusUpdateEmail(
+        {
+            customer_name:
+                order.customer_name,
+
+            customer_email:
+                order.customer_email,
+
+            order_number:
+                order.order_number
+        },
+        newStatus,
+        trackingNumber,
+        deliveryNote
+    );
 
 
-        displayAdminOrders();
+if (emailSent) {
+
+    alert(
+        "✅ Order updated successfully.\n\n" +
+        "📧 Customer notification email sent."
+    );
+
+}
+
+else {
+
+    alert(
+        "✅ Order updated successfully.\n\n" +
+        "⚠️ Customer email could not be sent."
+    );
+
+}
+
+
+displayAdminOrders();
 
     }
 

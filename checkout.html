@@ -1,171 +1,269 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout | Hasbunallahu Store</title>
 
-  <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/checkout.css">
-
-<script src="https://js.paystack.co/v2/inline.js"></script>
-
-<!-- EmailJS -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
-<script>
-    emailjs.init({
-        publicKey: "zDU17Xd3CuZ3fJztk"
-    });
-</script>
-
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-    const SUPABASE_URL = "https://qreliegujlmmsnyewtaq.supabase.co";
-
-    const SUPABASE_KEY = "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
-    const supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-</script>
-
-<script defer src="js/main.js"></script>
-<script defer src="js/checkout.js"></script>
-</head>
-<body>
-
-    <!-- Header -->
-    <header>
-        <nav class="navbar">
-            <h2 class="logo">Hasbunallahu Store</h2>
-<button class="menu-toggle" id="menu-toggle">
-    ☰
-</button>
-            <ul class="nav-links">
-
-    <li>
-        <a href="index.html">Home</a>
-    </li>
-
-    <li>
-        <a href="products.html">Products</a>
-    </li>
-
-    <li>
-        <a href="wishlist.html">
-            Wishlist ❤️
-            <span id="wishlist-count">0</span>
-        </a>
-    </li>
-
-    <li>
-        <a href="cart.html">
-            Cart 🛒
-            <span id="cart-count">0</span>
-        </a>
-    </li>
-
-    <li>
-        <a href="order.html">
-    My Orders 📦
-        </a>
-    </li>
-
-    <li>
-        <a href="about.html">About</a>
-    </li>
-
-    <li>
-        <a href="contact.html">Contact</a>
-    </li>
-
-</ul>
-        </nav>
-    </header>
-
-    <!-- Checkout -->
-    <main class="checkout-page">
-
-        <h1>Checkout</h1>
-
-        <div class="checkout-container">
-
-            <!-- Customer Details -->
-            <section class="customer-details">
-
-                <h2>Customer Information</h2>
-
-                <form id="checkout-form">
-
-                    <label>Full Name</label>
-<input type="text" id="fullname" required>
-
-<label>Phone Number</label>
-<input type="tel" id="phone" required>
-
-<label>Email Address</label>
-<input type="email" id="email" required>
-
-<label>Delivery Address</label>
-<textarea id="address" rows="4" required></textarea>
-
-<label>State</label>
-<input type="text" id="state" required>
-
-<label>City</label>
-<input type="text" id="city" required>
-
-                </form>
-
-            </section>
-
-            <!-- Order Summary -->
-            <aside class="order-summary">
-
-                <h2>Order Summary</h2>
-
-<div id="checkout-items">
-    <!-- Products will be inserted here -->
-</div>
-<!-- Discount Coupon -->
-
-<div class="coupon-section">
-
-    <h3>🎟️ Discount Coupon</h3>
-
-    <input
-        type="text"
-        id="coupon-code"
-        placeholder="Enter coupon code"
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
     >
 
-    <button type="button" id="apply-coupon">
-        Apply Coupon
-    </button>
+    <title>Checkout | Hasbunallahu Store</title>
 
-    <p id="coupon-message"></p>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/checkout.css">
 
-</div>
-<h3>Total: <span id="checkout-total">₦0.00</span></h3>
+</head>
 
-<button id="place-order">
-    Place Order
-</button>
+<body>
 
-            </aside>
+    <!-- ==========================================
+         CHECKOUT
+    =========================================== -->
 
-        </div>
+    <main class="checkout-container">
+
+        <h1>🛒 Checkout</h1>
+
+        <!-- Customer Details -->
+
+        <section class="checkout-section">
+
+            <h2>Customer Details</h2>
+
+            <form id="checkout-form">
+
+                <label for="fullname">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="fullname"
+                    placeholder="Enter your full name"
+                    required
+                >
+
+
+                <label for="phone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    placeholder="Enter your phone number"
+                    required
+                >
+
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email address"
+                    required
+                >
+
+
+                <label for="address">
+                    Delivery Address
+                </label>
+
+                <textarea
+                    id="address"
+                    placeholder="Enter your delivery address"
+                    required
+                ></textarea>
+
+
+                <label for="state">
+                    State
+                </label>
+
+                <input
+                    type="text"
+                    id="state"
+                    placeholder="Enter your state"
+                    required
+                >
+
+
+                <label for="city">
+                    City
+                </label>
+
+                <input
+                    type="text"
+                    id="city"
+                    placeholder="Enter your city"
+                    required
+                >
+
+            </form>
+
+        </section>
+
+
+        <!-- ==========================================
+             COUPON
+        =========================================== -->
+
+        <section class="checkout-section">
+
+            <h2>🎟️ Discount Coupon</h2>
+
+            <div class="coupon-box">
+
+                <input
+                    type="text"
+                    id="coupon-code"
+                    placeholder="Enter coupon code"
+                >
+
+                <button
+                    type="button"
+                    id="apply-coupon"
+                >
+                    Apply Coupon
+                </button>
+
+            </div>
+
+            <p id="coupon-message"></p>
+
+        </section>
+
+
+        <!-- ==========================================
+             ORDER SUMMARY
+        =========================================== -->
+
+        <section class="checkout-section">
+
+            <h2>📦 Order Summary</h2>
+
+            <div id="checkout-summary">
+
+                <p>
+                    Total:
+                    <strong id="checkout-total">
+                        ₦0
+                    </strong>
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==========================================
+             PAYMENT
+        =========================================== -->
+
+        <section class="checkout-section">
+
+            <h2>💳 Payment</h2>
+
+            <p>
+                Secure payment powered by Paystack.
+            </p>
+
+            <button
+                type="button"
+                id="place-order"
+            >
+                Place Order
+            </button>
+
+        </section>
+
+
+        <br>
+
+        <a href="index.html">
+            ← Continue Shopping
+        </a>
 
     </main>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
-    </footer>
-    
+
+    <!-- ==========================================
+         SUPABASE
+    =========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://qreliegujlmmsnyewtaq.supabase.co";
+
+
+        const SUPABASE_KEY =
+            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
+
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+    </script>
+
+
+    <!-- ==========================================
+         EMAILJS
+    =========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+    </script>
+
+
+    <script>
+
+        emailjs.init({
+    publicKey:
+        "zDU17Xd3CuZ3fJztk"
+});
+
+    </script>
+
+
+    <!-- ==========================================
+         PAYSTACK
+    =========================================== -->
+
+    <script
+        src="https://js.paystack.co/v2/inline.js">
+    </script>
+
+
+    <!-- ==========================================
+         STORE JAVASCRIPT
+    =========================================== -->
+
+    <script src="js/products.js"></script>
+
+    <script src="js/main.js"></script>
+
+    <script src="js/cart.js"></script>
+
+
+    <!-- ==========================================
+         CHECKOUT JAVASCRIPT
+    =========================================== -->
+
+    <script src="js/checkout.js"></script>
+
 </body>
+
 </html>
