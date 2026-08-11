@@ -758,14 +758,14 @@ function setupCheckout() {
 
                             }
 
-                            catch (
-                                supabaseError
-                            ) {
+                            catch (supabaseError) {
 
-                                console.error(
-                                    "Supabase save failed:",
-                                    supabaseError
-                                );
+    console.error("Supabase save failed:", supabaseError);
+
+    alert(
+        "Supabase Error:\n\n" +
+        (supabaseError.message || JSON.stringify(supabaseError))
+    );
 
                             }
 
