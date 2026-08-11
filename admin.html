@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -12,12 +13,17 @@
     <title>Admin Login | Hasbunallahu Store</title>
 
     <link rel="stylesheet" href="css/style.css">
+
 </head>
 
 <body>
 
     <!-- Admin Login -->
-    <main id="admin-login" style="padding: 30px; max-width: 450px; margin: auto;">
+
+    <main
+        id="admin-login"
+        style="padding:30px; max-width:450px; margin:auto;"
+    >
 
         <h1>🔐 Admin Login</h1>
 
@@ -63,100 +69,198 @@
 
 
     <!-- Admin Dashboard -->
+
     <main
         id="admin-dashboard"
         style="padding:20px; display:none;"
     >
 
         <header>
+
             <h1>
                 Hasbunallahu Store - Admin Dashboard
             </h1>
+
         </header>
-<!-- Admin Statistics -->
-<section class="admin-statistics">
 
-    <h2>Store Statistics 📊</h2>
 
-    <div class="stats-container">
+        <!-- Admin Statistics -->
 
-        <div class="stat-card">
-            <h3>Total Orders</h3>
-            <p id="total-orders">0</p>
-        </div>
+        <section class="admin-statistics">
 
-        <div class="stat-card">
-            <h3>Total Sales</h3>
-            <p id="total-sales">₦0</p>
-        </div>
+            <h2>
+                Store Statistics 📊
+            </h2>
 
-        <div class="stat-card">
-            <h3>Total Customers</h3>
-            <p id="total-customers">0</p>
-        </div>
+            <div class="stats-container">
 
-        <div class="stat-card">
-            <h3>Total Products</h3>
-            <p id="total-products">0</p>
-        </div>
+                <div class="stat-card">
 
-    </div>
+                    <h3>Total Orders</h3>
 
-</section>
-<!-- Recent Orders -->
-<section class="recent-orders">
+                    <p id="total-orders">
+                        0
+                    </p>
 
-    <h2>Recent Orders 📦</h2>
+                </div>
 
-    <div id="recent-orders-container">
-        <p>No recent orders yet.</p>
-    </div>
 
-</section>
-        <h2>Customer Orders</h2>
+                <div class="stat-card">
 
-        <button id="admin-logout">
-            Logout
-        </button>
+                    <h3>Total Sales</h3>
 
-        <br><br>
+                    <p id="total-sales">
+                        ₦0
+                    </p>
 
-        <table
-            border="1"
-            width="100%"
-            cellpadding="10"
-        >
+                </div>
 
-            <thead>
 
- <tr>
-    <th>Customer</th>
-    <th>Email</th>
-    <th>Phone</th>
-    <th>Total</th>
-    <th>Reference</th>
-    <th>Status</th>
-    <th>Details</th>
- </tr>
+                <div class="stat-card">
 
-            </thead>
+                    <h3>Total Customers</h3>
 
-            <tbody id="orders-table">
+                    <p id="total-customers">
+                        0
+                    </p>
 
-                <tr>
-                    <td colspan="5">
-                        No orders yet.
-                    </td>
-                </tr>
+                </div>
 
-            </tbody>
 
-        </table>
+                <div class="stat-card">
+
+                    <h3>Total Products</h3>
+
+                    <p id="total-products">
+                        0
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Customer Orders -->
+
+        <section class="recent-orders">
+
+            <h2>
+                Customer Orders 📦
+            </h2>
+
+            <button id="admin-logout">
+                Logout
+            </button>
+
+            <br><br>
+
+
+            <div style="overflow-x:auto;">
+
+                <table
+                    border="1"
+                    width="100%"
+                    cellpadding="10"
+                >
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Order Number
+                            </th>
+
+                            <th>
+                                Customer
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Phone
+                            </th>
+
+                            <th>
+                                Total
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Tracking Number
+                            </th>
+
+                            <th>
+                                Delivery Note
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="orders-table">
+
+                        <tr>
+
+                            <td colspan="9">
+                                Loading orders...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
 
     </main>
- 
- <script src="js/products.js"></script>
- <script src="js/admin.js"></script>
+
+
+    <!-- Supabase -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://qreliegujlmmsnyewtaq.supabase.co";
+
+
+        const SUPABASE_KEY =
+            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
+
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+    </script>
+
+
+    <!-- Store Scripts -->
+
+    <script src="js/products.js"></script>
+
+    <script src="js/admin.js"></script>
+
 
 </body>
 

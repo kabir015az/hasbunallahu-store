@@ -1,5 +1,6 @@
 // ==========================================
 // Hasbunallahu Store - Admin Dashboard
+// Supabase Order Management
 // ==========================================
 
 const ADMIN_USERNAME = "admin";
@@ -25,282 +26,347 @@ const logoutButton =
 // Display Orders
 // ==========================================
 
-function displayAdminOrders() {
+async function displayAdminOrders() {
 
     const ordersTable =
         document.getElementById("orders-table");
 
     if (!ordersTable) return;
 
-    const orders =
-        JSON.parse(
-            localStorage.getItem("orders")
-        ) || [];
 
-
-    if (orders.length === 0) {
+    if (
+        typeof supabaseClient ===
+        "undefined"
+    ) {
 
         ordersTable.innerHTML = `
             <tr>
-                <td colspan="7">
-                    No orders yet.
+                <td colspan="9">
+                    ❌ Supabase connection not available.
                 </td>
             </tr>
         `;
 
         return;
-    }
-
-
-    ordersTable.innerHTML = "";
-
-
-    orders.slice().reverse().forEach(order => {
-
-        const currentStatus =
-            order.status || "Paid";
-
-
-        ordersTable.innerHTML += `
-
-            <tr>
-
-                <td>
-                    ${order.fullname || "N/A"}
-                </td>
-
-                <td>
-                    ${order.email || "N/A"}
-                </td>
-
-                <td>
-                    ${order.phone || "N/A"}
-                </td>
-
-                <td>
-                    ₦${Number(
-                        order.total || 0
-                    ).toLocaleString()}
-                </td>
-
-                <td>
-                    ${order.reference || "N/A"}
-                </td>
-
-                <td>
-
-                    <select
-                        onchange="updateOrderStatus(
-                            '${order.orderNumber}',
-                            this.value
-                        )"
-                    >
-
-                        <option value="Paid"
-                            ${currentStatus === "Paid" ? "selected" : ""}>
-                            Paid
-                        </option>
-
-                        <option value="Processing"
-                            ${currentStatus === "Processing" ? "selected" : ""}>
-                            Processing
-                        </option>
-
-                        <option value="Shipped"
-                            ${currentStatus === "Shipped" ? "selected" : ""}>
-                            Shipped
-                        </option>
-
-                        <option value="Out for Delivery"
-                            ${currentStatus === "Out for Delivery" ? "selected" : ""}>
-                            Out for Delivery
-                        </option>
-
-                        <option value="Delivered"
-                            ${currentStatus === "Delivered" ? "selected" : ""}>
-                            Delivered
-                        </option>
-
-                    </select>
-
-                </td>
-
-                <td>
-
-                    <button
-                        type="button"
-                        onclick="viewOrderDetails(
-                            '${order.orderNumber}'
-                        )"
-                    >
-                        View Details
-                    </button>
-
-                </td>
-
-            </tr>
-
-        `;
-
-    });
-
-}
-
-
-// ==========================================
-// Update Order Status
-// ==========================================
-
-function updateOrderStatus(
-    orderNumber,
-    newStatus
-) {
-
-    const orders =
-        JSON.parse(
-            localStorage.getItem("orders")
-        ) || [];
-
-
-    const order =
-        orders.find(
-            item =>
-                item.orderNumber === orderNumber
-        );
-
-
-    if (!order) {
-
-        alert("Order not found.");
-
-        return;
 
     }
 
 
-    order.status = newStatus;
+    ordersTable.innerHTML = `
+        <tr>
+            <td colspan="9">
+                Loading orders...
+            </td>
+        </tr>
+    `;
 
 
-    localStorage.setItem(
-        "orders",
-        JSON.stringify(orders)
-    );
+    try {
+
+        const { data: orders, error } =
+            await supabaseClient
+                .from("orders")
+                .select("*")
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
 
 
-    alert(
-        "Order " +
-        orderNumber +
-        " status updated to " +
-        newStatus
-    );
+        if (error) {
 
-}
+            console.error(
+                "Supabase orders error:",
+                error
+            );
 
+            ordersTable.innerHTML = `
+                <tr>
+                    <td colspan="9">
+                        ❌ Failed to load orders.
+                    </td>
+                </tr>
+            `;
 
-// ==========================================
-// View Full Order Details
-// ==========================================
+            return;
 
-function viewOrderDetails(orderNumber) {
-
-    const orders =
-        JSON.parse(
-            localStorage.getItem("orders")
-        ) || [];
+        }
 
 
-    const order =
-        orders.find(
-            item =>
-                item.orderNumber === orderNumber
-        );
+        if (
+            !orders ||
+            orders.length === 0
+        ) {
+
+            ordersTable.innerHTML = `
+                <tr>
+                    <td colspan="9">
+                        No orders yet.
+                    </td>
+                </tr>
+            `;
+
+            updateAdminStatistics([]);
+
+            return;
+
+        }
 
 
-    if (!order) {
-
-        alert("Order not found.");
-
-        return;
-
-    }
+        ordersTable.innerHTML = "";
 
 
-    let itemsText = "";
+        orders.forEach(order => {
+
+            const currentStatus =
+                order.status || "Paid";
 
 
-    if (
-        order.items &&
-        order.items.length > 0
-    ) {
+            ordersTable.innerHTML += `
 
-        order.items.forEach(item => {
+                <tr>
 
-            itemsText +=
-                "\n• " +
-                item.name +
-                " × " +
-                item.quantity +
-                " — ₦" +
-                (
-                    Number(item.price) *
-                    Number(item.quantity)
-                ).toLocaleString();
+                    <td>
+                        <strong>
+                            ${order.order_number || "N/A"}
+                        </strong>
+                    </td>
+
+                    <td>
+                        ${order.customer_name || "N/A"}
+                    </td>
+
+                    <td>
+                        ${order.customer_email || "N/A"}
+                    </td>
+
+                    <td>
+                        ${order.phone || "N/A"}
+                    </td>
+
+                    <td>
+                        ₦${Number(
+                            order.total || 0
+                        ).toLocaleString()}
+                    </td>
+
+                    <td>
+
+                        <select
+                            id="status-${order.order_number}"
+                        >
+
+                            <option value="Paid"
+                                ${currentStatus === "Paid"
+                                    ? "selected"
+                                    : ""}>
+                                Paid
+                            </option>
+
+                            <option value="Processing"
+                                ${currentStatus === "Processing"
+                                    ? "selected"
+                                    : ""}>
+                                Processing
+                            </option>
+
+                            <option value="Shipped"
+                                ${currentStatus === "Shipped"
+                                    ? "selected"
+                                    : ""}>
+                                Shipped
+                            </option>
+
+                            <option value="Out for Delivery"
+                                ${currentStatus === "Out for Delivery"
+                                    ? "selected"
+                                    : ""}>
+                                Out for Delivery
+                            </option>
+
+                            <option value="Delivered"
+                                ${currentStatus === "Delivered"
+                                    ? "selected"
+                                    : ""}>
+                                Delivered
+                            </option>
+
+                        </select>
+
+                    </td>
+
+
+                    <td>
+
+                        <input
+                            type="text"
+                            id="tracking-${order.order_number}"
+                            value="${order.tracking_number || ""}"
+                            placeholder="Tracking number"
+                        >
+
+                    </td>
+
+
+                    <td>
+
+                        <textarea
+                            id="note-${order.order_number}"
+                            placeholder="Delivery note"
+                            rows="2"
+                        >${order.delivery_note || ""}</textarea>
+
+                    </td>
+
+
+                    <td>
+
+                        <button
+                            type="button"
+                            onclick="saveOrderUpdate(
+                                '${order.order_number}'
+                            )"
+                        >
+                            💾 Save
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `;
 
         });
 
-    } else {
 
-        itemsText =
-            "\nNo product information available.";
+        updateAdminStatistics(orders);
 
     }
 
+    catch (error) {
 
-    alert(
+        console.error(
+            "Admin orders error:",
+            error
+        );
 
-        "📦 ORDER DETAILS\n\n" +
+        ordersTable.innerHTML = `
+            <tr>
+                <td colspan="9">
+                    ❌ Unable to load orders.
+                </td>
+            </tr>
+        `;
 
-        "Order Number: " +
-        (order.orderNumber || "N/A") +
+    }
 
-        "\n\n👤 CUSTOMER\n" +
+}
 
-        "Name: " +
-        (order.fullname || "N/A") +
 
-        "\nEmail: " +
-        (order.email || "N/A") +
+// ==========================================
+// Save Order Update
+// ==========================================
 
-        "\nPhone: " +
-        (order.phone || "N/A") +
+async function saveOrderUpdate(orderNumber) {
 
-        "\n\n🏠 DELIVERY ADDRESS\n" +
+    const statusElement =
+        document.getElementById(
+            "status-" + orderNumber
+        );
 
-        "Address: " +
-        (order.address || "N/A") +
+    const trackingElement =
+        document.getElementById(
+            "tracking-" + orderNumber
+        );
 
-        "\nState: " +
-        (order.state || "N/A") +
+    const noteElement =
+        document.getElementById(
+            "note-" + orderNumber
+        );
 
-        "\nCity: " +
-        (order.city || "N/A") +
 
-        "\n\n🛍️ PRODUCTS" +
+    if (!statusElement) return;
 
-        itemsText +
 
-        "\n\n💰 TOTAL: ₦" +
-        Number(
-            order.total || 0
-        ).toLocaleString() +
+    const newStatus =
+        statusElement.value;
 
-        "\n\n💳 PAYMENT REFERENCE: " +
-        (order.reference || "N/A") +
+    const trackingNumber =
+        trackingElement
+            ? trackingElement.value.trim()
+            : "";
 
-        "\n\n🚚 STATUS: " +
-        (order.status || "Paid")
+    const deliveryNote =
+        noteElement
+            ? noteElement.value.trim()
+            : "";
 
-    );
+
+    try {
+
+        const { error } =
+            await supabaseClient
+                .from("orders")
+                .update({
+
+                    status:
+                        newStatus,
+
+                    tracking_number:
+                        trackingNumber || null,
+
+                    delivery_note:
+                        deliveryNote ||
+                        "Order received. Preparing for delivery."
+
+                })
+                .eq(
+                    "order_number",
+                    orderNumber
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Update error:",
+                error
+            );
+
+            alert(
+                "❌ Failed to update order."
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "✅ Order " +
+            orderNumber +
+            " updated successfully."
+        );
+
+
+        displayAdminOrders();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Save order error:",
+            error
+        );
+
+        alert(
+            "❌ Something went wrong while updating the order."
+        );
+
+    }
 
 }
 
@@ -309,19 +375,20 @@ function viewOrderDetails(orderNumber) {
 // Admin Statistics
 // ==========================================
 
-function updateAdminStatistics() {
+function updateAdminStatistics(orders) {
 
-    const orders =
-        JSON.parse(
-            localStorage.getItem("orders")
-        ) || [];
+    if (!orders) {
+        orders = [];
+    }
 
 
     // Total Orders
+
     const totalOrders =
         document.getElementById(
             "total-orders"
         );
+
 
     if (totalOrders) {
 
@@ -332,6 +399,7 @@ function updateAdminStatistics() {
 
 
     // Total Sales
+
     let totalSales = 0;
 
 
@@ -359,18 +427,21 @@ function updateAdminStatistics() {
 
 
     // Total Customers
+
     const customers = [];
 
 
     orders.forEach(order => {
 
         if (
-            order.email &&
-            !customers.includes(order.email)
+            order.customer_email &&
+            !customers.includes(
+                order.customer_email
+            )
         ) {
 
             customers.push(
-                order.email
+                order.customer_email
             );
 
         }
@@ -393,6 +464,7 @@ function updateAdminStatistics() {
 
 
     // Total Products
+
     const totalProducts =
         document.getElementById(
             "total-products"
@@ -402,13 +474,16 @@ function updateAdminStatistics() {
     if (totalProducts) {
 
         if (
-            typeof products !== "undefined"
+            typeof products !==
+            "undefined"
         ) {
 
             totalProducts.textContent =
                 products.length;
 
-        } else {
+        }
+
+        else {
 
             totalProducts.textContent =
                 "0";
@@ -447,8 +522,6 @@ if (
 
 
     displayAdminOrders();
-
-    updateAdminStatistics();
 
 }
 
@@ -514,10 +587,9 @@ if (loginForm) {
 
                 displayAdminOrders();
 
-                updateAdminStatistics();
+            }
 
-
-            } else {
+            else {
 
                 if (loginMessage) {
 
