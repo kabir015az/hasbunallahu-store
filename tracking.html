@@ -175,6 +175,23 @@
 </footer>
 
 
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const SUPABASE_URL =
+        "https://qreliegujlmmsnyewtaq.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+</script>
+
 <script src="js/tracking.js"></script>
 
 </body>

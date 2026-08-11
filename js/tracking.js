@@ -1,5 +1,6 @@
 // ==========================================
-// Hasbunallahu Store - Order Tracking
+// Hasbunallahu Store - Online Order Tracking
+// Supabase
 // ==========================================
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -32,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     trackButton.addEventListener(
         "click",
-        function () {
+        async function () {
 
             const orderNumber =
                 orderInput.value
@@ -45,7 +46,10 @@ document.addEventListener("DOMContentLoaded", function () {
             result.style.display = "none";
 
 
-            // Check empty input
+            // ==========================================
+            // Empty Input
+            // ==========================================
+
             if (orderNumber === "") {
 
                 message.textContent =
@@ -56,89 +60,164 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
 
-            // Get orders
-            const orders =
-                JSON.parse(
-                    localStorage.getItem("orders")
-                ) || [];
+            // ==========================================
+            // Check Supabase
+            // ==========================================
 
-
-            // Find order
-            const order =
-                orders.find(
-                    item =>
-                        String(
-                            item.orderNumber
-                        ).toUpperCase() ===
-                        orderNumber
-                );
-
-
-            // Order not found
-            if (!order) {
+            if (
+                typeof supabaseClient ===
+                "undefined"
+            ) {
 
                 message.textContent =
-                    "❌ Order not found. Please check your order number.";
+                    "❌ Unable to connect to the tracking system.";
+
+                console.error(
+                    "supabaseClient is not defined."
+                );
 
                 return;
 
             }
 
 
-            // ==========================================
-            // Display Order Information
-            // ==========================================
+            trackButton.disabled = true;
 
-            document.getElementById(
-                "track-order-number"
-            ).textContent =
-                order.orderNumber;
+            trackButton.textContent =
+                "Checking...";
 
 
-            document.getElementById(
-                "track-customer"
-            ).textContent =
-                order.fullname || "N/A";
+            try {
+
+                // ==========================================
+                // Find Order In Supabase
+                // ==========================================
+
+                const { data, error } =
+                    await supabaseClient
+                        .from("orders")
+                        .select("*")
+                        .eq(
+                            "order_number",
+                            orderNumber
+                        )
+                        .maybeSingle();
 
 
-            document.getElementById(
-                "track-total"
-            ).textContent =
-                Number(
-                    order.total || 0
-                ).toLocaleString();
+                // ==========================================
+                // Supabase Error
+                // ==========================================
+
+                if (error) {
+
+                    console.error(
+                        "Tracking error:",
+                        error
+                    );
+
+                    message.textContent =
+                        "❌ Unable to check your order. Please try again.";
+
+                    return;
+
+                }
 
 
-            const status =
-                order.status || "Paid";
+                // ==========================================
+                // Order Not Found
+                // ==========================================
+
+                if (!data) {
+
+                    message.textContent =
+                        "❌ Order not found. Please check your order number.";
+
+                    return;
+
+                }
 
 
-            document.getElementById(
-                "track-status"
-            ).textContent =
-                status;
+                // ==========================================
+                // Display Order
+                // ==========================================
+
+                document.getElementById(
+                    "track-order-number"
+                ).textContent =
+                    data.order_number || "N/A";
 
 
-            // ==========================================
-            // Show Result
-            // ==========================================
-
-            result.style.display = "block";
-
-
-            // ==========================================
-            // Update Progress Tracker
-            // ==========================================
-
-            updateTrackingProgress(status);
+                document.getElementById(
+                    "track-customer"
+                ).textContent =
+                    data.customer_name || "N/A";
 
 
-            message.textContent =
-                "✅ Order found!";
+                document.getElementById(
+                    "track-total"
+                ).textContent =
+                    Number(
+                        data.total || 0
+                    ).toLocaleString();
+
+
+                const status =
+                    data.status || "Paid";
+
+
+                document.getElementById(
+                    "track-status"
+                ).textContent =
+                    status;
+
+
+                // ==========================================
+                // Show Result
+                // ==========================================
+
+                result.style.display =
+                    "block";
+
+
+                // ==========================================
+                // Update Progress
+                // ==========================================
+
+                updateTrackingProgress(
+                    status
+                );
+
+
+                message.textContent =
+                    "✅ Order found!";
+
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Tracking error:",
+                    error
+                );
+
+                message.textContent =
+                    "❌ Something went wrong. Please try again.";
+
+            }
+
+            finally {
+
+                trackButton.disabled =
+                    false;
+
+                trackButton.textContent =
+                    "Track Order";
+
+            }
 
         }
     );
-
 
 });
 
@@ -153,6 +232,7 @@ function updateTrackingProgress(status) {
 
         {
             id: "step-paid",
+
             statuses: [
                 "Paid",
                 "Processing",
@@ -164,6 +244,7 @@ function updateTrackingProgress(status) {
 
         {
             id: "step-processing",
+
             statuses: [
                 "Processing",
                 "Shipped",
@@ -174,6 +255,7 @@ function updateTrackingProgress(status) {
 
         {
             id: "step-shipped",
+
             statuses: [
                 "Shipped",
                 "Out for Delivery",
@@ -183,6 +265,7 @@ function updateTrackingProgress(status) {
 
         {
             id: "step-delivery",
+
             statuses: [
                 "Out for Delivery",
                 "Delivered"
@@ -191,6 +274,7 @@ function updateTrackingProgress(status) {
 
         {
             id: "step-delivered",
+
             statuses: [
                 "Delivered"
             ]
@@ -199,7 +283,7 @@ function updateTrackingProgress(status) {
     ];
 
 
-    steps.forEach(step => {
+    steps.forEach(function (step) {
 
         const element =
             document.getElementById(
@@ -216,7 +300,9 @@ function updateTrackingProgress(status) {
 
 
         if (
-            step.statuses.includes(status)
+            step.statuses.includes(
+                status
+            )
         ) {
 
             element.classList.add(
