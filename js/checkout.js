@@ -25,20 +25,21 @@ function getCheckoutCart() {
 
 function getCheckoutCartTotal() {
 
-    const cart = getCheckoutCart();
+    const cart =
+        JSON.parse(localStorage.getItem("cart")) || [];
 
     let total = 0;
 
     cart.forEach(function (item) {
 
-        total +=
-            Number(item.price) *
-            Number(item.quantity);
+        const price = Number(item.price) || 0;
+        const quantity = Number(item.quantity) || 1;
+
+        total += price * quantity;
 
     });
 
     return total;
-
 }
 
 
@@ -52,17 +53,13 @@ function updateCheckoutTotal() {
         getCheckoutCartTotal();
 
     const discountAmount =
-        originalTotal *
-        (couponDiscount / 100);
+        originalTotal * (couponDiscount / 100);
 
     const finalTotal =
-        originalTotal -
-        discountAmount;
+        originalTotal - discountAmount;
 
     const totalElement =
-        document.getElementById(
-            "checkout-total"
-        );
+        document.getElementById("checkout-total");
 
     if (totalElement) {
 
@@ -73,7 +70,6 @@ function updateCheckoutTotal() {
     }
 
     return finalTotal;
-
 }
 
 
