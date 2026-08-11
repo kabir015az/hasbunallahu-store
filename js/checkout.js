@@ -313,73 +313,41 @@ function saveOrder(orderData) {
 }
 
 
+/ ORDER TO SUPABASE
 // ==========================================
-// SAVE ORDER TO SUPABASE
+// Save Order To Supabase
 // ==========================================
 
 async function saveOrderToSupabase(orderData) {
 
-    // Check Supabase
-    if (
-        typeof supabaseClient === "undefined"
-    ) {
+    const { error } = await supabaseClient
+        .from("orders")
+        .insert([{
 
-        console.error(
-            "Supabase client is not loaded."
-        );
+            order_number: orderData.orderNumber,
 
-        throw new Error(
-            "Supabase client is not loaded."
-        );
+            customer_name: orderData.fullname,
 
-    }
+            customer_email: orderData.email,
 
+            phone: orderData.phone,
 
-    const { data, error } =
-        await supabaseClient
-            .from("orders")
-            .insert([
+            address: orderData.address,
 
-                {
+            city: orderData.city,
 
-                    order_number:
-                        orderData.orderNumber,
+            state: orderData.state,
 
-                    customer_name:
-                        orderData.fullname,
+            total: orderData.total,
 
-                    customer_email:
-                        orderData.email,
+            status: orderData.status,
 
-                    phone:
-                        orderData.phone,
+            tracking_number: null,
 
-                    address:
-                        orderData.address,
+            delivery_note:
+                "Order received. Preparing for delivery."
 
-                    city:
-                        orderData.city,
-
-                    state:
-                        orderData.state,
-
-                    total:
-                        orderData.total,
-
-                    status:
-                        "Paid",
-
-                    tracking_number:
-                        "",
-
-                    delivery_note:
-                        ""
-
-                }
-
-            ])
-            .select();
-
+        }]);
 
     if (error) {
 
@@ -392,17 +360,10 @@ async function saveOrderToSupabase(orderData) {
 
     }
 
-
     console.log(
-        "Order saved to Supabase:",
-        data
+        "Order successfully saved to Supabase."
     );
-
-
-    return data;
-
 }
-
 
 // ==========================================
 // Start Checkout
