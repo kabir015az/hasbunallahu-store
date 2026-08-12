@@ -19,176 +19,225 @@
 
 <body>
 
-    <!-- ==========================================
-         CHECKOUT
-    =========================================== -->
-
     <main class="checkout-container">
 
-        <h1>🛒 Checkout</h1>
-
-        <!-- Customer Details -->
-
-        <section class="checkout-section">
-
-            <h2>Customer Details</h2>
-
-            <form id="checkout-form">
-
-                <label for="fullname">
-                    Full Name
-                </label>
-
-                <input
-                    type="text"
-                    id="fullname"
-                    placeholder="Enter your full name"
-                    required
-                >
+        <h1 class="checkout-title">
+            🛒 Checkout
+        </h1>
 
 
-                <label for="phone">
-                    Phone Number
-                </label>
+        <div class="checkout-layout">
 
-                <input
-                    type="tel"
-                    id="phone"
-                    placeholder="Enter your phone number"
-                    required
-                >
+            <!-- =====================================
+                 LEFT SIDE - CUSTOMER DETAILS
+            ====================================== -->
 
+            <div class="checkout-left">
 
-                <label for="email">
-                    Email Address
-                </label>
+                <section class="checkout-section customer-section">
 
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="Enter your email address"
-                    required
-                >
+                    <h2>👤 Customer Details</h2>
 
+                    <form id="checkout-form">
 
-                <label for="address">
-                    Delivery Address
-                </label>
+                        <div class="form-group">
 
-                <textarea
-                    id="address"
-                    placeholder="Enter your delivery address"
-                    required
-                ></textarea>
+                            <label for="fullname">
+                                Full Name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="fullname"
+                                placeholder="Enter your full name"
+                                required
+                            >
+
+                        </div>
 
 
-                <label for="state">
-                    State
-                </label>
+                        <div class="form-group">
 
-                <input
-                    type="text"
-                    id="state"
-                    placeholder="Enter your state"
-                    required
-                >
+                            <label for="phone">
+                                Phone Number
+                            </label>
 
+                            <input
+                                type="tel"
+                                id="phone"
+                                placeholder="Enter your phone number"
+                                required
+                            >
 
-                <label for="city">
-                    City
-                </label>
-
-                <input
-                    type="text"
-                    id="city"
-                    placeholder="Enter your city"
-                    required
-                >
-
-            </form>
-
-        </section>
+                        </div>
 
 
-        <!-- ==========================================
-             COUPON
-        =========================================== -->
+                        <div class="form-group">
 
-        <section class="checkout-section">
+                            <label for="email">
+                                Email Address
+                            </label>
 
-            <h2>🎟️ Discount Coupon</h2>
+                            <input
+                                type="email"
+                                id="email"
+                                placeholder="Enter your email address"
+                                required
+                            >
 
-            <div class="coupon-box">
-
-                <input
-                    type="text"
-                    id="coupon-code"
-                    placeholder="Enter coupon code"
-                >
-
-                <button
-                    type="button"
-                    id="apply-coupon"
-                >
-                    Apply Coupon
-                </button>
-
-            </div>
-
-            <p id="coupon-message"></p>
-
-        </section>
+                        </div>
 
 
-        <!-- ==========================================
-             ORDER SUMMARY
-        =========================================== -->
+                        <div class="form-group">
 
-        <section class="checkout-section">
+                            <label for="address">
+                                Delivery Address
+                            </label>
 
-            <h2>📦 Order Summary</h2>
+                            <textarea
+                                id="address"
+                                placeholder="Enter your delivery address"
+                                required
+                            ></textarea>
 
-            <div id="checkout-summary">
+                        </div>
 
-                <p>
-                    Total:
-                    <strong id="checkout-total">
-                        ₦0
-                    </strong>
-                </p>
+
+                        <div class="form-row">
+
+                            <div class="form-group">
+
+                                <label for="state">
+                                    State
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="state"
+                                    placeholder="Enter your state"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label for="city">
+                                    City
+                                </label>
+
+                                <input
+                                    type="text"
+                                    id="city"
+                                    placeholder="Enter your city"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </section>
 
             </div>
 
-        </section>
+
+            <!-- =====================================
+                 RIGHT SIDE
+            ====================================== -->
+
+            <div class="checkout-right">
 
 
-        <!-- ==========================================
-             PAYMENT
-        =========================================== -->
+                <!-- COUPON -->
 
-        <section class="checkout-section">
+                <section class="checkout-section">
 
-            <h2>💳 Payment</h2>
+                    <h2>🎟️ Discount Coupon</h2>
 
-            <p>
-                Secure payment powered by Paystack.
-            </p>
+                    <div class="coupon-box">
 
-            <button
-                type="button"
-                id="place-order"
-            >
-                Place Order
-            </button>
+                        <input
+                            type="text"
+                            id="coupon-code"
+                            placeholder="Enter coupon code"
+                        >
 
-        </section>
+                        <button
+                            type="button"
+                            id="apply-coupon"
+                        >
+                            Apply Coupon
+                        </button>
+
+                    </div>
+
+                    <p id="coupon-message"></p>
+
+                </section>
 
 
-        <br>
+                <!-- ORDER SUMMARY -->
 
-        <a href="index.html">
-            ← Continue Shopping
-        </a>
+                <section class="checkout-section order-summary">
+
+                    <h2>📦 Order Summary</h2>
+
+                    <div id="checkout-summary">
+
+                        <p class="total-row">
+
+                            <span>
+                                Total:
+                            </span>
+
+                            <strong id="checkout-total">
+                                ₦0
+                            </strong>
+
+                        </p>
+
+                    </div>
+
+                </section>
+
+
+                <!-- PAYMENT -->
+
+                <section class="checkout-section payment-section">
+
+                    <h2>💳 Payment</h2>
+
+                    <p class="payment-text">
+                        Secure payment powered by Paystack.
+                    </p>
+
+                    <button
+                        type="button"
+                        id="place-order"
+                    >
+                        Place Order
+                    </button>
+
+                </section>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONTINUE SHOPPING -->
+
+        <div class="continue-shopping">
+
+            <a href="index.html">
+                ← Continue Shopping
+            </a>
+
+        </div>
 
     </main>
 
@@ -199,16 +248,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
     <script>
 
         const SUPABASE_URL =
             "https://qreliegujlmmsnyewtaq.supabase.co";
 
-
         const SUPABASE_KEY =
             "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
 
         const supabaseClient =
             window.supabase.createClient(
@@ -227,13 +273,12 @@
         src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
     </script>
 
-
     <script>
 
         emailjs.init({
-    publicKey:
-        "zDU17Xd3CuZ3fJztk"
-});
+            publicKey:
+                "zDU17Xd3CuZ3fJztk"
+        });
 
     </script>
 
@@ -256,11 +301,6 @@
     <script src="js/main.js"></script>
 
     <script src="js/cart.js"></script>
-
-
-    <!-- ==========================================
-         CHECKOUT JAVASCRIPT
-    =========================================== -->
 
     <script src="js/checkout.js"></script>
 
