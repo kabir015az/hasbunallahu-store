@@ -12,300 +12,575 @@
 
     <title>Admin Dashboard | Hasbunallahu Store</title>
 
-    <link rel="stylesheet" href="css/style.css">
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
 
 </head>
 
 <body>
 
-    <!-- ==========================================
-         ADMIN LOGIN
-    =========================================== -->
 
-    <main
-        id="admin-login"
-        style="
-            padding:30px;
-            max-width:450px;
-            margin:50px auto;
-        "
-    >
+<!-- ==================================================
+     ADMIN LOGIN
+================================================== -->
 
-        <h1>🔐 Admin Login</h1>
+<main
+    id="admin-login"
+    style="
+        padding:30px;
+        max-width:450px;
+        margin:50px auto;
+    "
+>
 
-        <p>Hasbunallahu Store</p>
+    <h1>🔐 Admin Login</h1>
 
-        <form id="admin-login-form">
-
-            <label for="admin-username">
-                Username
-            </label>
-
-            <input
-                type="text"
-                id="admin-username"
-                placeholder="Enter username"
-                required
-            >
-
-            <br><br>
-
-            <label for="admin-password">
-                Password
-            </label>
-
-            <input
-                type="password"
-                id="admin-password"
-                placeholder="Enter password"
-                required
-            >
-
-            <br><br>
-
-            <button type="submit">
-                Login
-            </button>
-
-            <p id="login-message"></p>
-
-        </form>
-
-    </main>
+    <p>Hasbunallahu Store</p>
 
 
-    <!-- ==========================================
-         ADMIN DASHBOARD
-    =========================================== -->
+    <form id="admin-login-form">
 
-    <main
-        id="admin-dashboard"
-        style="
-            padding:20px;
-            display:none;
-        "
-    >
+        <label for="admin-username">
+            Username
+        </label>
 
-        <header>
-
-            <h1>
-                Hasbunallahu Store
-                - Admin Dashboard
-            </h1>
-
-            <button
-                type="button"
-                id="admin-logout"
-            >
-                Logout
-            </button>
-
-        </header>
+        <input
+            type="text"
+            id="admin-username"
+            placeholder="Enter username"
+            required
+        >
 
 
-        <!-- ==========================================
-             STATISTICS
-        =========================================== -->
-
-        <section class="admin-statistics">
-
-            <h2>
-                Store Statistics 📊
-            </h2>
-
-            <div class="stats-container">
-
-                <div class="stat-card">
-
-                    <h3>
-                        Total Orders
-                    </h3>
-
-                    <p id="total-orders">
-                        0
-                    </p>
-
-                </div>
+        <br><br>
 
 
-                <div class="stat-card">
+        <label for="admin-password">
+            Password
+        </label>
 
-                    <h3>
-                        Total Sales
-                    </h3>
-
-                    <p id="total-sales">
-                        ₦0
-                    </p>
-
-                </div>
-
-
-                <div class="stat-card">
-
-                    <h3>
-                        Total Customers
-                    </h3>
-
-                    <p id="total-customers">
-                        0
-                    </p>
-
-                </div>
+        <input
+            type="password"
+            id="admin-password"
+            placeholder="Enter password"
+            required
+        >
 
 
-                <div class="stat-card">
+        <br><br>
 
-                    <h3>
-                        Total Products
-                    </h3>
 
-                    <p id="total-products">
-                        0
-                    </p>
+        <button type="submit">
+            Login
+        </button>
 
-                </div>
+
+        <p id="login-message"></p>
+
+    </form>
+
+</main>
+
+
+
+<!-- ==================================================
+     ADMIN DASHBOARD
+================================================== -->
+
+<main
+    id="admin-dashboard"
+    style="
+        padding:20px;
+        display:none;
+    "
+>
+
+
+    <!-- HEADER -->
+
+    <header>
+
+        <h1>
+            Hasbunallahu Store
+            - Admin Dashboard
+        </h1>
+
+
+        <button
+            type="button"
+            id="admin-logout"
+        >
+            Logout
+        </button>
+
+    </header>
+
+
+
+    <!-- ==================================================
+         STATISTICS
+    ================================================== -->
+
+    <section class="admin-statistics">
+
+        <h2>
+            Store Statistics 📊
+        </h2>
+
+
+        <div class="stats-container">
+
+
+            <div class="stat-card">
+
+                <h3>
+                    Total Orders
+                </h3>
+
+                <p id="total-orders">
+                    0
+                </p>
 
             </div>
 
-        </section>
+
+            <div class="stat-card">
+
+                <h3>
+                    Total Sales
+                </h3>
+
+                <p id="total-sales">
+                    ₦0
+                </p>
+
+            </div>
 
 
-        <!-- ==========================================
-             CUSTOMER ORDERS
-        =========================================== -->
+            <div class="stat-card">
 
-        <section class="recent-orders">
+                <h3>
+                    Total Customers
+                </h3>
 
-            <h2>
-                Customer Orders 📦
-            </h2>
+                <p id="total-customers">
+                    0
+                </p>
 
-            <div
-                style="
-                    overflow-x:auto;
-                "
-            >
+            </div>
 
-                <table
-                    border="1"
-                    width="100%"
-                    cellpadding="10"
+
+            <div class="stat-card">
+
+                <h3>
+                    Total Products
+                </h3>
+
+                <p id="total-products">
+                    0
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         PRODUCT MANAGEMENT
+    ================================================== -->
+
+    <section
+        class="product-management"
+        style="
+            margin-top:40px;
+        "
+    >
+
+        <h2>
+            🛍️ Product Management
+        </h2>
+
+
+        <p>
+            Add, edit, delete and manage product quantities.
+        </p>
+
+
+
+        <!-- ADD PRODUCT -->
+
+        <div
+            style="
+                border:1px solid #ddd;
+                padding:20px;
+                margin-bottom:30px;
+                border-radius:10px;
+            "
+        >
+
+            <h3>
+                ➕ Add New Product
+            </h3>
+
+
+            <form id="add-product-form">
+
+
+                <label for="product-name">
+                    Product Name
+                </label>
+
+                <input
+                    type="text"
+                    id="product-name"
+                    placeholder="Product name"
+                    required
                 >
 
-                    <thead>
 
-                        <tr>
-
-                            <th>
-                                Order Number
-                            </th>
-
-                            <th>
-                                Customer
-                            </th>
-
-                            <th>
-                                Email
-                            </th>
-
-                            <th>
-                                Phone
-                            </th>
-
-                            <th>
-                                Total
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Tracking Number
-                            </th>
-
-                            <th>
-                                Delivery Note
-                            </th>
-
-                            <th>
-                                Action
-                            </th>
-
-                        </tr>
-
-                    </thead>
+                <br><br>
 
 
-                    <tbody id="orders-table">
+                <label for="product-price">
+                    Price (₦)
+                </label>
 
-                        <tr>
-
-                            <td colspan="9">
-                                Please login to view orders.
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-    </main>
+                <input
+                    type="number"
+                    id="product-price"
+                    placeholder="Product price"
+                    min="0"
+                    required
+                >
 
 
-    <!-- ==========================================
-         SUPABASE
-         LOAD ONLY ONCE
-    =========================================== -->
+                <br><br>
 
-<!-- EmailJS -->
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+                <label for="product-category">
+                    Category
+                </label>
+
+                <input
+                    type="text"
+                    id="product-category"
+                    placeholder="Example: School"
+                    required
+                >
+
+
+                <br><br>
+
+
+                <label for="product-image">
+                    Image Path
+                </label>
+
+                <input
+                    type="text"
+                    id="product-image"
+                    placeholder="images/product.jpg"
+                    required
+                >
+
+
+                <br><br>
+
+
+                <label for="product-description">
+                    Description
+                </label>
+
+                <textarea
+                    id="product-description"
+                    placeholder="Product description"
+                    rows="4"
+                    required
+                ></textarea>
+
+
+                <br><br>
+
+
+                <label for="product-quantity">
+                    Quantity / Stock
+                </label>
+
+                <input
+                    type="number"
+                    id="product-quantity"
+                    placeholder="30"
+                    min="0"
+                    value="30"
+                    required
+                >
+
+
+                <br><br>
+
+
+                <button
+                    type="submit"
+                    id="add-product-button"
+                >
+                    ➕ Add Product
+                </button>
+
+
+            </form>
+
+
+            <p id="product-message"></p>
+
+        </div>
+
+
+
+        <!-- PRODUCT LIST -->
+
+        <h3>
+            📦 Products
+        </h3>
+
+
+        <div
+            style="
+                overflow-x:auto;
+            "
+        >
+
+            <table
+                border="1"
+                width="100%"
+                cellpadding="10"
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Image
+                        </th>
+
+                        <th>
+                            Product
+                        </th>
+
+                        <th>
+                            Price
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Quantity
+                        </th>
+
+                        <th>
+                            Description
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="products-table">
+
+                    <tr>
+
+                        <td colspan="8">
+                            Loading products...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    </section>
+
+
+
+    <!-- ==================================================
+         CUSTOMER ORDERS
+    ================================================== -->
+
+    <section
+        class="recent-orders"
+        style="
+            margin-top:50px;
+        "
+    >
+
+        <h2>
+            Customer Orders 📦
+        </h2>
+
+
+        <div
+            style="
+                overflow-x:auto;
+            "
+        >
+
+            <table
+                border="1"
+                width="100%"
+                cellpadding="10"
+            >
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Order Number
+                        </th>
+
+                        <th>
+                            Customer
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Phone
+                        </th>
+
+                        <th>
+                            Total
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Tracking Number
+                        </th>
+
+                        <th>
+                            Delivery Note
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="orders-table">
+
+                    <tr>
+
+                        <td colspan="9">
+                            Please login to view orders.
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ==================================================
+     EMAILJS
+================================================== -->
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+></script>
+
 
 <script>
+
     emailjs.init({
         publicKey: "zDU17Xd3CuZ3fJztk"
     });
+
 </script>
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-    <script>
+<!-- ==================================================
+     SUPABASE
+================================================== -->
 
-        const SUPABASE_URL =
-            "https://qreliegujlmmsnyewtaq.supabase.co";
-
-        const SUPABASE_KEY =
-            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
-        const supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
-            );
-
-    </script>
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 
 
-    <!-- ==========================================
-         PRODUCTS
-    =========================================== -->
+<script>
 
-    <script src="js/products.js"></script>
+    const SUPABASE_URL =
+        "https://qreliegujlmmsnyewtaq.supabase.co";
 
 
-    <!-- ==========================================
-         ADMIN JAVASCRIPT
-    =========================================== -->
+    const SUPABASE_KEY =
+        "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
 
-    <script src="js/admin.js"></script>
+
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+</script>
+
+
+
+<!-- ==================================================
+     PRODUCTS
+================================================== -->
+
+<script src="js/products.js"></script>
+
+
+
+<!-- ==================================================
+     ADMIN JAVASCRIPT
+================================================== -->
+
+<script src="js/admin.js"></script>
+
 
 </body>
 
