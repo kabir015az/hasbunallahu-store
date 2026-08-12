@@ -1,122 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart | Hasbunallahu Store</title>
 
-  <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/cart.css">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<script defer src="js/main.js"></script>
-<script defer src="js/cart.js"></script>
+    <title>
+        Shopping Cart | Hasbunallahu Store
+    </title>
+
+
+    <!-- ==========================================
+         CSS
+    =========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/cart.css"
+    >
+
+
+    <!-- ==========================================
+         SUPABASE
+    =========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://qreliegujlmmsnyewtaq.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+    </script>
+
+
+    <!-- ==========================================
+         MAIN JAVASCRIPT
+    =========================================== -->
+
+    <script
+        defer
+        src="js/main.js"
+    ></script>
+
+
+    <!-- ==========================================
+         CART JAVASCRIPT
+    =========================================== -->
+
+    <script
+        defer
+        src="js/cart.js"
+    ></script>
+
 </head>
+
+
 <body>
 
-    <!-- Header -->
-    <header>
-        <nav class="navbar">
-            <h2 class="logo">Hasbunallahu Store</h2>
-<button class="menu-toggle" id="menu-toggle">
-    ☰
-</button>
-            <ul class="nav-links">
 
-    <li>
-        <a href="index.html">Home</a>
-    </li>
+<!-- ==========================================
+     HEADER
+=========================================== -->
 
-    <li>
-        <a href="products.html">Products</a>
-    </li>
+<header>
 
-    <li>
-        <a href="wishlist.html">
-            Wishlist ❤️
-            <span id="wishlist-count">0</span>
-        </a>
-    </li>
+    <nav class="navbar">
 
-    <li>
-        <a href="cart.html">
-            Cart 🛒
-            <span id="cart-count">0</span>
-        </a>
-    </li>
 
-    <li>
-        <a href="order.html">
-            My Orders 📦
-        </a>
-    </li>
+        <h2 class="logo">
+            Hasbunallahu Store
+        </h2>
 
-    <li>
-        <a href="about.html">About</a>
-    </li>
 
-    <li>
-        <a href="contact.html">Contact</a>
-    </li>
+        <button
+            class="menu-toggle"
+            id="menu-toggle"
+            type="button"
+        >
+            ☰
+        </button>
 
-</ul>
-        </nav>
-    </header>
 
-    <!-- Cart -->
-    <main class="cart-page">
+        <ul class="nav-links">
 
-        <h1>Shopping Cart</h1>
 
-        <table class="cart-table">
+            <li>
+                <a href="index.html">
+                    Home
+                </a>
+            </li>
 
-            <thead>
-                <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Quantity</th>
-                    <th>Subtotal</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
 
-            <tbody id="cart-items">
-                <!-- JavaScript will load cart items here -->
-            </tbody>
+            <li>
+                <a href="products.html">
+                    Products
+                </a>
+            </li>
 
-        </table>
 
-        <div class="cart-summary">
+            <li>
 
-            <h2>Order Summary</h2>
+                <a href="wishlist.html">
 
-            <p>Total Items:
-                <span id="total-items">0</span>
-            </p>
+                    Wishlist ❤️
 
-            <p>Total Price:
-                <strong id="total-price">₦0.00</strong>
-            </p>
+                    <span id="wishlist-count">
+                        0
+                    </span>
 
-            <button id="clear-cart">
-                Clear Cart
-            </button>
+                </a>
 
-            <a href="checkout.html">
-                <button id="checkout-btn">
-                    Proceed to Checkout
-                </button>
-            </a>
+            </li>
 
-        </div>
 
-    </main>
+            <li>
 
-    <!-- Footer -->
-    <footer>
+                <a href="cart.html">
 
-        <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
+                    Cart 🛒
 
-    </footer>
+                    <span id="cart-count">
+                        0
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="order.html">
+                    My Orders 📦
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="about.html">
+                    About
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="contact.html">
+                    Contact
+                </a>
+
+            </li>
+
+
+        </ul>
+
+    </nav>
+
+</header>
+
+
+
+<!-- ==========================================
+     CART
+=========================================== -->
+
+<main class="cart-page">
+
+
+    <h1>
+        Shopping Cart
+    </h1>
+
+
+    <table class="cart-table">
+
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Product
+                </th>
+
+                <th>
+                    Price
+                </th>
+
+                <th>
+                    Quantity
+                </th>
+
+                <th>
+                    Subtotal
+                </th>
+
+                <th>
+                    Action
+                </th>
+
+            </tr>
+
+        </thead>
+
+
+        <tbody id="cart-items">
+
+            <tr>
+
+                <td colspan="5">
+                    Loading cart...
+                </td>
+
+            </tr>
+
+        </tbody>
+
+
+    </table>
+
+
+
+    <!-- ==========================================
+         CART SUMMARY
+    =========================================== -->
+
+    <div class="cart-summary">
+
+
+        <h2>
+            Order Summary
+        </h2>
+
+
+        <p>
+
+            Total Items:
+
+            <span id="total-items">
+                0
+            </span>
+
+        </p>
+
+
+        <p>
+
+            Total Price:
+
+            <strong id="total-price">
+                ₦0.00
+            </strong>
+
+        </p>
+
+
+        <button
+            id="clear-cart"
+            type="button"
+        >
+            Clear Cart
+        </button>
+
+
+        <button
+            id="checkout-btn"
+            type="button"
+        >
+            Proceed to Checkout
+        </button>
+
+
+    </div>
+
+
+</main>
+
+
+
+<!-- ==========================================
+     FOOTER
+=========================================== -->
+
+<footer>
+
+    <p>
+        &copy; 2026 Hasbunallahu Store.
+        All Rights Reserved.
+    </p>
+
+</footer>
+
 
 </body>
+
 </html>

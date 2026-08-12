@@ -1,265 +1,318 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<!DOCTYPE html>
+<html lang="en">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+<head>
 
-<title>
-    Products | Hasbunallahu Store
-</title>
+    <meta charset="UTF-8">
 
-
-<!-- ==========================================
-     CSS
-=========================================== -->
-
-<link
-    rel="stylesheet"
-    href="css/style.css"
->
-
-<link
-    rel="stylesheet"
-    href="css/products.css"
->
-
-
-<!-- ==========================================
-     SUPABASE
-=========================================== -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-
-    const SUPABASE_URL =
-        "https://qreliegujlmmsnyewtaq.supabase.co";
-
-    const SUPABASE_KEY =
-        "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
-    const supabaseClient =
-        window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
-
-</script>
-
-
-<!-- ==========================================
-     MAIN JAVASCRIPT
-=========================================== -->
-
-<script
-    defer
-    src="js/main.js"
-></script>
-
-
-<!-- ==========================================
-     PRODUCTS JAVASCRIPT
-=========================================== -->
-
-<script
-    defer
-    src="js/products.js"
-></script>
-
-
-<!-- ==========================================
-     WISHLIST JAVASCRIPT
-=========================================== -->
-
-<script
-    defer
-    src="js/wishlist.js"
-></script>
-
-</head><body><!-- ==========================================
-     NAVIGATION
-=========================================== --><header><nav class="navbar">
-
-
-    <h2 class="logo">
-        Hasbunallahu Store
-    </h2>
-
-
-    <button
-        class="menu-toggle"
-        id="menu-toggle"
-        type="button"
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
     >
-        ☰
-    </button>
+
+    <title>
+        Products | Hasbunallahu Store
+    </title>
 
 
-    <ul class="nav-links">
+    <!-- ==========================================
+         CSS
+    =========================================== -->
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="css/products.css"
+    >
 
 
-        <li>
-            <a href="index.html">
-                Home
-            </a>
-        </li>
+    <!-- ==========================================
+         SUPABASE
+    =========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://qreliegujlmmsnyewtaq.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+    </script>
 
 
-        <li>
-            <a href="products.html">
-                Products
-            </a>
-        </li>
+    <!-- ==========================================
+         MAIN JAVASCRIPT
+    =========================================== -->
+
+    <script
+        defer
+        src="js/main.js"
+    ></script>
 
 
-        <li>
+    <!-- ==========================================
+         PRODUCTS JAVASCRIPT
+    =========================================== -->
 
-            <a href="wishlist.html">
-
-                Wishlist ❤️
-
-                <span id="wishlist-count">
-                    0
-                </span>
-
-            </a>
-
-        </li>
+    <script
+        defer
+        src="js/products.js"
+    ></script>
 
 
-        <li>
+    <!-- ==========================================
+         WISHLIST JAVASCRIPT
+    =========================================== -->
 
-            <a href="cart.html">
+    <script
+        defer
+        src="js/wishlist.js"
+    ></script>
 
-                Cart 🛒
-
-                <span id="cart-count">
-                    0
-                </span>
-
-            </a>
-
-        </li>
+</head>
 
 
-        <li>
-
-            <a href="order.html">
-                My Orders 📦
-            </a>
-
-        </li>
+<body>
 
 
-        <li>
+<!-- ==========================================
+     NAVIGATION
+=========================================== -->
 
-            <a href="about.html">
-                About
-            </a>
+<header>
 
-        </li>
-
-
-        <li>
-
-            <a href="contact.html">
-                Contact
-            </a>
-
-        </li>
+    <nav class="navbar">
 
 
-    </ul>
+        <h2 class="logo">
+            Hasbunallahu Store
+        </h2>
 
-</nav>
 
-</header><!-- ==========================================
+        <button
+            class="menu-toggle"
+            id="menu-toggle"
+            type="button"
+        >
+            ☰
+        </button>
+
+
+        <ul class="nav-links">
+
+
+            <li>
+                <a href="index.html">
+                    Home
+                </a>
+            </li>
+
+
+            <li>
+                <a href="products.html">
+                    Products
+                </a>
+            </li>
+
+
+            <li>
+
+                <a href="wishlist.html">
+
+                    Wishlist ❤️
+
+                    <span id="wishlist-count">
+                        0
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="cart.html">
+
+                    Cart 🛒
+
+                    <span id="cart-count">
+                        0
+                    </span>
+
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="order.html">
+                    My Orders 📦
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="about.html">
+                    About
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="contact.html">
+                    Contact
+                </a>
+
+            </li>
+
+
+        </ul>
+
+    </nav>
+
+</header>
+
+
+
+<!-- ==========================================
      PAGE BANNER
-=========================================== --><section class="page-banner"><h1>
-    Our Products
-</h1>
+=========================================== -->
+
+<section class="page-banner">
+
+    <h1>
+        Our Products
+    </h1>
 
 
-<p>
-    Find quality products at affordable prices.
-</p>
-
-</section><!-- ==========================================
-     PRODUCT SEARCH AND FILTER
-=========================================== --><section class="product-tools"><input
-    type="text"
-    id="searchInput"
-    placeholder="Search products..."
->
-
-
-<select id="categoryFilter">
-
-    <option value="all">
-        All Categories
-    </option>
-
-
-    <option value="Gift Items">
-        Gift Items
-    </option>
-
-
-    <option value="Rugs">
-        Rugs
-    </option>
-
-
-    <option value="Mugs">
-        Mugs
-    </option>
-
-
-    <option value="Kitchen">
-        Kitchen
-    </option>
-
-
-    <option value="Baby">
-        Baby Clothes
-    </option>
-
-
-    <option value="School">
-        School Supplies
-    </option>
-
-
-    <option value="Toys">
-        Toys
-    </option>
-
-
-    <option value="Home">
-        Home
-    </option>
-
-</select>
-
-</section><!-- ==========================================
-     PRODUCTS
-=========================================== --><main><section
-    class="products-grid"
-    id="products-container"
->
-
-    <p style="text-align:center;">
-        Loading products...
+    <p>
+        Find quality products at affordable prices.
     </p>
 
 </section>
 
-</main><!-- ==========================================
-     FOOTER
-=========================================== --><footer><p>
-    &copy; 2026 Hasbunallahu Store.
-    All Rights Reserved.
-</p>
 
-</footer></body></html>
+
+<!-- ==========================================
+     PRODUCT SEARCH AND FILTER
+=========================================== -->
+
+<section class="product-tools">
+
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search products..."
+    >
+
+
+    <select id="categoryFilter">
+
+        <option value="all">
+            All Categories
+        </option>
+
+
+        <option value="Gift Items">
+            Gift Items
+        </option>
+
+
+        <option value="Rugs">
+            Rugs
+        </option>
+
+
+        <option value="Mugs">
+            Mugs
+        </option>
+
+
+        <option value="Kitchen">
+            Kitchen
+        </option>
+
+
+        <option value="Baby">
+            Baby Clothes
+        </option>
+
+
+        <option value="School">
+            School Supplies
+        </option>
+
+
+        <option value="Toys">
+            Toys
+        </option>
+
+
+        <option value="Home">
+            Home
+        </option>
+
+    </select>
+
+</section>
+
+
+
+<!-- ==========================================
+     PRODUCTS
+=========================================== -->
+
+<main>
+
+    <section
+        class="products-grid"
+        id="products-container"
+    >
+
+        <p style="text-align:center;">
+            Loading products...
+        </p>
+
+    </section>
+
+</main>
+
+
+
+<!-- ==========================================
+     FOOTER
+=========================================== -->
+
+<footer>
+
+    <p>
+        &copy; 2026 Hasbunallahu Store.
+        All Rights Reserved.
+    </p>
+
+</footer>
+
+
+</body>
+
+</html>

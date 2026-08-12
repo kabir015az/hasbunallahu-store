@@ -207,11 +207,13 @@ function displayProducts(
                         </h3>
 
 
-                        <p class="price">
-
-                            ₦${price.toLocaleString()}
-
-                        </p>
+                        <p class="product-stock">
+    ${
+        Number(product.quantity) > 0
+            ? "In stock: " + Number(product.quantity)
+            : "❌ Out of stock"
+    }
+</p>
 
 
                         ${createRatingHTML(product.id)}
@@ -358,103 +360,194 @@ if (categoryFilter) {
 
 
 // ==========================================
-// Add To Cart
+// Add To Cart - Stock Protected
 // ==========================================
 
-function addToCart(
-    productId
-) {
+async function addToCart(productId) {
 
-    const product =
-        products.find(
-            function (item) {
+    let cart = getCart();
 
-                return String(item.id) ===
-                    String(productId);
-
-            }
-        );
-
+    const product = products.find(function (item) {
+        return String(item.id) === String(productId);
+    });
 
     if (!product) {
-
-        alert(
-            "Product not found."
-        );
-
+        alert("Product not found.");
         return;
-
     }
 
+    // ==========================================
+    // Check Real Stock From Supabase
+    // ==========================================
 
-    let cart =
-        JSON.parse(
-            localStorage.getItem(
-                "cart"
-            )
-        ) || [];
+    if (typeof supabaseClient !== "undefined") {
 
+        try {
 
-    const existingItem =
-        cart.find(
-            function (item) {
+            const { data: stockProduct, error } =
+                await supabaseClient
+                    .from("products")
+                    .select("id, name, quantity")
+                    .eq("id", productId)
+                    .single();
 
-                return String(item.id) ===
-                    String(product.id);
+            if (error) {
+
+                console.error(
+                    "Stock check error:",
+                    error
+                );
+
+                alert(
+                    "❌ Unable to check product stock. Please try again."
+                );
+
+                return;
+            }
+
+            const stock =
+                Number(stockProduct.quantity) || 0;
+
+            // ==========================================
+            // Out Of Stock
+            // ==========================================
+
+            if (stock <= 0) {
+
+                alert(
+                    "❌ " +
+                    stockProduct.name +
+                    " is currently out of stock."
+                );
+
+                return;
+            }
+
+            // ==========================================
+            // Check Existing Cart Quantity
+            // ==========================================
+
+            const existingItem =
+                cart.find(function (item) {
+                    return String(item.id) === String(productId);
+                });
+
+            const currentQuantity =
+                existingItem
+                    ? Number(existingItem.quantity) || 0
+                    : 0;
+
+            // ==========================================
+            // Prevent More Than Available Stock
+            // ==========================================
+
+            if (currentQuantity >= stock) {
+
+                alert(
+                    "❌ Only " +
+                    stock +
+                    " unit" +
+                    (stock === 1 ? "" : "s") +
+                    " of " +
+                    stockProduct.name +
+                    " available."
+                );
+
+                return;
+            }
+
+            // ==========================================
+            // Add / Increase Cart Quantity
+            // ==========================================
+
+            if (existingItem) {
+
+                existingItem.quantity =
+                    currentQuantity + 1;
+
+            } else {
+
+                cart.push({
+
+                    id: product.id,
+
+                    name: product.name,
+
+                    price: product.price,
+
+                    image: product.image,
+
+                    quantity: 1
+
+                });
 
             }
-        );
 
+            // ==========================================
+            // Save Cart
+            // ==========================================
+
+            saveCart(cart);
+
+            updateCartCount();
+
+            alert(
+                product.name +
+                " added to cart!"
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Stock verification error:",
+                error
+            );
+
+            alert(
+                "❌ Unable to verify product stock. Please try again."
+            );
+
+        }
+
+        return;
+    }
+
+    // ==========================================
+    // Fallback If Supabase Is Not Loaded
+    // ==========================================
+
+    const existingItem =
+        cart.find(function (item) {
+            return String(item.id) === String(productId);
+        });
 
     if (existingItem) {
 
         existingItem.quantity++;
 
-    }
-
-    else {
+    } else {
 
         cart.push({
 
-            id:
-                product.id,
+            id: product.id,
 
-            name:
-                product.name,
+            name: product.name,
 
-            price:
-                Number(
-                    product.price
-                ) || 0,
+            price: product.price,
 
-            image:
-                product.image,
+            image: product.image,
 
-            quantity:
-                1
+            quantity: 1
 
         });
 
     }
 
+    saveCart(cart);
 
-    localStorage.setItem(
-        "cart",
-        JSON.stringify(
-            cart
-        )
-    );
-
-
-    if (
-        typeof updateCartCount ===
-        "function"
-    ) {
-
-        updateCartCount();
-
-    }
-
+    updateCartCount();
 
     alert(
         product.name +
