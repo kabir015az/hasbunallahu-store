@@ -1,10 +1,25 @@
 // ==========================================
 // Hasbunallahu Store
 // products.js
-// Supabase Product System
+// Supabase Products
+// ==========================================
+
+
+// ==========================================
+// Product List
 // ==========================================
 
 let products = [];
+
+
+// ==========================================
+// Products Container
+// ==========================================
+
+const productsContainer =
+    document.getElementById(
+        "products-container"
+    );
 
 
 // ==========================================
@@ -13,54 +28,32 @@ let products = [];
 
 async function loadProducts() {
 
-    const productsContainer =
-        document.getElementById("products-container");
-
-    const featuredContainer =
-        document.getElementById("featured-products");
+    if (!productsContainer) return;
 
 
-    if (
-        !productsContainer &&
-        !featuredContainer
-    ) {
-        return;
-    }
+    productsContainer.innerHTML = `
+        <p style="text-align:center;">
+            Loading products...
+        </p>
+    `;
 
 
-    if (productsContainer) {
-
-        productsContainer.innerHTML = `
-            <p style="text-align:center;">
-                Loading products...
-            </p>
-        `;
-
-    }
-
-
-    if (featuredContainer) {
-
-        featuredContainer.innerHTML = `
-            <p style="text-align:center;">
-                Loading products...
-            </p>
-        `;
-
-    }
-
+    // Check Supabase
 
     if (
-        typeof supabaseClient === "undefined"
+        typeof supabaseClient ===
+        "undefined"
     ) {
 
         console.error(
             "Supabase client is not available."
         );
 
-        showProductError(
-            "Supabase is not connected."
-        );
+        productsContainer.innerHTML = `
+            <p style="text-align:center;">
+                ❌ Supabase is not connected.
+            </p>
+        `;
 
         return;
 
@@ -76,9 +69,12 @@ async function loadProducts() {
             await supabaseClient
                 .from("products")
                 .select("*")
-                .order("id", {
-                    ascending: true
-                });
+                .order(
+                    "id",
+                    {
+                        ascending: true
+                    }
+                );
 
 
         if (error) {
@@ -88,16 +84,22 @@ async function loadProducts() {
                 error
             );
 
-            showProductError(
-                error.message
-            );
+
+            productsContainer.innerHTML = `
+                <p style="text-align:center;">
+                    ❌ Failed to load products.
+                    <br><br>
+                    ${error.message}
+                </p>
+            `;
 
             return;
 
         }
 
 
-        products = data || [];
+        products =
+            data || [];
 
 
         console.log(
@@ -106,80 +108,24 @@ async function loadProducts() {
         );
 
 
-        // Products page
-        if (productsContainer) {
+        displayProducts(
+            products
+        );
 
-            displayProducts(
-                products
-            );
-
-        }
-
-
-        // Homepage
-        if (featuredContainer) {
-
-            displayFeaturedProducts(
-                products
-            );
-
-        }
 
     }
 
     catch (error) {
 
         console.error(
-            "Product loading error:",
+            "Products loading error:",
             error
         );
 
-        showProductError(
-            "Unable to load products."
-        );
-
-    }
-
-}
-
-
-// ==========================================
-// Product Error
-// ==========================================
-
-function showProductError(message) {
-
-    const productsContainer =
-        document.getElementById(
-            "products-container"
-        );
-
-    const featuredContainer =
-        document.getElementById(
-            "featured-products"
-        );
-
-
-    if (productsContainer) {
 
         productsContainer.innerHTML = `
             <p style="text-align:center;">
                 ❌ Failed to load products.
-                <br><br>
-                ${message}
-            </p>
-        `;
-
-    }
-
-
-    if (featuredContainer) {
-
-        featuredContainer.innerHTML = `
-            <p style="text-align:center;">
-                ❌ Failed to load products.
-                <br><br>
-                ${message}
             </p>
         `;
 
@@ -188,24 +134,19 @@ function showProductError(message) {
 }
 
 
+
 // ==========================================
-// Display Products Page
+// Display Products
 // ==========================================
 
 function displayProducts(
     productList
 ) {
 
-    const container =
-        document.getElementById(
-            "products-container"
-        );
+    if (!productsContainer) return;
 
 
-    if (!container) return;
-
-
-    container.innerHTML = "";
+    productsContainer.innerHTML = "";
 
 
     if (
@@ -213,7 +154,7 @@ function displayProducts(
         productList.length === 0
     ) {
 
-        container.innerHTML = `
+        productsContainer.innerHTML = `
             <p style="text-align:center;">
                 No products available.
             </p>
@@ -227,309 +168,90 @@ function displayProducts(
     productList.forEach(
         function (product) {
 
-            container.innerHTML +=
-                createProductCard(
-                    product
-                );
-
-        }
-    );
-
-}
+            const price =
+                Number(
+                    product.price
+                ) || 0;
 
 
-// ==========================================
-// Display Featured Products
-// ==========================================
+            productsContainer.innerHTML += `
 
-function displayFeaturedProducts(
-    productList
-) {
-
-    const container =
-        document.getElementById(
-            "featured-products"
-        );
-
-
-    if (!container) return;
-
-
-    container.innerHTML = "";
-
-
-    if (
-        !productList ||
-        productList.length === 0
-    ) {
-
-        container.innerHTML = `
-            <p style="text-align:center;">
-                No products available.
-            </p>
-        `;
-
-        return;
-
-    }
-
-
-    // Show first 6 products on homepage
-    const featured =
-        productList.slice(
-            0,
-            6
-        );
-
-
-    featured.forEach(
-        function (product) {
-
-            container.innerHTML +=
-                createProductCard(
-                    product
-                );
-
-        }
-    );
-
-}
-
-
-// ==========================================
-// Create Product Card
-// ==========================================
-
-function createProductCard(
-    product
-) {
-
-    const image =
-        product.image || "";
-
-
-    return `
-
-        <div class="product-card">
-
-            <a href="product.html?id=${product.id}">
-
-                <img
-                    src="${image}"
-                    alt="${product.name || "Product"}"
-                    onerror="
-                        this.onerror=null;
-                        this.src='images/logo.png';
-                    "
-                >
-
-            </a>
-
-
-            <div class="product-info">
-
-                <h3>
+                <div class="product-card">
 
                     <a
                         href="product.html?id=${product.id}"
                     >
-                        ${product.name || ""}
+
+                        <img
+                            src="${product.image || "images/logo.png"}"
+                            alt="${product.name || "Product"}"
+                            onerror="
+                                this.src='images/logo.png'
+                            "
+                        >
+
                     </a>
 
-                </h3>
+
+                    <div class="product-info">
 
 
-                <p class="price">
+                        <h3>
 
-                    ₦${Number(
-                        product.price || 0
-                    ).toLocaleString()}
+                            <a
+                                href="product.html?id=${product.id}"
+                            >
+                                ${product.name || "Unnamed Product"}
+                            </a>
 
-                </p>
-
-
-                ${createRatingHTML(
-                    product.id
-                )}
+                        </h3>
 
 
-                <button
-                    type="button"
-                    onclick="
-                        addToCart(
-                            ${product.id}
-                        )
-                    "
-                >
-                    Add to Cart
-                </button>
+                        <p class="price">
+
+                            ₦${price.toLocaleString()}
+
+                        </p>
 
 
-                <button
-                    type="button"
-                    onclick="
-                        addToWishlist(
-                            ${product.id}
-                        )
-                    "
-                >
-                    ❤️ Wishlist
-                </button>
-
-            </div>
-
-        </div>
-
-    `;
-
-}
+                        ${createRatingHTML(product.id)}
 
 
-// ==========================================
-// Add To Cart
-// ==========================================
-
-function addToCart(
-    productId
-) {
-
-    const product =
-        products.find(
-            function (item) {
-
-                return Number(item.id) ===
-                    Number(productId);
-
-            }
-        );
+                        <button
+                            type="button"
+                            onclick="
+                                addToCart(${product.id})
+                            "
+                        >
+                            Add to Cart
+                        </button>
 
 
-    if (!product) {
-
-        alert(
-            "Product not found."
-        );
-
-        return;
-
-    }
-
-
-    let cart =
-        JSON.parse(
-            localStorage.getItem(
-                "cart"
-            )
-        ) || [];
+                        <button
+                            type="button"
+                            onclick="
+                                addToWishlist(${product.id})
+                            "
+                        >
+                            ❤️ Wishlist
+                        </button>
 
 
-    const existingItem =
-        cart.find(
-            function (item) {
+                    </div>
 
-                return Number(item.id) ===
-                    Number(productId);
+                </div>
 
-            }
-        );
+            `;
 
-
-    if (existingItem) {
-
-        existingItem.quantity++;
-
-    }
-
-    else {
-
-        cart.push({
-
-            id:
-                product.id,
-
-            name:
-                product.name,
-
-            price:
-                Number(
-                    product.price
-                ) || 0,
-
-            image:
-                product.image,
-
-            quantity:
-                1
-
-        });
-
-    }
-
-
-    localStorage.setItem(
-        "cart",
-        JSON.stringify(cart)
-    );
-
-
-    if (
-        typeof updateCartCount ===
-        "function"
-    ) {
-
-        updateCartCount();
-
-    }
-
-
-    alert(
-        product.name +
-        " added to cart!"
+        }
     );
 
 }
 
 
-// ==========================================
-// Wishlist
-// ==========================================
-
-function addToWishlist(
-    productId
-) {
-
-    const product =
-        products.find(
-            function (item) {
-
-                return Number(item.id) ===
-                    Number(productId);
-
-            }
-        );
-
-
-    if (!product) {
-
-        alert(
-            "Product not found."
-        );
-
-        return;
-
-    }
-
-
-    alert(
-        product.name +
-        " added to wishlist!"
-    );
-
-}
-
 
 // ==========================================
-// Search
+// Search Products
 // ==========================================
 
 const searchInput =
@@ -541,7 +263,7 @@ const searchInput =
 if (searchInput) {
 
     searchInput.addEventListener(
-        "input",
+        "keyup",
         function () {
 
             const keyword =
@@ -575,6 +297,7 @@ if (searchInput) {
     );
 
 }
+
 
 
 // ==========================================
@@ -633,8 +356,227 @@ if (categoryFilter) {
 }
 
 
+
 // ==========================================
-// Product Rating
+// Add To Cart
+// ==========================================
+
+function addToCart(
+    productId
+) {
+
+    const product =
+        products.find(
+            function (item) {
+
+                return String(item.id) ===
+                    String(productId);
+
+            }
+        );
+
+
+    if (!product) {
+
+        alert(
+            "Product not found."
+        );
+
+        return;
+
+    }
+
+
+    let cart =
+        JSON.parse(
+            localStorage.getItem(
+                "cart"
+            )
+        ) || [];
+
+
+    const existingItem =
+        cart.find(
+            function (item) {
+
+                return String(item.id) ===
+                    String(product.id);
+
+            }
+        );
+
+
+    if (existingItem) {
+
+        existingItem.quantity++;
+
+    }
+
+    else {
+
+        cart.push({
+
+            id:
+                product.id,
+
+            name:
+                product.name,
+
+            price:
+                Number(
+                    product.price
+                ) || 0,
+
+            image:
+                product.image,
+
+            quantity:
+                1
+
+        });
+
+    }
+
+
+    localStorage.setItem(
+        "cart",
+        JSON.stringify(
+            cart
+        )
+    );
+
+
+    if (
+        typeof updateCartCount ===
+        "function"
+    ) {
+
+        updateCartCount();
+
+    }
+
+
+    alert(
+        product.name +
+        " added to cart!"
+    );
+
+}
+
+
+
+// ==========================================
+// Wishlist
+// ==========================================
+
+function addToWishlist(
+    productId
+) {
+
+    const product =
+        products.find(
+            function (item) {
+
+                return String(item.id) ===
+                    String(productId);
+
+            }
+        );
+
+
+    if (!product) {
+
+        alert(
+            "Product not found."
+        );
+
+        return;
+
+    }
+
+
+    let wishlist =
+        JSON.parse(
+            localStorage.getItem(
+                "wishlist"
+            )
+        ) || [];
+
+
+    const exists =
+        wishlist.some(
+            function (item) {
+
+                return String(item.id) ===
+                    String(product.id);
+
+            }
+        );
+
+
+    if (exists) {
+
+        alert(
+            product.name +
+            " is already in your wishlist."
+        );
+
+        return;
+
+    }
+
+
+    wishlist.push({
+
+        id:
+            product.id,
+
+        name:
+            product.name,
+
+        price:
+            Number(
+                product.price
+            ) || 0,
+
+        image:
+            product.image,
+
+        category:
+            product.category
+
+    });
+
+
+    localStorage.setItem(
+        "wishlist",
+        JSON.stringify(
+            wishlist
+        )
+    );
+
+
+    if (
+        typeof updateWishlistCount ===
+        "function"
+    ) {
+
+        updateWishlistCount();
+
+    }
+
+
+    alert(
+        product.name +
+        " added to wishlist!"
+    );
+
+}
+
+
+
+// ==========================================
+// Product Ratings
 // ==========================================
 
 function getProductRating(
@@ -697,8 +639,9 @@ function getProductRating(
 }
 
 
+
 // ==========================================
-// Rating HTML
+// Display Product Ratings
 // ==========================================
 
 function createRatingHTML(
@@ -716,12 +659,17 @@ function createRatingHTML(
     ) {
 
         return `
+
             <p class="product-rating">
+
                 ☆☆☆☆☆
+
                 <span>
                     (0 reviews)
                 </span>
+
             </p>
+
         `;
 
     }
@@ -734,33 +682,37 @@ function createRatingHTML(
 
 
     return `
+
         <p class="product-rating">
 
-            ${"★".repeat(
-                rounded
-            )}
+            ${"★".repeat(rounded)}
 
             ${"☆".repeat(
                 5 - rounded
             )}
 
             <span>
+
                 (${rating.count}
+
                 ${
                     rating.count === 1
                         ? "review"
                         : "reviews"
                 })
+
             </span>
 
         </p>
+
     `;
 
 }
 
 
+
 // ==========================================
-// PAGE READY
+// Start
 // ==========================================
 
 document.addEventListener(
