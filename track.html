@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Track Order | Hasbunallahu Store
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+</head>
+
+<body>
+
+    <!-- HEADER -->
+
+    <header>
+
+        <nav>
+
+            <a
+                href="index.html"
+                class="logo"
+            >
+                Hasbunallahu Store
+            </a>
+
+            <div class="nav-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="products.html">
+                    Products
+                </a>
+
+                <a href="cart.html">
+                    Cart
+                </a>
+
+                <a href="order.html">
+                    My Orders
+                </a>
+
+                <a href="track.html">
+                    Track Order
+                </a>
+
+            </div>
+
+        </nav>
+
+    </header>
+
+
+    <!-- TRACK ORDER -->
+
+    <main>
+
+        <section class="checkout-section">
+
+            <h1>
+                Track Your Order 📦
+            </h1>
+
+            <p>
+                Enter your tracking number below
+                to check your delivery status.
+            </p>
+
+
+            <div class="form-group">
+
+                <label for="tracking-number">
+                    Tracking Number
+                </label>
+
+                <input
+                    type="text"
+                    id="tracking-number"
+                    placeholder="Example: HST-20260813-483921"
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <button
+                type="button"
+                id="track-order"
+                class="place-order-btn"
+            >
+                Track Order
+            </button>
+
+
+            <div
+                id="tracking-message"
+                style="
+                    margin-top:20px;
+                    padding:15px;
+                    font-weight:bold;
+                "
+            ></div>
+
+
+            <!-- RESULT -->
+
+            <div
+                id="tracking-result"
+                style="
+                    display:none;
+                    margin-top:20px;
+                    padding:20px;
+                    border-radius:10px;
+                    background:#f8f8f8;
+                "
+            >
+
+                <h2>
+                    Order Tracking
+                </h2>
+
+                <p>
+                    <strong>
+                        Order Number:
+                    </strong>
+
+                    <span id="result-order-number"></span>
+                </p>
+
+                <p>
+                    <strong>
+                        Tracking Number:
+                    </strong>
+
+                    <span id="result-tracking-number"></span>
+                </p>
+
+                <p>
+                    <strong>
+                        Customer:
+                    </strong>
+
+                    <span id="result-customer"></span>
+                </p>
+
+                <p>
+                    <strong>
+                        Order Status:
+                    </strong>
+
+                    <span id="result-status"></span>
+                </p>
+
+                <p>
+                    <strong>
+                        Delivery Update:
+                    </strong>
+
+                    <span id="result-delivery-note"></span>
+                </p>
+
+                <p>
+                    <strong>
+                        Total:
+                    </strong>
+
+                    <span id="result-total"></span>
+                </p>
+
+                <p>
+                    <strong>
+                        Order Date:
+                    </strong>
+
+                    <span id="result-date"></span>
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- SUPABASE -->
+
+    <script src="js/supabase.js"></script>
+
+
+    <!-- TRACKING JAVASCRIPT -->
+
+    <script src="js/track.js"></script>
+
+</body>
+
+</html>

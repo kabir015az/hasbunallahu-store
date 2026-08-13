@@ -1,149 +1,158 @@
 // ==========================================
-// Hasbunallahu Store - Success & Email
+// HASBUNALLAHU STORE
+// SUCCESS PAGE
 // ==========================================
 
-document.addEventListener("DOMContentLoaded", function () {
 
-    // Initialize EmailJS
-    emailjs.init({
-        publicKey: "zDU17Xd3CuZ3fJztk"
-    });
+// ==========================================
+// FORMAT MONEY
+// ==========================================
 
+function formatSuccessMoney(amount) {
 
-    // Get saved orders
-    const orders =
-        JSON.parse(
-            localStorage.getItem("orders")
-        ) || [];
+    return "₦" +
+        Number(amount || 0).toLocaleString(
+            "en-NG",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
 
-
-    // Check if there is an order
-    if (orders.length === 0) {
-        return;
-    }
+}
 
 
-    // Get latest order
-    const latestOrder =
-        orders[orders.length - 1];
+// ==========================================
+// LOAD SUCCESS DATA
+// ==========================================
+
+function loadSuccessData() {
+
+    const saved =
+        localStorage.getItem(
+            "lastOrder"
+        );
 
 
-    // ==========================================
-    // Display Order Number
-    // ==========================================
+    if (!saved) {
 
-    const orderNumberElement =
         document.getElementById(
             "success-order-number"
-        );
+        ).textContent =
+            "Not available";
 
-    if (orderNumberElement) {
-
-        orderNumberElement.textContent =
-            latestOrder.orderNumber || "-";
-
-    }
-
-
-    // ==========================================
-    // Display Payment Reference
-    // ==========================================
-
-    const referenceElement =
         document.getElementById(
-            "success-reference"
-        );
+            "success-name"
+        ).textContent =
+            "Not available";
 
-    if (referenceElement) {
+        document.getElementById(
+            "success-email"
+        ).textContent =
+            "Not available";
 
-        referenceElement.textContent =
-            latestOrder.reference || "-";
-
-    }
-
-
-    // ==========================================
-    // Display Total
-    // ==========================================
-
-    const totalElement =
         document.getElementById(
             "success-total"
-        );
+        ).textContent =
+            "₦0.00";
 
-    if (totalElement) {
+        document.getElementById(
+            "success-payment"
+        ).textContent =
+            "Not available";
 
-        totalElement.textContent =
-            "₦" +
-            Number(
-                latestOrder.total || 0
-            ).toLocaleString();
+        document.getElementById(
+            "success-status"
+        ).textContent =
+            "Not available";
+
+        document.getElementById(
+            "success-date"
+        ).textContent =
+            "Not available";
+
+        return;
 
     }
 
 
-    // ==========================================
-    // Send Email Confirmation
-    // ==========================================
+    try {
 
-    const templateParams = {
-
-        fullname:
-            latestOrder.fullname || "",
-
-        email:
-            latestOrder.email || "",
-
-        phone:
-            latestOrder.phone || "",
-
-        address:
-            latestOrder.address || "",
-
-        state:
-            latestOrder.state || "",
-
-        city:
-            latestOrder.city || "",
-
-        orderNumber:
-            latestOrder.orderNumber || "",
-
-        total:
-            Number(
-                latestOrder.total || 0
-            ).toLocaleString(),
-
-        reference:
-            latestOrder.reference || "",
-
-        status:
-            latestOrder.status || "Paid"
-
-    };
+        const order =
+            JSON.parse(saved);
 
 
-    emailjs.send(
-    "service_x0frozt",
-    "template_3wqeitu",
-    templateParams
-)
+        document.getElementById(
+            "success-order-number"
+        ).textContent =
+            order.orderNumber ||
+            "Not available";
 
-    .then(function () {
 
-        console.log(
-            "Order confirmation email sent successfully."
-        );
+        document.getElementById(
+            "success-name"
+        ).textContent =
+            order.fullname ||
+            "Customer";
 
-    })
 
-    .catch(function (error) {
+        document.getElementById(
+            "success-email"
+        ).textContent =
+            order.email ||
+            "Not available";
+
+
+        document.getElementById(
+            "success-total"
+        ).textContent =
+            formatSuccessMoney(
+                order.total
+            );
+
+
+        document.getElementById(
+            "success-payment"
+        ).textContent =
+            order.paymentMethod ||
+            "Not available";
+
+
+        document.getElementById(
+            "success-status"
+        ).textContent =
+            order.paymentStatus ||
+            "Pending";
+
+
+        document.getElementById(
+            "success-date"
+        ).textContent =
+            order.date ||
+            "Not available";
+
+
+    } catch (error) {
 
         console.error(
-            "Email could not be sent:",
+            "Success page error:",
             error
         );
 
-    });
+    }
 
-});
+}
+
+
+// ==========================================
+// PAGE LOAD
+// ==========================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadSuccessData();
+
+    }
+);

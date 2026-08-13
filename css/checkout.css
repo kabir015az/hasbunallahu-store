@@ -1,7 +1,7 @@
 /* ==========================================
-   Hasbunallahu Store
-   Checkout Page
-========================================== */
+   HASBUNALLAHU STORE
+   CHECKOUT PAGE STYLES
+   ========================================== */
 
 * {
     box-sizing: border-box;
@@ -9,97 +9,109 @@
 
 body {
     margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
     background: #f5f7fa;
-    font-family: Arial, sans-serif;
     color: #222;
 }
 
-
 /* ==========================================
-   MAIN CONTAINER
-========================================== */
+   HEADER
+   ========================================== */
 
-.checkout-container {
-    width: 100%;
-    max-width: 1150px;
-    margin: 0 auto;
-    padding: 35px 20px 60px;
+header {
+    background: #1677ff;
+    color: white;
+    padding: 18px 20px;
 }
 
+header .container {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    color: white;
+    text-decoration: none;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo img {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin-left: 18px;
+    font-weight: 600;
+}
 
 /* ==========================================
-   CHECKOUT TITLE
-========================================== */
+   MAIN CHECKOUT
+   ========================================== */
+
+.checkout-container {
+    width: 95%;
+    max-width: 1100px;
+    margin: 35px auto;
+}
 
 .checkout-title {
     text-align: center;
-    font-size: 32px;
-    margin: 0 0 30px;
-    color: #168c58;
+    margin-bottom: 30px;
 }
 
+.checkout-title h1 {
+    margin: 0;
+    font-size: 34px;
+}
+
+.checkout-title p {
+    color: #666;
+    margin-top: 10px;
+}
 
 /* ==========================================
-   TWO COLUMN LAYOUT
-========================================== */
+   CHECKOUT GRID
+   ========================================== */
 
-.checkout-layout {
+.checkout-grid {
     display: grid;
-    grid-template-columns: 1.35fr 0.85fr;
+    grid-template-columns: 1.5fr 1fr;
     gap: 25px;
-    align-items: start;
 }
 
-
 /* ==========================================
-   LEFT AND RIGHT
-========================================== */
+   CARDS
+   ========================================== */
 
-.checkout-left,
-.checkout-right {
-    width: 100%;
-}
-
-
-/* ==========================================
-   CHECKOUT SECTIONS
-========================================== */
-
-.checkout-section {
-    background: #ffffff;
-    border-radius: 14px;
+.checkout-card {
+    background: white;
+    border-radius: 12px;
     padding: 25px;
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
     margin-bottom: 20px;
-
-    box-shadow:
-        0 4px 15px rgba(0, 0, 0, 0.08);
-
-    border: 1px solid #e8ecef;
 }
 
-.checkout-section h2 {
-    margin: 0 0 22px;
-    font-size: 21px;
-    color: #222;
+.checkout-card h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 22px;
 }
-
 
 /* ==========================================
-   CUSTOMER DETAILS
-========================================== */
-
-.customer-section {
-    border-top: 5px solid #168c58;
-}
-
-.customer-section h2 {
-    color: #168c58;
-}
-
-
-/* ==========================================
-   FORM GROUP
-========================================== */
+   FORM
+   ========================================== */
 
 .form-group {
     margin-bottom: 18px;
@@ -107,66 +119,28 @@ body {
 
 .form-group label {
     display: block;
-    font-weight: bold;
     margin-bottom: 7px;
-    color: #333;
+    font-weight: bold;
 }
-
-
-/* ==========================================
-   INPUTS
-========================================== */
 
 .form-group input,
 .form-group textarea,
-#coupon-code {
+.form-group select {
     width: 100%;
-    padding: 13px 14px;
-
-    border: 1px solid #d5d9df;
-    border-radius: 8px;
-
-    font-size: 15px;
-    font-family: Arial, sans-serif;
-
-    background: #ffffff;
-    color: #222;
-
+    padding: 13px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 16px;
     outline: none;
-
-    transition:
-        border-color 0.2s ease,
-        box-shadow 0.2s ease;
+    background: white;
 }
-
-
-/* ==========================================
-   INPUT FOCUS
-========================================== */
 
 .form-group input:focus,
 .form-group textarea:focus,
-#coupon-code:focus {
-    border-color: #168c58;
-
-    box-shadow:
-        0 0 0 3px rgba(22, 140, 88, 0.10);
+.form-group select:focus {
+    border-color: #1677ff;
+    box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
 }
-
-
-/* ==========================================
-   TEXTAREA
-========================================== */
-
-.form-group textarea {
-    min-height: 120px;
-    resize: vertical;
-}
-
-
-/* ==========================================
-   STATE + CITY
-========================================== */
 
 .form-row {
     display: grid;
@@ -174,213 +148,213 @@ body {
     gap: 15px;
 }
 
+/* ==========================================
+   PAYMENT METHODS
+   ========================================== */
+
+.payment-method {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.payment-method:hover {
+    border-color: #1677ff;
+}
+
+.payment-method label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.payment-method input {
+    width: auto;
+}
+
+#bank-details {
+    display: none;
+    background: #f0f6ff;
+    border-left: 4px solid #1677ff;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+    line-height: 1.7;
+}
+
+/* ==========================================
+   ORDER SUMMARY
+   ========================================== */
+
+#checkout-summary {
+    margin-top: 10px;
+}
+
+.checkout-product {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 20px;
+    margin-top: 20px;
+}
+
+.total-row strong {
+    color: #1677ff;
+}
 
 /* ==========================================
    COUPON
-========================================== */
+   ========================================== */
 
 .coupon-box {
     display: flex;
     gap: 8px;
-    width: 100%;
+    margin-top: 15px;
 }
 
 .coupon-box input {
     flex: 1;
-    min-width: 0;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 15px;
 }
-
 
 #apply-coupon {
     border: none;
-
-    background: #333;
-    color: #ffffff;
-
-    padding: 0 16px;
-
-    border-radius: 8px;
-
-    font-weight: bold;
-
+    background: #222;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 7px;
     cursor: pointer;
-
-    white-space: nowrap;
-
-    transition:
-        background 0.2s ease,
-        transform 0.1s ease;
+    font-weight: bold;
 }
 
 #apply-coupon:hover {
-    background: #222;
+    background: #000;
 }
-
-#apply-coupon:active {
-    transform: scale(0.98);
-}
-
-
-/* ==========================================
-   COUPON MESSAGE
-========================================== */
 
 #coupon-message {
-    margin: 12px 0 0;
-    font-size: 14px;
+    margin-top: 10px;
     font-weight: bold;
 }
-
-
-/* ==========================================
-   ORDER SUMMARY
-========================================== */
-
-.order-summary {
-    border-top: 5px solid #168c58;
-}
-
-.order-summary h2 {
-    color: #168c58;
-}
-
-
-/* ==========================================
-   TOTAL
-========================================== */
-
-.total-row {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-
-    margin: 0;
-
-    padding: 15px 0;
-
-    border-top: 1px solid #eeeeee;
-}
-
-.total-row span {
-    font-size: 18px;
-    font-weight: bold;
-}
-
-.total-row strong {
-    color: #168c58;
-    font-size: 25px;
-}
-
-
-/* ==========================================
-   PAYMENT
-========================================== */
-
-.payment-section {
-    border-top: 5px solid #168c58;
-}
-
-.payment-section h2 {
-    color: #168c58;
-}
-
-.payment-text {
-    color: #666;
-    line-height: 1.6;
-    margin-bottom: 20px;
-}
-
 
 /* ==========================================
    PLACE ORDER BUTTON
-========================================== */
+   ========================================== */
 
 #place-order {
     width: 100%;
-
-    padding: 15px;
-
+    padding: 16px;
     border: none;
-    border-radius: 9px;
-
-    background: #168c58;
-    color: #ffffff;
-
-    font-size: 17px;
+    border-radius: 8px;
+    background: #1677ff;
+    color: white;
+    font-size: 18px;
     font-weight: bold;
-
     cursor: pointer;
-
-    transition:
-        background 0.2s ease,
-        transform 0.1s ease;
+    margin-top: 20px;
 }
 
 #place-order:hover {
-    background: #117447;
-}
-
-#place-order:active {
-    transform: scale(0.98);
+    background: #0868ed;
 }
 
 #place-order:disabled {
-    background: #999999;
+    background: #999;
     cursor: not-allowed;
-    transform: none;
 }
-
 
 /* ==========================================
-   CONTINUE SHOPPING
-========================================== */
+   CHECKOUT MESSAGE
+   ========================================== */
 
-.continue-shopping {
-    margin-top: 5px;
-    text-align: left;
-}
-
-.continue-shopping a {
-    color: #168c58;
-
+#checkout-message {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 7px;
+    text-align: center;
     font-weight: bold;
-
-    text-decoration: none;
 }
 
-.continue-shopping a:hover {
-    text-decoration: underline;
+/* ==========================================
+   LOGIN REQUIRED
+   ========================================== */
+
+#login-required {
+    background: #fff4d6;
+    border-left: 4px solid #f0a500;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
 }
 
+#login-required a {
+    color: #1677ff;
+    font-weight: bold;
+}
+
+/* ==========================================
+   FOOTER
+   ========================================== */
+
+footer {
+    background: #111;
+    color: white;
+    text-align: center;
+    padding: 25px;
+    margin-top: 40px;
+}
+
+footer p {
+    margin: 5px 0;
+}
 
 /* ==========================================
    MOBILE
-========================================== */
+   ========================================== */
 
 @media (max-width: 768px) {
 
+    header .container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    nav {
+        text-align: center;
+    }
+
+    nav a {
+        display: inline-block;
+        margin: 5px 8px;
+    }
+
     .checkout-container {
-        padding: 20px 12px 45px;
+        width: 92%;
+        margin-top: 25px;
     }
 
-    .checkout-title {
-        font-size: 26px;
-        margin-bottom: 20px;
-    }
-
-    .checkout-layout {
+    .checkout-grid {
         grid-template-columns: 1fr;
-        gap: 0;
     }
 
-    .checkout-section {
-        padding: 19px;
-        border-radius: 11px;
+    .checkout-card {
+        padding: 18px;
     }
 
-    .checkout-section h2 {
-        font-size: 20px;
+    .checkout-title h1 {
+        font-size: 28px;
     }
 
     .form-row {
@@ -394,43 +368,9 @@ body {
 
     #apply-coupon {
         width: 100%;
-        padding: 13px;
     }
 
-    .total-row span {
-        font-size: 17px;
+    .total-row {
+        font-size: 18px;
     }
-
-    .total-row strong {
-        font-size: 22px;
-    }
-}
-
-
-/* ==========================================
-   SMALL PHONES
-========================================== */
-
-@media (max-width: 400px) {
-
-    .checkout-container {
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-
-    .checkout-section {
-        padding: 16px;
-    }
-
-    .checkout-title {
-        font-size: 24px;
-    }
-
-    .form-group input,
-    .form-group textarea,
-    #coupon-code {
-        font-size: 14px;
-        padding: 12px;
-    }
-
 }

@@ -10,84 +10,14 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Checkout | Hasbunallahu Store</title>
-
-
-    <!-- ==========================================
-         MAIN CSS
-    =========================================== -->
+    <title>
+        Checkout | Hasbunallahu Store
+    </title>
 
     <link
         rel="stylesheet"
         href="css/style.css"
     >
-
-    <link
-        rel="stylesheet"
-        href="css/checkout.css"
-    >
-
-
-    <!-- ==========================================
-         SUPABASE
-    =========================================== -->
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script>
-
-        const SUPABASE_URL =
-            "https://qreliegujlmmsnyewtaq.supabase.co";
-
-        const SUPABASE_KEY =
-            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
-        const supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
-            );
-
-    </script>
-
-
-    <!-- ==========================================
-         PAYSTACK V2
-    =========================================== -->
-
-    <script src="https://js.paystack.co/v2/inline.js"></script>
-
-
-    <!-- ==========================================
-         PAYSTACK CHECK
-    =========================================== -->
-
-    <script>
-
-        window.addEventListener(
-            "load",
-            function () {
-
-                if (
-                    typeof PaystackPop === "undefined"
-                ) {
-
-                    console.error(
-                        "Paystack V2 failed to load."
-                    );
-
-                } else {
-
-                    console.log(
-                        "Paystack V2 loaded successfully."
-                    );
-
-                }
-
-            }
-        );
-
-    </script>
 
 </head>
 
@@ -96,235 +26,248 @@
 
 
     <!-- ==========================================
+         HEADER
+         ========================================== -->
+
+    <header>
+
+        <nav>
+
+            <a
+                href="index.html"
+                class="logo"
+            >
+                Hasbunallahu Store
+            </a>
+
+
+            <div class="nav-links">
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="products.html">
+                    Products
+                </a>
+
+                <a href="cart.html">
+                    Cart
+                </a>
+
+            
+                <a href="order.html">
+                    My Orders
+                </a>
+
+              <a href="track.html">
+    Track Order
+              </a>
+
+              <a href="admin.html">
+    Admin Dashboard
+              </a>
+            </div>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- ==========================================
          CHECKOUT
-    =========================================== -->
+         ========================================== -->
 
-    <main class="checkout-container">
+    <main>
+
+        <section class="checkout-section">
+
+            <h1>
+                Checkout
+            </h1>
 
 
-        <h1 class="checkout-title">
-            🛒 Checkout
-        </h1>
+            <!-- LOGIN MESSAGE -->
 
-
-        <!-- ======================================
-             LOGIN REQUIRED
-        ======================================= -->
-
-        <div
-            id="login-required"
-            style="
-                display:none;
-                background:#fff3cd;
-                color:#664d03;
-                padding:15px;
-                border-radius:10px;
-                margin-bottom:20px;
-                text-align:center;
-            "
-        >
-
-            🔐 Please
-
-            <a
-                href="login.html?redirect=checkout.html"
+            <div
+                id="login-required"
                 style="
-                    color:#198754;
-                    font-weight:bold;
+                    display:none;
+                    padding:15px;
+                    margin-bottom:20px;
+                    background:#fff3cd;
+                    border:1px solid #ffeeba;
+                    border-radius:8px;
                 "
             >
-                login
-            </a>
 
-            or
-
-            <a
-                href="register.html"
-                style="
-                    color:#198754;
-                    font-weight:bold;
-                "
-            >
-                create an account
-            </a>
-
-            before placing your order.
-
-        </div>
-
-
-        <!-- ======================================
-             CHECKOUT LAYOUT
-        ======================================= -->
-
-        <div class="checkout-layout">
-
-
-            <!-- ==================================
-                 CUSTOMER DETAILS
-            =================================== -->
-
-            <div class="checkout-left">
-
-                <section
-                    class="checkout-section customer-section"
-                >
-
-                    <h2>
-                        👤 Customer Details
-                    </h2>
-
-
-                    <form id="checkout-form">
-
-
-                        <!-- FULL NAME -->
-
-                        <div class="form-group">
-
-                            <label for="fullname">
-                                Full Name
-                            </label>
-
-                            <input
-                                type="text"
-                                id="fullname"
-                                name="fullname"
-                                placeholder="Enter your full name"
-                                autocomplete="name"
-                                required
-                            >
-
-                        </div>
-
-
-                        <!-- PHONE -->
-
-                        <div class="form-group">
-
-                            <label for="phone">
-                                Phone Number
-                            </label>
-
-                            <input
-                                type="tel"
-                                id="phone"
-                                name="phone"
-                                placeholder="Enter your phone number"
-                                autocomplete="tel"
-                                required
-                            >
-
-                        </div>
-
-
-                        <!-- EMAIL -->
-
-                        <div class="form-group">
-
-                            <label for="email">
-                                Email Address
-                            </label>
-
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                placeholder="Enter your email address"
-                                autocomplete="email"
-                                required
-                            >
-
-                        </div>
-
-
-                        <!-- ADDRESS -->
-
-                        <div class="form-group">
-
-                            <label for="address">
-                                Delivery Address
-                            </label>
-
-                            <textarea
-                                id="address"
-                                name="address"
-                                placeholder="Enter your delivery address"
-                                autocomplete="street-address"
-                                required
-                            ></textarea>
-
-                        </div>
-
-
-                        <!-- STATE + CITY -->
-
-                        <div class="form-row">
-
-
-                            <div class="form-group">
-
-                                <label for="state">
-                                    State
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="state"
-                                    name="state"
-                                    placeholder="Enter your state"
-                                    required
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label for="city">
-                                    City
-                                </label>
-
-                                <input
-                                    type="text"
-                                    id="city"
-                                    name="city"
-                                    placeholder="Enter your city"
-                                    required
-                                >
-
-                            </div>
-
-
-                        </div>
-
-
-                    </form>
-
-                </section>
+                Please login or create an account
+                before placing your order.
 
             </div>
 
 
-            <!-- ==================================
-                 RIGHT SIDE
-            =================================== -->
 
-            <div class="checkout-right">
+            <!-- ======================================
+                 CHECKOUT FORM
+                 ====================================== -->
+
+            <form id="checkout-form">
 
 
-                <!-- =================================
+                <!-- CUSTOMER INFORMATION -->
+
+                <h2>
+                    Customer Information
+                </h2>
+
+
+                <div class="form-group">
+
+                    <label for="fullname">
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="fullname"
+                        name="fullname"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="phone">
+                        Phone Number
+                    </label>
+
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- DELIVERY INFORMATION -->
+
+                <h2>
+                    Delivery Information
+                </h2>
+
+
+                <div class="form-group">
+
+                    <label for="address">
+                        Delivery Address
+                    </label>
+
+                    <textarea
+                        id="address"
+                        name="address"
+                        rows="3"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="state">
+                        State
+                    </label>
+
+                    <input
+                        type="text"
+                        id="state"
+                        name="state"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="city">
+                        City
+                    </label>
+
+                    <input
+                        type="text"
+                        id="city"
+                        name="city"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- ======================================
+                     ORDER SUMMARY
+                     ====================================== -->
+
+                <h2>
+                    Order Summary
+                </h2>
+
+
+                <div
+                    id="checkout-summary"
+                    class="checkout-summary"
+                >
+
+                    <p>
+                        Loading cart...
+                    </p>
+
+                </div>
+
+
+
+                <!-- ======================================
                      COUPON
-                ================================== -->
+                     ====================================== -->
 
-                <section class="checkout-section">
+                <div class="coupon-section">
 
-                    <h2>
-                        🎟️ Discount Coupon
-                    </h2>
+                    <h3>
+                        Discount Coupon
+                    </h3>
 
 
-                    <div class="coupon-box">
+                    <div
+                        style="
+                            display:flex;
+                            gap:10px;
+                            flex-wrap:wrap;
+                        "
+                    >
 
                         <input
                             type="text"
@@ -345,103 +288,40 @@
 
                     <p id="coupon-message"></p>
 
-                </section>
+                </div>
 
 
-                <!-- =================================
-                     ORDER SUMMARY
-                ================================== -->
 
-                <section
-                    class="checkout-section order-summary"
-                >
+                <!-- ======================================
+                     PAYMENT METHODS
+                     ====================================== -->
 
-                    <h2>
-                        📦 Order Summary
-                    </h2>
+                <h2>
+                    Payment Method
+                </h2>
 
 
-                    <div id="checkout-summary">
-
-                        <p>
-                            Loading order...
-                        </p>
-
-                        <p class="total-row">
-
-                            <span>
-                                Total:
-                            </span>
-
-                            <strong id="checkout-total">
-                                ₦0.00
-                            </strong>
-
-                        </p>
-
-                    </div>
-
-                </section>
+                <div class="payment-methods">
 
 
-                <!-- =================================
-                     PAYMENT
-                ================================== -->
-
-                <section
-                    class="checkout-section payment-section"
-                >
-
-                    <h2>
-                        💳 Payment Method
-                    </h2>
-
-
-                    <p class="payment-text">
-                        Choose how you would like
-                        to pay for your order.
-                    </p>
-
-
-                    <!-- PAYSTACK -->
-
-                    <label
-                        class="payment-option"
-                        style="
-                            display:block;
-                            padding:15px;
-                            border:1px solid #ddd;
-                            border-radius:10px;
-                            margin-bottom:12px;
-                            cursor:pointer;
-                        "
-                    >
+                    <label>
 
                         <input
                             type="radio"
                             name="payment-method"
                             value="paystack"
-                            checked
+                            required
                         >
 
-                        💳 Pay Online with Paystack
+                        Pay with Paystack
 
                     </label>
 
 
-                    <!-- CASH ON DELIVERY -->
+                    <br>
 
-                    <label
-                        class="payment-option"
-                        style="
-                            display:block;
-                            padding:15px;
-                            border:1px solid #ddd;
-                            border-radius:10px;
-                            margin-bottom:12px;
-                            cursor:pointer;
-                        "
-                    >
+
+                    <label>
 
                         <input
                             type="radio"
@@ -449,24 +329,15 @@
                             value="cod"
                         >
 
-                        💵 Cash on Delivery
+                        Cash on Delivery
 
                     </label>
 
 
-                    <!-- BANK TRANSFER -->
+                    <br>
 
-                    <label
-                        class="payment-option"
-                        style="
-                            display:block;
-                            padding:15px;
-                            border:1px solid #ddd;
-                            border-radius:10px;
-                            margin-bottom:12px;
-                            cursor:pointer;
-                        "
-                    >
+
+                    <label>
 
                         <input
                             type="radio"
@@ -474,126 +345,178 @@
                             value="bank"
                         >
 
-                        🏦 Bank Transfer
+                        Bank Transfer
 
                     </label>
 
+                </div>
 
-                    <!-- =================================
-                         BANK DETAILS
-                    ================================== -->
 
-                    <div
-                        id="bank-details"
-                        style="
-                            display:none;
-                            background:#f5f5f5;
-                            padding:15px;
-                            border-radius:10px;
-                            margin-bottom:15px;
-                        "
-                    >
 
+                <!-- ======================================
+                     BANK DETAILS
+                     ====================================== -->
+
+                <div
+                    id="bank-details"
+                    style="
+                        display:none;
+                        margin-top:15px;
+                    "
+                >
+
+                    <h3>
+                        Bank Transfer Details
+                    </h3>
+
+                    <p>
+                        Please transfer your payment
+                        to the store bank account.
+                    </p>
+
+                    <p>
+                        Account Name:
                         <strong>
-                            Bank Transfer Details
+                            Hasbunallahu Store
                         </strong>
+                    </p>
 
-                        <p>
-                            Bank:
-                            <span>
-                                Contact Hasbunallahu Store
-                            </span>
-                        </p>
+                    <p>
+                        Account Number:
+                        <strong>
+                            YOUR_ACCOUNT_NUMBER
+                        </strong>
+                    </p>
 
-                        <p>
-                            Account Number:
-                            <span>
-                                Contact Store
-                            </span>
-                        </p>
+                    <p>
+                        Bank:
+                        <strong>
+                            YOUR_BANK_NAME
+                        </strong>
+                    </p>
 
-                        <p>
-                            Account Name:
-                            <span>
-                                Hasbunallahu Store
-                            </span>
-                        </p>
+                    <p>
+                        Your order will remain
+                        <strong>
+                            Pending Payment
+                        </strong>
+                        until payment is confirmed.
+                    </p>
 
-                        <small>
-                            After transferring,
-                            your order will remain
-                            pending until payment
-                            is confirmed.
-                        </small>
-
-                    </div>
+                </div>
 
 
-                    <!-- =================================
-                         CHECKOUT MESSAGE
-                    ================================== -->
 
-                    <p
-                        id="checkout-message"
-                        style="
-                            margin-top:15px;
-                            font-weight:bold;
-                        "
-                    ></p>
+                <!-- ======================================
+                     TOTAL
+                     ====================================== -->
 
+                <div
+                    class="checkout-total-box"
+                    style="
+                        margin-top:20px;
+                        padding:15px;
+                        border-radius:8px;
+                    "
+                >
 
-                    <!-- =================================
-                         PLACE ORDER
-                    ================================== -->
+                    <h2>
 
-                    <button
-                        type="button"
-                        id="place-order"
-                    >
-                        Place Order
-                    </button>
+                        Total:
 
+                        <span id="checkout-total">
+                            ₦0.00
+                        </span>
 
-                </section>
+                    </h2>
 
-
-            </div>
-
-        </div>
+                </div>
 
 
-        <!-- ======================================
-             CONTINUE SHOPPING
-        ======================================= -->
 
-        <div class="continue-shopping">
+                <!-- ======================================
+                     CHECKOUT MESSAGE
+                     ====================================== -->
 
-            <a href="index.html">
-                ← Continue Shopping
-            </a>
+                <div
+                    id="checkout-message"
+                    style="
+                        margin-top:15px;
+                        padding:10px;
+                        font-weight:bold;
+                    "
+                ></div>
 
-        </div>
 
+
+                <!-- ======================================
+                     PLACE ORDER
+                     ====================================== -->
+
+                <button
+                    type="button"
+                    id="place-order"
+                    class="place-order-btn"
+                >
+                    Place Order
+                </button>
+
+
+            </form>
+
+        </section>
 
     </main>
 
 
-    <!-- ==========================================
-         STORE JAVASCRIPT
-    =========================================== -->
-
-    <script src="js/main.js"></script>
-
-    <script src="js/cart.js"></script>
-
 
     <!-- ==========================================
-         CHECKOUT JS
-         
-         MUST BE LAST
-    =========================================== -->
+         PAYSTACK
+         ========================================== -->
 
-    <script src="js/checkout.js"></script>
+    <script
+        src="https://js.paystack.co/v2/inline.js"
+    ></script>
+
+
+
+    <!-- ==========================================
+         EMAILJS
+         ========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+    ></script>
+
+
+    <script>
+
+        emailjs.init({
+            publicKey:
+                "zDU17Xd3CuZ3fJztk"
+        });
+
+    </script>
+
+
+
+    <!-- ==========================================
+         SUPABASE
+         ========================================== -->
+
+    <script
+        src="js/supabase.js"
+    ></script>
+
+
+
+    <!-- ==========================================
+         CHECKOUT JAVASCRIPT
+         ========================================== -->
+
+    <script
+        src="js/checkout.js"
+    ></script>
 
 
 </body>
