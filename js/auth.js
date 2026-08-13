@@ -1,25 +1,8 @@
 // ==========================================
-// Hasbunallahu Store
-// auth.js
-// Customer Authentication
+// HASBUNALLAHU STORE
+// AUTH.JS
+// CUSTOMER AUTHENTICATION
 // ==========================================
-
-const SUPABASE_URL =
-    "https://qreliegujlmmsnyewtaq.supabase.co";
-
-const SUPABASE_KEY =
-    "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
-
-// ==========================================
-// CREATE SUPABASE CLIENT
-// ==========================================
-
-const authSupabase =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
 
 
 // ==========================================
@@ -28,18 +11,51 @@ const authSupabase =
 
 async function getCurrentUser() {
 
-    const {
-        data,
-        error
-    } =
-        await authSupabase
-            .auth
-            .getUser();
+    try {
 
-    if (error) {
+        if (
+            typeof supabaseClient ===
+            "undefined"
+        ) {
+
+            console.error(
+                "Supabase client is not available."
+            );
+
+            return null;
+
+        }
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
+
+
+        if (error) {
+
+            console.error(
+                "Get user error:",
+                error
+            );
+
+            return null;
+
+        }
+
+
+        return data.user || null;
+
+    }
+
+    catch (error) {
 
         console.error(
-            "Get user error:",
+            "Get current user error:",
             error
         );
 
@@ -47,13 +63,11 @@ async function getCurrentUser() {
 
     }
 
-    return data.user || null;
-
 }
 
 
 // ==========================================
-// UPDATE LOGIN STATUS
+// UPDATE LOGIN UI
 // ==========================================
 
 async function updateAuthUI() {
@@ -62,15 +76,11 @@ async function updateAuthUI() {
         await getCurrentUser();
 
 
-    // Login links
-
     const loginLinks =
         document.querySelectorAll(
             ".login-link"
         );
 
-
-    // Register links
 
     const registerLinks =
         document.querySelectorAll(
@@ -78,15 +88,11 @@ async function updateAuthUI() {
         );
 
 
-    // Logout buttons
-
     const logoutButtons =
         document.querySelectorAll(
             ".logout-btn"
         );
 
-
-    // Account elements
 
     const accountElements =
         document.querySelectorAll(
@@ -97,7 +103,7 @@ async function updateAuthUI() {
     if (user) {
 
         // ==========================================
-        // CUSTOMER IS LOGGED IN
+        // LOGGED IN
         // ==========================================
 
         loginLinks.forEach(
@@ -133,12 +139,13 @@ async function updateAuthUI() {
         accountElements.forEach(
             function (element) {
 
-                const name =
+                const fullName =
                     user.user_metadata &&
                     user.user_metadata.full_name;
 
+
                 element.textContent =
-                    name ||
+                    fullName ||
                     user.email ||
                     "Customer";
 
@@ -150,8 +157,28 @@ async function updateAuthUI() {
     else {
 
         // ==========================================
-        // CUSTOMER IS LOGGED OUT
+        // LOGGED OUT
         // ==========================================
+
+        loginLinks.forEach(
+            function (element) {
+
+                element.style.display =
+                    "";
+
+            }
+        );
+
+
+        registerLinks.forEach(
+            function (element) {
+
+                element.style.display =
+                    "";
+
+            }
+        );
+
 
         logoutButtons.forEach(
             function (element) {
@@ -183,43 +210,76 @@ async function updateAuthUI() {
 
 async function logoutCustomer() {
 
-    const {
-        error
-    } =
-        await authSupabase
-            .auth
-            .signOut();
+    try {
+
+        if (
+            typeof supabaseClient ===
+            "undefined"
+        ) {
+
+            alert(
+                "Supabase is not connected."
+            );
+
+            return;
+
+        }
 
 
-    if (error) {
+        const {
+            error
+        } =
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+        if (error) {
+
+            console.error(
+                "Logout error:",
+                error
+            );
+
+
+            alert(
+                "❌ Unable to logout."
+            );
+
+            return;
+
+        }
+
+
+        alert(
+            "✅ You have been logged out."
+        );
+
+
+        window.location.href =
+            "index.html";
+
+    }
+
+    catch (error) {
 
         console.error(
             "Logout error:",
             error
         );
 
+
         alert(
             "❌ Unable to logout."
         );
 
-        return;
-
     }
-
-
-    alert(
-        "✅ You have been logged out."
-    );
-
-
-    window.location.href =
-        "index.html";
 
 }
 
 
 // ==========================================
-// PROTECT CUSTOMER PAGE
+// REQUIRE LOGIN
 // ==========================================
 
 async function requireLogin() {
@@ -237,6 +297,7 @@ async function requireLogin() {
 
         window.location.href =
             "login.html";
+
 
         return false;
 

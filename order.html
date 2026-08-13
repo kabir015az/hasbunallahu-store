@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -11,26 +12,77 @@
 
     <title>My Orders | Hasbunallahu Store</title>
 
-    <link rel="stylesheet" href="css/style.css">
 
-    <script defer src="js/main.js"></script>
-    <script defer src="js/order.js"></script>
+    <!-- Main Store CSS -->
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <!-- Supabase Client -->
+    <script src="js/supabase.js"></script>
+
+
+    <!-- Main JavaScript -->
+    <script
+        defer
+        src="js/main.js"
+    ></script>
+
+
+    <!-- Authentication -->
+    <script
+        defer
+        src="js/auth.js"
+    ></script>
+
+
+    <!-- Orders -->
+    <script
+        defer
+        src="js/order.js"
+    ></script>
+
 </head>
+
 
 <body>
 
-    <!-- Header -->
+
+    <!-- ==========================================
+         HEADER
+    =========================================== -->
+
     <header>
 
         <nav class="navbar">
 
-            <h2 class="logo">
+
+            <a
+                href="index.html"
+                class="logo"
+            >
                 Hasbunallahu Store
-            </h2>
-<button class="menu-toggle" id="menu-toggle">
-    ☰
-</button>
+            </a>
+
+
+            <button
+                type="button"
+                class="menu-toggle"
+                id="menu-toggle"
+                aria-label="Open menu"
+            >
+                ☰
+            </button>
+
+
             <ul class="nav-links">
+
 
                 <li>
                     <a href="index.html">
@@ -38,31 +90,43 @@
                     </a>
                 </li>
 
+
                 <li>
                     <a href="products.html">
                         Products
                     </a>
                 </li>
 
+
                 <li>
                     <a href="wishlist.html">
                         Wishlist ❤️
-                        <span id="wishlist-count">0</span>
+                        <span id="wishlist-count">
+                            0
+                        </span>
                     </a>
                 </li>
+
 
                 <li>
                     <a href="cart.html">
                         Cart 🛒
-                        <span id="cart-count">0</span>
+                        <span id="cart-count">
+                            0
+                        </span>
                     </a>
                 </li>
 
+
                 <li>
-                    <a href="order.html" class="active">
+                    <a
+                        href="order.html"
+                        class="active"
+                    >
                         My Orders 📦
                     </a>
                 </li>
+
 
                 <li>
                     <a href="about.html">
@@ -70,10 +134,45 @@
                     </a>
                 </li>
 
+
                 <li>
                     <a href="contact.html">
                         Contact
                     </a>
+                </li>
+
+
+                <!-- Login -->
+                <li class="login-link">
+                    <a href="login.html">
+                        Login
+                    </a>
+                </li>
+
+
+                <!-- Register -->
+                <li class="register-link">
+                    <a href="register.html">
+                        Register
+                    </a>
+                </li>
+
+
+                <!-- Logged-in customer -->
+                <li class="account-user">
+                </li>
+
+
+                <!-- Logout -->
+                <li>
+                    <button
+                        type="button"
+                        class="logout-btn"
+                        onclick="logoutCustomer()"
+                        style="display:none;"
+                    >
+                        Logout
+                    </button>
                 </li>
 
             </ul>
@@ -83,7 +182,10 @@
     </header>
 
 
-    <!-- Page Banner -->
+    <!-- ==========================================
+         PAGE BANNER
+    =========================================== -->
+
     <section class="page-banner">
 
         <h1>
@@ -91,13 +193,17 @@
         </h1>
 
         <p>
-            View your previous orders and order details.
+            View your orders, products,
+            payment status and delivery information.
         </p>
 
     </section>
 
 
-    <!-- Orders -->
+    <!-- ==========================================
+         ORDERS
+    =========================================== -->
+
     <main>
 
         <section
@@ -105,14 +211,29 @@
             class="orders-container"
         >
 
-            <!-- Orders will appear here -->
+            <!-- order.js loads orders here -->
+
+            <div class="empty-orders">
+
+                <h2>
+                    Loading Orders... 📦
+                </h2>
+
+                <p>
+                    Please wait.
+                </p>
+
+            </div>
 
         </section>
 
     </main>
 
 
-    <!-- Footer -->
+    <!-- ==========================================
+         FOOTER
+    =========================================== -->
+
     <footer>
 
         <p>
@@ -121,6 +242,7 @@
         </p>
 
     </footer>
+
 
 </body>
 

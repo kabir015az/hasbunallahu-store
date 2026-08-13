@@ -10,9 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Checkout | Hasbunallahu Store
-    </title>
+    <title>Checkout | Hasbunallahu Store</title>
 
 
     <!-- ==========================================
@@ -54,38 +52,14 @@
 
 
     <!-- ==========================================
-         EMAILJS
+         PAYSTACK V2
     =========================================== -->
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-    </script>
-
-    <script>
-
-        emailjs.init({
-            publicKey:
-                "zDU17Xd3CuZ3fJztk"
-        });
-
-    </script>
+    <script src="https://js.paystack.co/v2/inline.js"></script>
 
 
     <!-- ==========================================
-         PAYSTACK
-         
-         IMPORTANT:
-         This is V1 because checkout.js
-         uses PaystackPop.setup()
-    =========================================== -->
-
-    <script
-        src="https://js.paystack.co/v2/inline.js">
-    </script>
-
-
-    <!-- ==========================================
-         CHECK PAYSTACK LOADING
+         PAYSTACK CHECK
     =========================================== -->
 
     <script>
@@ -95,20 +69,17 @@
             function () {
 
                 if (
-                    typeof PaystackPop ===
-                    "undefined"
+                    typeof PaystackPop === "undefined"
                 ) {
 
                     console.error(
-                        "Paystack library failed to load."
+                        "Paystack V2 failed to load."
                     );
 
-                }
-
-                else {
+                } else {
 
                     console.log(
-                        "Paystack library loaded successfully."
+                        "Paystack V2 loaded successfully."
                     );
 
                 }
@@ -125,15 +96,11 @@
 
 
     <!-- ==========================================
-         CHECKOUT CONTAINER
+         CHECKOUT
     =========================================== -->
 
     <main class="checkout-container">
 
-
-        <!-- ======================================
-             TITLE
-        ======================================= -->
 
         <h1 class="checkout-title">
             🛒 Checkout
@@ -141,7 +108,7 @@
 
 
         <!-- ======================================
-             LOGIN REQUIRED MESSAGE
+             LOGIN REQUIRED
         ======================================= -->
 
         <div
@@ -158,6 +125,7 @@
         >
 
             🔐 Please
+
             <a
                 href="login.html?redirect=checkout.html"
                 style="
@@ -193,13 +161,10 @@
 
 
             <!-- ==================================
-                 LEFT SIDE
+                 CUSTOMER DETAILS
             =================================== -->
 
             <div class="checkout-left">
-
-
-                <!-- CUSTOMER DETAILS -->
 
                 <section
                     class="checkout-section customer-section"
@@ -224,7 +189,9 @@
                             <input
                                 type="text"
                                 id="fullname"
+                                name="fullname"
                                 placeholder="Enter your full name"
+                                autocomplete="name"
                                 required
                             >
 
@@ -242,7 +209,9 @@
                             <input
                                 type="tel"
                                 id="phone"
+                                name="phone"
                                 placeholder="Enter your phone number"
+                                autocomplete="tel"
                                 required
                             >
 
@@ -260,7 +229,9 @@
                             <input
                                 type="email"
                                 id="email"
+                                name="email"
                                 placeholder="Enter your email address"
+                                autocomplete="email"
                                 required
                             >
 
@@ -277,7 +248,9 @@
 
                             <textarea
                                 id="address"
+                                name="address"
                                 placeholder="Enter your delivery address"
+                                autocomplete="street-address"
                                 required
                             ></textarea>
 
@@ -298,6 +271,7 @@
                                 <input
                                     type="text"
                                     id="state"
+                                    name="state"
                                     placeholder="Enter your state"
                                     required
                                 >
@@ -314,6 +288,7 @@
                                 <input
                                     type="text"
                                     id="city"
+                                    name="city"
                                     placeholder="Enter your city"
                                     required
                                 >
@@ -327,7 +302,6 @@
                     </form>
 
                 </section>
-
 
             </div>
 
@@ -369,9 +343,7 @@
                     </div>
 
 
-                    <p
-                        id="coupon-message"
-                    ></p>
+                    <p id="coupon-message"></p>
 
                 </section>
 
@@ -389,14 +361,11 @@
                     </h2>
 
 
-                    <div
-                        id="checkout-summary"
-                    >
+                    <div id="checkout-summary">
 
                         <p>
                             Loading order...
                         </p>
-
 
                         <p class="total-row">
 
@@ -404,9 +373,7 @@
                                 Total:
                             </span>
 
-                            <strong
-                                id="checkout-total"
-                            >
+                            <strong id="checkout-total">
                                 ₦0.00
                             </strong>
 
@@ -431,10 +398,8 @@
 
 
                     <p class="payment-text">
-
                         Choose how you would like
                         to pay for your order.
-
                     </p>
 
 
@@ -459,8 +424,7 @@
                             checked
                         >
 
-                        💳
-                        Pay Online with Paystack
+                        💳 Pay Online with Paystack
 
                     </label>
 
@@ -485,8 +449,7 @@
                             value="cod"
                         >
 
-                        💵
-                        Cash on Delivery
+                        💵 Cash on Delivery
 
                     </label>
 
@@ -511,13 +474,14 @@
                             value="bank"
                         >
 
-                        🏦
-                        Bank Transfer
+                        🏦 Bank Transfer
 
                     </label>
 
 
-                    <!-- BANK DETAILS -->
+                    <!-- =================================
+                         BANK DETAILS
+                    ================================== -->
 
                     <div
                         id="bank-details"
@@ -565,7 +529,9 @@
                     </div>
 
 
-                    <!-- MESSAGE -->
+                    <!-- =================================
+                         CHECKOUT MESSAGE
+                    ================================== -->
 
                     <p
                         id="checkout-message"
@@ -576,7 +542,9 @@
                     ></p>
 
 
-                    <!-- PLACE ORDER -->
+                    <!-- =================================
+                         PLACE ORDER
+                    ================================== -->
 
                     <button
                         type="button"
@@ -590,7 +558,6 @@
 
 
             </div>
-
 
         </div>
 
@@ -615,19 +582,16 @@
          STORE JAVASCRIPT
     =========================================== -->
 
-
-    <script src="js/products.js"></script>
-
-
     <script src="js/main.js"></script>
-
 
     <script src="js/cart.js"></script>
 
 
-    <!-- IMPORTANT:
-         checkout.js MUST COME LAST
-    -->
+    <!-- ==========================================
+         CHECKOUT JS
+         
+         MUST BE LAST
+    =========================================== -->
 
     <script src="js/checkout.js"></script>
 
