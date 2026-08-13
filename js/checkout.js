@@ -1,1511 +1,1799 @@
-// ==========================================
-// Hasbunallahu Store - Checkout
-// Paystack + EmailJS + Supabase
-// Automatic Stock Reduction
-// ==========================================
+/* ==========================================
+   HASBUNALLAHU STORE
+   CHECKOUT JAVASCRIPT
+   PAYSTACK INLINEJS V2
+========================================== */
 
-let couponDiscount = 0;
 
-// ==========================================
-// GET CART
-// ==========================================
+/* ==========================================
+   PAYSTACK PUBLIC KEY
+========================================== */
+
+const PAYSTACK_PUBLIC_KEY =
+    "pk_test_17d80f52a39fb05435d5898b29744b5b034d85a9";
+
+
+/* ==========================================
+   STORE WHATSAPP NUMBER
+========================================== */
+
+const STORE_WHATSAPP_NUMBER =
+    "2347019154961";
+
+
+/* ==========================================
+   VARIABLES
+========================================== */
+
+let cart = [];
+
+let originalTotal = 0;
+
+let discountAmount = 0;
+
+let finalTotal = 0;
+
+let appliedCoupon = "";
+
+
+/* ==========================================
+   GET CART
+========================================== */
 
 function getCheckoutCart() {
 
-return JSON.parse(
-    localStorage.getItem("cart")
-) || [];
+    try {
 
-}
+        const savedCart =
+            localStorage.getItem("cart");
 
-// ==========================================
-// GET CART TOTAL
-// ==========================================
-
-function getCheckoutCartTotal() {
-
-const cart =
-    getCheckoutCart();
-
-let total = 0;
-
-cart.forEach(function (item) {
-
-    const price =
-        Number(item.price) || 0;
-
-    const quantity =
-        Number(item.quantity) || 1;
-
-    total +=
-        price * quantity;
-
-});
-
-return total;
-
-}
-
-// ==========================================
-// UPDATE CHECKOUT TOTAL
-// ==========================================
-
-function updateCheckoutTotal() {
-
-const originalTotal =
-    getCheckoutCartTotal();
-
-const discountAmount =
-    originalTotal *
-    (couponDiscount / 100);
-
-const finalTotal =
-    originalTotal -
-    discountAmount;
-
-const totalElement =
-    document.getElementById(
-        "checkout-total"
-    );
-
-if (totalElement) {
-
-    totalElement.textContent =
-        "₦" +
-        finalTotal.toLocaleString();
-
-}
-
-return finalTotal;
-
-}
-
-// ==========================================
-// COUPONS
-// ==========================================
-
-const coupons = {
-
-SAVE10: 10,
-
-SAVE20: 20,
-
-WELCOME: 5
-
-};
-
-// ==========================================
-// APPLY COUPON
-// ==========================================
-
-function setupCoupon() {
-
-const applyCoupon =
-    document.getElementById(
-        "apply-coupon"
-    );
-
-if (!applyCoupon) return;
-
-
-applyCoupon.addEventListener(
-    "click",
-    function () {
-
-        const couponInput =
-            document.getElementById(
-                "coupon-code"
-            );
-
-        const couponMessage =
-            document.getElementById(
-                "coupon-message"
-            );
-
-        const code =
-            couponInput.value
-                .trim()
-                .toUpperCase();
-
-
-        if (code === "") {
-
-            couponMessage.textContent =
-                "Please enter a coupon code.";
-
-            return;
-
+        if (!savedCart) {
+            return [];
         }
 
+        const parsedCart =
+            JSON.parse(savedCart);
 
-        if (!coupons[code]) {
-
-            couponDiscount = 0;
-
-            couponMessage.textContent =
-                "❌ Invalid coupon code.";
-
-            updateCheckoutTotal();
-
-            return;
-
+        if (!Array.isArray(parsedCart)) {
+            return [];
         }
 
+        return parsedCart;
 
-        couponDiscount =
-            coupons[code];
+    } catch (error) {
 
+        console.error(
+            "Cart error:",
+            error
+        );
 
-        couponMessage.textContent =
-            "✅ Coupon applied! " +
-            couponDiscount +
-            "% discount.";
-
-        updateCheckoutTotal();
+        return [];
 
     }
-);
-
-}
-
-// ==========================================
-// CREATE PRODUCTS HTML FOR EMAIL
-// ==========================================
-
-function createItemsHTML(items) {
-
-let itemsHTML = "";
-
-
-if (
-    !items ||
-    items.length === 0
-) {
-
-    return "No products.";
 
 }
 
 
-items.forEach(function (item) {
+/* ==========================================
+   FORMAT MONEY
+========================================== */
 
-    const itemTotal =
-        Number(item.price) *
-        Number(item.quantity);
+function formatMoney(amount) {
+
+    return "₦" +
+        Number(amount || 0).toLocaleString(
+            "en-NG",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
+
+}
 
 
-    itemsHTML += `
+/* ==========================================
+   ESCAPE HTML
+========================================== */
 
-        <div style="
-            padding:10px 0;
-            border-bottom:1px solid #ddd;
-        ">
+function escapeHtml(value) {
 
-            <strong>
-                ${item.name}
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* ==========================================
+   GENERATE ORDER NUMBER
+========================================== */
+
+function generateOrderNumber() {
+
+    const now = new Date();
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        String(
+            now.getMonth() + 1
+        ).padStart(2, "0");
+
+    const day =
+        String(
+            now.getDate()
+        ).padStart(2, "0");
+
+    const random =
+        Math.floor(
+            100000 +
+            Math.random() * 900000
+        );
+
+    return (
+        "HS-" +
+        year +
+        month +
+        day +
+        "-" +
+        random
+    );
+
+}
+
+
+/* ==========================================
+   GET MESSAGE ELEMENT
+========================================== */
+
+function getCheckoutMessage() {
+
+    let message =
+        document.getElementById(
+            "checkout-message"
+        );
+
+    /*
+     * If checkout.html does not already
+     * contain the message element, create it.
+     */
+
+    if (!message) {
+
+        message =
+            document.createElement("div");
+
+        message.id =
+            "checkout-message";
+
+        message.style.marginTop =
+            "15px";
+
+        message.style.padding =
+            "12px";
+
+        message.style.fontWeight =
+            "bold";
+
+        const button =
+            document.getElementById(
+                "place-order"
+            );
+
+        if (button && button.parentNode) {
+
+            button.parentNode.insertBefore(
+                message,
+                button.nextSibling
+            );
+
+        }
+
+    }
+
+    return message;
+
+}
+
+
+/* ==========================================
+   CALCULATE TOTAL
+========================================== */
+
+function calculateCheckoutTotal() {
+
+    cart =
+        getCheckoutCart();
+
+    originalTotal = 0;
+
+    cart.forEach(
+        function (item) {
+
+            const price =
+                Number(item.price) || 0;
+
+            const quantity =
+                Number(item.quantity) || 1;
+
+            originalTotal +=
+                price * quantity;
+
+        }
+    );
+
+    finalTotal =
+        Math.max(
+            0,
+            originalTotal -
+            discountAmount
+        );
+
+    const totalElement =
+        document.getElementById(
+            "checkout-total"
+        );
+
+    if (totalElement) {
+
+        totalElement.textContent =
+            formatMoney(finalTotal);
+
+    }
+
+}
+
+
+/* ==========================================
+   DISPLAY ORDER SUMMARY
+========================================== */
+
+function displayCheckoutSummary() {
+
+    const summary =
+        document.getElementById(
+            "checkout-summary"
+        );
+
+    if (!summary) {
+        return;
+    }
+
+    if (cart.length === 0) {
+
+        summary.innerHTML = `
+            <p>
+                Your cart is empty.
+            </p>
+
+            <p class="total-row">
+                <span>Total:</span>
+                <strong>₦0.00</strong>
+            </p>
+        `;
+
+        return;
+
+    }
+
+    let html = "";
+
+    cart.forEach(
+        function (item) {
+
+            const name =
+                item.name ||
+                "Product";
+
+            const price =
+                Number(item.price) || 0;
+
+            const quantity =
+                Number(item.quantity) || 1;
+
+            const itemTotal =
+                price * quantity;
+
+            html += `
+
+                <div
+                    class="checkout-product"
+                    style="
+                        display:flex;
+                        justify-content:space-between;
+                        gap:15px;
+                        margin-bottom:12px;
+                    "
+                >
+
+                    <span>
+                        ${escapeHtml(name)}
+                        × ${quantity}
+                    </span>
+
+                    <strong>
+                        ${formatMoney(itemTotal)}
+                    </strong>
+
+                </div>
+
+            `;
+
+        }
+    );
+
+    html += `
+
+        <hr>
+
+        <p class="total-row">
+
+            <span>
+                Total:
+            </span>
+
+            <strong id="checkout-total">
+                ${formatMoney(finalTotal)}
             </strong>
 
-            <br>
-
-            Quantity:
-            ${item.quantity}
-
-            <br>
-
-            Price:
-            ₦${Number(
-                item.price
-            ).toLocaleString()}
-
-            <br>
-
-            Subtotal:
-            ₦${itemTotal.toLocaleString()}
-
-        </div>
+        </p>
 
     `;
 
-});
-
-
-return itemsHTML;
+    summary.innerHTML =
+        html;
 
 }
 
-// ==========================================
-// CREATE EMAIL DATA
-// ==========================================
 
-function createEmailData(orderData) {
+/* ==========================================
+   GET LOGGED-IN CUSTOMER
+========================================== */
 
-return {
+async function getLoggedInCustomer() {
 
-    orderNumber:
-        orderData.orderNumber,
+    try {
 
-    orderDate:
-        orderData.orderDate,
+        if (
+            typeof supabaseClient ===
+            "undefined"
+        ) {
 
-    fullname:
-        orderData.fullname,
+            console.error(
+                "Supabase client is not available."
+            );
 
-    email:
-        orderData.email,
+            return null;
 
-    phone:
-        orderData.phone,
+        }
 
-    address:
-        orderData.address,
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
 
-    state:
-        orderData.state,
+        if (error) {
 
-    city:
-        orderData.city,
+            console.error(
+                "Authentication error:",
+                error
+            );
 
-    items:
-        createItemsHTML(
-            orderData.items
-        ),
+            return null;
 
-    subtotal:
-        Number(
-            orderData.subtotal
-        ).toLocaleString(),
+        }
 
-    discount:
-        orderData.discount +
-        "%",
+        return data.user || null;
 
-    total:
-        Number(
-            orderData.total
-        ).toLocaleString(),
+    } catch (error) {
 
-    reference:
-        orderData.reference,
+        console.error(
+            "Login check error:",
+            error
+        );
 
-    status:
-        orderData.status ||
-        "Paid"
+        return null;
 
-};
+    }
 
 }
 
-// ==========================================
-// SEND NEW ORDER EMAIL
-// ==========================================
 
-function sendNewOrderEmail(
-orderData
+/* ==========================================
+   GET PAYMENT METHOD
+========================================== */
+
+function getPaymentMethod() {
+
+    const selected =
+        document.querySelector(
+            'input[name="payment-method"]:checked'
+        );
+
+    if (!selected) {
+        return null;
+    }
+
+    return selected.value;
+
+}
+
+
+/* ==========================================
+   PAYMENT METHOD NAME
+========================================== */
+
+function getPaymentMethodName(
+    paymentMethod
 ) {
 
-if (
-    typeof emailjs ===
-    "undefined"
-) {
+    if (
+        paymentMethod ===
+        "paystack"
+    ) {
 
-    console.error(
-        "EmailJS is not loaded."
-    );
+        return "Paystack";
 
-    return Promise.reject(
-        new Error(
-            "EmailJS is not loaded."
-        )
-    );
+    }
 
-}
+    if (
+        paymentMethod ===
+        "cod"
+    ) {
 
+        return "Cash on Delivery";
 
-return emailjs.send(
+    }
 
-    "service_x0frozt",
+    if (
+        paymentMethod ===
+        "bank"
+    ) {
 
-    "template_3wqeitu",
+        return "Bank Transfer";
 
-    createEmailData(
-        orderData
-    )
+    }
 
-);
-
-}
-
-// ==========================================
-// SEND CUSTOMER CONFIRMATION EMAIL
-// ==========================================
-
-function sendCustomerConfirmationEmail(
-orderData
-) {
-
-if (
-    typeof emailjs ===
-    "undefined"
-) {
-
-    console.error(
-        "EmailJS is not loaded."
-    );
-
-    return Promise.reject(
-        new Error(
-            "EmailJS is not loaded."
-        )
-    );
+    return paymentMethod;
 
 }
 
 
-return emailjs.send(
-
-    "service_x0frozt",
-
-    "template_mo5bvrd",
-
-    createEmailData(
-        orderData
-    )
-
-);
-
-}
-
-// ==========================================
-// SAVE ORDER LOCALLY
-// ==========================================
-
-function saveOrder(
-orderData
-) {
-
-let orders =
-    JSON.parse(
-        localStorage.getItem(
-            "orders"
-        )
-    ) || [];
-
-
-orders.push(
-    orderData
-);
-
-
-localStorage.setItem(
-    "orders",
-    JSON.stringify(
-        orders
-    )
-);
-
-}
-
-// ==========================================
-// SAVE ORDER TO SUPABASE
-// ==========================================
+/* ==========================================
+   SAVE ORDER TO SUPABASE
+========================================== */
 
 async function saveOrderToSupabase(
-orderData
+    customer,
+    orderNumber,
+    paymentStatus,
+    paymentMethod
 ) {
 
-if (
-    typeof supabaseClient ===
-    "undefined"
-) {
+    const fullname =
+        document.getElementById(
+            "fullname"
+        ).value.trim();
 
-    throw new Error(
-        "Supabase is not connected."
+    const phone =
+        document.getElementById(
+            "phone"
+        ).value.trim();
+
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
+
+    const address =
+        document.getElementById(
+            "address"
+        ).value.trim();
+
+    const state =
+        document.getElementById(
+            "state"
+        ).value.trim();
+
+    const city =
+        document.getElementById(
+            "city"
+        ).value.trim();
+
+
+    let deliveryNote =
+        "";
+
+
+    if (
+        paymentMethod ===
+        "cod"
+    ) {
+
+        deliveryNote =
+            "Cash on Delivery";
+
+    }
+
+    else if (
+        paymentMethod ===
+        "bank"
+    ) {
+
+        deliveryNote =
+            "Bank Transfer - Payment Pending";
+
+    }
+
+    else if (
+        paymentMethod ===
+        "paystack"
+    ) {
+
+        deliveryNote =
+            "Paid with Paystack";
+
+    }
+
+
+    const orderData = {
+
+        order_number:
+            orderNumber,
+
+        customer_name:
+            fullname,
+
+        customer_email:
+            customer.email ||
+            email,
+
+        phone:
+            phone,
+
+        address:
+            address,
+
+        city:
+            city,
+
+        state:
+            state,
+
+        total:
+            Number(finalTotal),
+
+        status:
+            paymentStatus,
+
+        tracking_number:
+            "",
+
+        delivery_note:
+            deliveryNote
+
+    };
+
+
+    console.log(
+        "Saving order:",
+        orderData
     );
 
-}
-
-
-const {
-    error
-} =
-    await supabaseClient
-        .from("orders")
-        .insert([{
-
-            order_number:
-                orderData.orderNumber,
-
-            customer_name:
-                orderData.fullname,
-
-            customer_email:
-                orderData.email,
-
-            phone:
-                orderData.phone,
-
-            address:
-                orderData.address,
-
-            city:
-                orderData.city,
-
-            state:
-                orderData.state,
-
-            total:
-                orderData.total,
-
-            status:
-                orderData.status,
-
-            tracking_number:
-                null,
-
-            delivery_note:
-                "Order received. Preparing for delivery."
-
-        }]);
-
-
-if (error) {
-
-    console.error(
-        "Supabase order error:",
-        error
-    );
-
-    throw error;
-
-}
-
-
-console.log(
-    "Order successfully saved to Supabase."
-);
-
-}
-
-// ==========================================
-// CHECK PRODUCT STOCK BEFORE PAYMENT
-// ==========================================
-
-async function checkProductStock(
-cart
-) {
-
-if (
-    typeof supabaseClient ===
-    "undefined"
-) {
-
-    throw new Error(
-        "Supabase is not connected."
-    );
-
-}
-
-
-for (
-    const item of cart
-) {
 
     const {
-        data: product,
+        data,
         error
     } =
         await supabaseClient
-            .from("products")
-            .select(
-                "id, name, quantity"
+            .from("orders")
+            .insert(
+                [orderData]
             )
-            .eq(
-                "id",
-                item.id
-            )
+            .select()
             .single();
 
 
     if (error) {
 
         console.error(
-            "Stock check error:",
+            "SUPABASE ORDER ERROR:",
             error
         );
 
-        throw new Error(
-            "Could not check stock for " +
-            item.name
-        );
-
-    }
-
-
-    const available =
-        Number(
-            product.quantity
-        ) || 0;
-
-
-    const requested =
-        Number(
-            item.quantity
-        ) || 0;
-
-
-    if (
-        requested <= 0
-    ) {
-
-        throw new Error(
-            "Invalid quantity for " +
-            item.name
-        );
-
-    }
-
-
-    if (
-        available <
-        requested
-    ) {
-
-        throw new Error(
-            product.name +
-            " only has " +
-            available +
-            " item(s) available."
-        );
-
-    }
-
-}
-
-
-return true;
-
-}
-
-// ==========================================
-// REDUCE PRODUCT STOCK
-// ==========================================
-
-async function reduceProductStock(
-cart
-) {
-
-if (
-    typeof supabaseClient ===
-    "undefined"
-) {
-
-    throw new Error(
-        "Supabase is not connected."
-    );
-
-}
-
-
-for (
-    const item of cart
-) {
-
-    // Get current stock
-
-    const {
-        data: product,
-        error: fetchError
-    } =
-        await supabaseClient
-            .from("products")
-            .select(
-                "id, name, quantity"
-            )
-            .eq(
-                "id",
-                item.id
-            )
-            .single();
-
-
-    if (fetchError) {
-
-        console.error(
-            "Stock fetch error:",
-            fetchError
-        );
-
-        throw new Error(
-            "Could not update stock for " +
-            item.name
-        );
-
-    }
-
-
-    const currentStock =
-        Number(
-            product.quantity
-        ) || 0;
-
-
-    const purchasedQuantity =
-        Number(
-            item.quantity
-        ) || 0;
-
-
-    const newStock =
-        currentStock -
-        purchasedQuantity;
-
-
-    if (
-        newStock < 0
-    ) {
-
-        throw new Error(
-            product.name +
-            " does not have enough stock."
-        );
-
-    }
-
-
-    // Update Supabase
-
-    const {
-        error: updateError
-    } =
-        await supabaseClient
-            .from("products")
-            .update({
-
-                quantity:
-                    newStock
-
-            })
-            .eq(
-                "id",
-                item.id
-            );
-
-
-    if (updateError) {
-
-        console.error(
-            "Stock update error:",
-            updateError
-        );
-
-        throw new Error(
-            "Could not reduce stock for " +
-            item.name
-        );
+        throw error;
 
     }
 
 
     console.log(
-        product.name +
-        " stock reduced from " +
-        currentStock +
-        " to " +
-        newStock
+        "Order saved successfully:",
+        data
+    );
+
+
+    return data;
+
+}
+
+
+/* ==========================================
+   CREATE WHATSAPP MESSAGE
+========================================== */
+
+function createWhatsAppMessage(
+    orderNumber,
+    paymentStatus,
+    paymentMethod
+) {
+
+    const fullname =
+        document.getElementById(
+            "fullname"
+        ).value.trim();
+
+    const phone =
+        document.getElementById(
+            "phone"
+        ).value.trim();
+
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
+
+    const address =
+        document.getElementById(
+            "address"
+        ).value.trim();
+
+    const state =
+        document.getElementById(
+            "state"
+        ).value.trim();
+
+    const city =
+        document.getElementById(
+            "city"
+        ).value.trim();
+
+
+    let productsText =
+        "";
+
+
+    cart.forEach(
+        function (item) {
+
+            const name =
+                item.name ||
+                "Product";
+
+            const quantity =
+                Number(item.quantity) ||
+                1;
+
+            const price =
+                Number(item.price) ||
+                0;
+
+            productsText +=
+                "• " +
+                name +
+                " × " +
+                quantity +
+                " — " +
+                formatMoney(
+                    price * quantity
+                ) +
+                "\n";
+
+        }
+    );
+
+
+    const paymentName =
+        getPaymentMethodName(
+            paymentMethod
+        );
+
+
+    return (
+
+        "🛍️ *NEW HASBUNALLAHU STORE ORDER*\n\n" +
+
+        "📦 Order Number: " +
+        orderNumber +
+        "\n\n" +
+
+        "👤 Customer: " +
+        fullname +
+        "\n" +
+
+        "📧 Email: " +
+        email +
+        "\n" +
+
+        "📱 Phone: " +
+        phone +
+        "\n\n" +
+
+        "📍 Delivery Address:\n" +
+        address +
+        "\n" +
+        city +
+        ", " +
+        state +
+        "\n\n" +
+
+        "🛒 *Products:*\n" +
+        productsText +
+        "\n" +
+
+        "💰 *Total: " +
+        formatMoney(finalTotal) +
+        "*\n\n" +
+
+        "💳 Payment Method: " +
+        paymentName +
+        "\n" +
+
+        "📌 Payment Status: " +
+        paymentStatus +
+        "\n\n" +
+
+        "Hasbunallahu Store"
+
     );
 
 }
 
 
-return true;
+/* ==========================================
+   OPEN WHATSAPP
+========================================== */
+
+function openWhatsApp(
+    orderNumber,
+    paymentStatus,
+    paymentMethod
+) {
+
+    const message =
+        createWhatsAppMessage(
+            orderNumber,
+            paymentStatus,
+            paymentMethod
+        );
+
+    const encodedMessage =
+        encodeURIComponent(message);
+
+    /*
+     * Open WhatsApp Web directly.
+     * This avoids the whatsapp://
+     * ERR_UNKNOWN_URL_SCHEME error.
+     */
+
+    const whatsappURL =
+        "https://web.whatsapp.com/send?phone=" +
+        STORE_WHATSAPP_NUMBER +
+        "&text=" +
+        encodedMessage;
+
+    window.open(
+        whatsappURL,
+        "_blank"
+    );
 
 }
 
-// ==========================================
-// START CHECKOUT
-// ==========================================
 
-function setupCheckout() {
+/* ==========================================
+   SHOW BANK DETAILS
+========================================== */
 
-const placeOrder =
-    document.getElementById(
-        "place-order"
-    );
+function setupPaymentMethods() {
 
-if (!placeOrder) return;
+    const paymentInputs =
+        document.querySelectorAll(
+            'input[name="payment-method"]'
+        );
 
 
-placeOrder.addEventListener(
-    "click",
-    async function (e) {
+    const bankDetails =
+        document.getElementById(
+            "bank-details"
+        );
 
-        e.preventDefault();
 
+    if (!paymentInputs.length) {
 
-        // ==========================================
-        // CUSTOMER DETAILS
-        // ==========================================
+        return;
 
-        const fullname =
-            document.getElementById(
-                "fullname"
-            ).value.trim();
+    }
 
 
-        const email =
-            document.getElementById(
-                "email"
-            ).value.trim();
+    paymentInputs.forEach(
+        function (input) {
 
+            input.addEventListener(
+                "change",
+                function () {
 
-        const phone =
-            document.getElementById(
-                "phone"
-            ).value.trim();
+                    if (!bankDetails) {
+                        return;
+                    }
 
 
-        const address =
-            document.getElementById(
-                "address"
-            ).value.trim();
-
-
-        const state =
-            document.getElementById(
-                "state"
-            ).value.trim();
-
-
-        const city =
-            document.getElementById(
-                "city"
-            ).value.trim();
-
-
-        // ==========================================
-        // CART
-        // ==========================================
-
-        const cart =
-            getCheckoutCart();
-
-
-        const subtotal =
-            getCheckoutCartTotal();
-
-
-        const discountAmount =
-            subtotal *
-            (couponDiscount / 100);
-
-
-        const total =
-            subtotal -
-            discountAmount;
-
-
-        // ==========================================
-        // VALIDATE CUSTOMER
-        // ==========================================
-
-        if (
-            fullname === "" ||
-            email === "" ||
-            phone === "" ||
-            address === "" ||
-            state === "" ||
-            city === ""
-        ) {
-
-            alert(
-                "Please fill all customer details."
-            );
-
-            return;
-
-        }
-
-
-        // ==========================================
-        // VALIDATE CART
-        // ==========================================
-
-        if (
-            cart.length === 0 ||
-            subtotal <= 0
-        ) {
-
-            alert(
-                "Your cart is empty."
-            );
-
-            return;
-
-        }
-
-
-        // ==========================================
-        // CHECK STOCK BEFORE PAYMENT
-        // ==========================================
-
-        placeOrder.disabled =
-            true;
-
-        placeOrder.textContent =
-            "Checking stock...";
-
-
-        try {
-
-            await checkProductStock(
-                cart
-            );
-
-        }
-
-        catch (stockError) {
-
-            console.error(
-                "Stock check failed:",
-                stockError
-            );
-
-
-            alert(
-                "❌ " +
-                stockError.message
-            );
-
-
-            placeOrder.disabled =
-                false;
-
-            placeOrder.textContent =
-                "Place Order";
-
-            return;
-
-        }
-
-
-        // ==========================================
-        // CHECK PAYSTACK
-        // ==========================================
-
-        if (
-            typeof PaystackPop ===
-            "undefined"
-        ) {
-
-            alert(
-                "Paystack could not load. Please refresh the page and check your Internet connection."
-            );
-
-
-            placeOrder.disabled =
-                false;
-
-            placeOrder.textContent =
-                "Place Order";
-
-            return;
-
-        }
-
-
-        placeOrder.textContent =
-            "Opening Payment...";
-
-
-        try {
-
-            // ==========================================
-            // PAYSTACK
-            // ==========================================
-
-            const paystack =
-                new PaystackPop();
-
-
-            paystack.newTransaction({
-
-                key:
-                    "pk_test_17d80f52a39fb05435d5898b29744b5b034d85a9",
-
-                email:
-                    email,
-
-                amount:
-                    Math.round(
-                        total * 100
-                    ),
-
-                currency:
-                    "NGN",
-
-
-                metadata: {
-
-                    custom_fields: [
-
-                        {
-                            display_name:
-                                "Customer Name",
-
-                            variable_name:
-                                "name",
-
-                            value:
-                                fullname
-
-                        },
-
-                        {
-                            display_name:
-                                "Phone Number",
-
-                            variable_name:
-                                "phone",
-
-                            value:
-                                phone
-
-                        },
-
-                        {
-                            display_name:
-                                "Delivery Address",
-
-                            variable_name:
-                                "address",
-
-                            value:
-                                address
-
-                        },
-
-                        {
-                            display_name:
-                                "State",
-
-                            variable_name:
-                                "state",
-
-                            value:
-                                state
-
-                        },
-
-                        {
-                            display_name:
-                                "City",
-
-                            variable_name:
-                                "city",
-
-                            value:
-                                city
-
-                        },
-
-                        {
-                            display_name:
-                                "Discount",
-
-                            variable_name:
-                                "discount",
-
-                            value:
-                                couponDiscount +
-                                "%"
-
-                        }
-
-                    ]
-
-                },
-
-
-                // ==========================================
-                // PAYMENT SUCCESS
-                // ==========================================
-
-                onSuccess:
-                    async function (
-                        response
+                    if (
+                        this.value ===
+                        "bank"
                     ) {
 
-                        console.log(
-                            "Payment successful:",
-                            response
-                        );
-
-
-                        // ==========================================
-                        // ORDER NUMBER
-                        // ==========================================
-
-                        const orderNumber =
-                            "HSB-" +
-                            Date.now();
-
-
-                        const orderDate =
-                            new Date()
-                                .toLocaleString();
-
-
-                        // ==========================================
-                        // REDUCE STOCK
-                        // ==========================================
-
-                        let stockUpdated =
-                            false;
-
-
-                        try {
-
-                            await reduceProductStock(
-                                cart
-                            );
-
-
-                            stockUpdated =
-                                true;
-
-
-                            console.log(
-                                "Product stock updated successfully."
-                            );
-
-                        }
-
-                        catch (
-                            stockError
-                        ) {
-
-                            console.error(
-                                "Stock update failed:",
-                                stockError
-                            );
-
-
-                            alert(
-                                "⚠️ Payment was successful, but stock could not be updated automatically.\n\n" +
-                                stockError.message +
-                                "\n\nPlease contact the store administrator."
-                            );
-
-                        }
-
-
-                        // ==========================================
-                        // CREATE ORDER
-                        // ==========================================
-
-                        const newOrder = {
-
-                            orderNumber:
-                                orderNumber,
-
-                            orderDate:
-                                orderDate,
-
-                            fullname:
-                                fullname,
-
-                            email:
-                                email,
-
-                            phone:
-                                phone,
-
-                            address:
-                                address,
-
-                            state:
-                                state,
-
-                            city:
-                                city,
-
-                            subtotal:
-                                subtotal,
-
-                            discount:
-                                couponDiscount,
-
-                            total:
-                                total,
-
-                            reference:
-                                response.reference,
-
-                            date:
-                                orderDate,
-
-                            status:
-                                "Paid",
-
-                            stockUpdated:
-                                stockUpdated,
-
-                            items:
-                                cart.map(
-                                    function (
-                                        item
-                                    ) {
-
-                                        return {
-
-                                            id:
-                                                item.id,
-
-                                            name:
-                                                item.name,
-
-                                            price:
-                                                item.price,
-
-                                            image:
-                                                item.image,
-
-                                            quantity:
-                                                item.quantity
-
-                                        };
-
-                                    }
-                                )
-
-                        };
-
-
-                        // ==========================================
-                        // SAVE LOCAL ORDER
-                        // ==========================================
-
-                        saveOrder(
-                            newOrder
-                        );
-
-
-                        // ==========================================
-                        // SAVE TO SUPABASE
-                        // ==========================================
-
-                        let supabaseSaved =
-                            false;
-
-
-                        try {
-
-                            await saveOrderToSupabase(
-                                newOrder
-                            );
-
-
-                            supabaseSaved =
-                                true;
-
-
-                            console.log(
-                                "Order saved to Supabase successfully."
-                            );
-
-                        }
-
-                        catch (
-                            supabaseError
-                        ) {
-
-                            console.error(
-                                "Supabase save failed:",
-                                supabaseError
-                            );
-
-
-                            alert(
-                                "⚠️ Order was paid, but there was a problem saving the online order record.\n\n" +
-                                supabaseError.message
-                            );
-
-                        }
-
-
-                        // ==========================================
-                        // EMAIL DATA
-                        // ==========================================
-
-                        const emailOrderData = {
-
-                            orderNumber:
-                                orderNumber,
-
-                            orderDate:
-                                orderDate,
-
-                            fullname:
-                                fullname,
-
-                            email:
-                                email,
-
-                            phone:
-                                phone,
-
-                            address:
-                                address,
-
-                            state:
-                                state,
-
-                            city:
-                                city,
-
-                            items:
-                                cart,
-
-                            subtotal:
-                                subtotal,
-
-                            discount:
-                                couponDiscount,
-
-                            total:
-                                total,
-
-                            reference:
-                                response.reference,
-
-                            status:
-                                "Paid"
-
-                        };
-
-
-                        // ==========================================
-                        // ADMIN EMAIL
-                        // ==========================================
-
-                        let adminEmailSent =
-                            false;
-
-
-                        try {
-
-                            await sendNewOrderEmail(
-                                emailOrderData
-                            );
-
-
-                            adminEmailSent =
-                                true;
-
-
-                            console.log(
-                                "New order email sent successfully."
-                            );
-
-                        }
-
-                        catch (
-                            emailError
-                        ) {
-
-                            console.error(
-                                "New order EmailJS error:",
-                                emailError
-                            );
-
-                        }
-
-
-                        // ==========================================
-                        // CUSTOMER EMAIL
-                        // ==========================================
-
-                        let customerEmailSent =
-                            false;
-
-
-                        try {
-
-                            await sendCustomerConfirmationEmail(
-                                emailOrderData
-                            );
-
-
-                            customerEmailSent =
-                                true;
-
-
-                            console.log(
-                                "Customer confirmation email sent successfully."
-                            );
-
-                        }
-
-                        catch (
-                            emailError
-                        ) {
-
-                            console.error(
-                                "Customer confirmation EmailJS error:",
-                                emailError
-                            );
-
-                        }
-
-
-                        // ==========================================
-                        // FINAL MESSAGE
-                        // ==========================================
-
-                        let message =
-                            "Payment successful!\n\n" +
-
-                            "Order: " +
-                            orderNumber +
-
-                            "\nReference: " +
-                            response.reference +
-
-                            "\n\nYour order has been received.";
-
-
-                        if (
-                            customerEmailSent
-                        ) {
-
-                            message +=
-                                "\n\n📧 A confirmation email has been sent to " +
-                                email +
-                                ".";
-
-                        }
-
-                        else {
-
-                            message +=
-                                "\n\n⚠️ We could not send the confirmation email, but your order was received.";
-
-                        }
-
-
-                        if (
-                            !supabaseSaved
-                        ) {
-
-                            message +=
-                                "\n\n⚠️ Online order tracking could not be activated.";
-
-                        }
-
-
-                        if (
-                            stockUpdated
-                        ) {
-
-                            message +=
-                                "\n\n📦 Product stock has been updated.";
-
-                        }
-
-
-                        alert(
-                            message
-                        );
-
-
-                        // ==========================================
-                        // CLEAR CART
-                        // ==========================================
-
-                        localStorage.removeItem(
-                            "cart"
-                        );
-
-
-                        // ==========================================
-                        // GO TO SUCCESS PAGE
-                        // ==========================================
-
-                        window.location.href =
-                            "success.html";
-
-                    },
-
-
-                // ==========================================
-                // PAYMENT CANCELLED
-                // ==========================================
-
-                onCancel:
-                    function () {
-
-                        console.log(
-                            "Payment cancelled."
-                        );
-
-
-                        alert(
-                            "Payment cancelled."
-                        );
-
-
-                        placeOrder.disabled =
-                            false;
-
-                        placeOrder.textContent =
-                            "Place Order";
+                        bankDetails.style.display =
+                            "block";
 
                     }
 
-            });
+                    else {
 
-        }
+                        bankDetails.style.display =
+                            "none";
 
-        catch (error) {
+                    }
 
-            console.error(
-                "Paystack error:",
-                error
+                }
             );
 
+        }
+    );
 
-            alert(
-                "Unable to open Paystack. Please refresh the page and try again."
-            );
+}
 
 
-            placeOrder.disabled =
-                false;
+/* ==========================================
+   COUPON
+========================================== */
 
-            placeOrder.textContent =
-                "Place Order";
+function setupCoupon() {
+
+    const button =
+        document.getElementById(
+            "apply-coupon"
+        );
+
+
+    if (!button) {
+        return;
+    }
+
+
+    button.addEventListener(
+        "click",
+        function () {
+
+            const input =
+                document.getElementById(
+                    "coupon-code"
+                );
+
+
+            const message =
+                document.getElementById(
+                    "coupon-message"
+                );
+
+
+            if (!input || !message) {
+                return;
+            }
+
+
+            const code =
+                input.value
+                    .trim()
+                    .toUpperCase();
+
+
+            if (!code) {
+
+                message.textContent =
+                    "Please enter a coupon code.";
+
+                return;
+
+            }
+
+
+            if (
+                code ===
+                "SAVE10"
+            ) {
+
+                discountAmount =
+                    originalTotal * 0.10;
+
+
+                appliedCoupon =
+                    code;
+
+
+                message.textContent =
+                    "✅ 10% discount applied.";
+
+            }
+
+            else {
+
+                discountAmount =
+                    0;
+
+
+                appliedCoupon =
+                    "";
+
+
+                message.textContent =
+                    "❌ Invalid coupon code.";
+
+            }
+
+
+            calculateCheckoutTotal();
+
+            displayCheckoutSummary();
 
         }
+    );
+
+}
+
+
+/* ==========================================
+   PAYSTACK V2 PAYMENT
+========================================== */
+
+function startPaystackPayment(
+    customer,
+    orderNumber
+) {
+
+    const email =
+        document.getElementById(
+            "email"
+        ).value.trim();
+
+
+    const button =
+        document.getElementById(
+            "place-order"
+        );
+
+
+    const message =
+        getCheckoutMessage();
+
+
+    /*
+     * Check Paystack library.
+     */
+
+    if (
+        typeof PaystackPop ===
+        "undefined"
+    ) {
+
+        throw new Error(
+            "Paystack library is not available. Please make sure the Paystack script is loaded in checkout.html."
+        );
 
     }
-);
+
+
+    /*
+     * Check public key.
+     */
+
+    if (
+        !PAYSTACK_PUBLIC_KEY ||
+        !PAYSTACK_PUBLIC_KEY.startsWith(
+            "pk_"
+        )
+    ) {
+
+        throw new Error(
+            "Invalid Paystack public key."
+        );
+
+    }
+
+
+    /*
+     * Check email.
+     */
+
+    if (!email) {
+
+        throw new Error(
+            "Please enter your email address."
+        );
+
+    }
+
+
+    /*
+     * Create Paystack V2 popup.
+     */
+
+    const paystack =
+        new PaystackPop();
+
+
+    /*
+     * Start transaction.
+     *
+     * Paystack V2 uses:
+     *
+     * onSuccess
+     * onCancel
+     * onError
+     *
+     * NOT callback/onClose.
+     */
+
+    paystack.newTransaction({
+
+        key:
+            PAYSTACK_PUBLIC_KEY,
+
+        email:
+            email,
+
+        amount:
+            Math.round(
+                finalTotal * 100
+            ),
+
+        currency:
+            "NGN",
+
+        reference:
+            orderNumber,
+
+        firstName:
+            document.getElementById(
+                "fullname"
+            ).value
+                .trim()
+                .split(" ")[0],
+
+        phone:
+            document.getElementById(
+                "phone"
+            ).value.trim(),
+
+        channels: [
+            "card",
+            "bank",
+            "ussd",
+            "qr",
+            "bank_transfer"
+        ],
+
+        metadata: {
+
+            order_number:
+                orderNumber,
+
+            customer_name:
+                document.getElementById(
+                    "fullname"
+                ).value.trim(),
+
+            customer_phone:
+                document.getElementById(
+                    "phone"
+                ).value.trim()
+
+        },
+
+
+        /* ==============================
+           PAYMENT SUCCESS
+        ============================== */
+
+        onSuccess:
+            async function (transaction) {
+
+                console.log(
+                    "Paystack successful:",
+                    transaction
+                );
+
+
+                try {
+
+                    button.textContent =
+                        "Saving Order...";
+
+
+                    message.textContent =
+                        "Payment successful. Saving your order...";
+
+
+                    /*
+                     * Save order.
+                     */
+
+                    await saveOrderToSupabase(
+                        customer,
+                        orderNumber,
+                        "Paid",
+                        "paystack"
+                    );
+
+
+                    /*
+                     * Clear cart.
+                     */
+
+                    localStorage.removeItem(
+                        "cart"
+                    );
+
+
+                    /*
+                     * Success message.
+                     */
+
+                    message.textContent =
+                        "✅ Payment successful! Your order has been saved.";
+
+
+                    button.disabled =
+                        true;
+
+
+                    button.textContent =
+                        "Order Placed";
+
+
+                    /*
+                     * Send order to WhatsApp.
+                     */
+
+                    setTimeout(
+                        function () {
+
+                            openWhatsApp(
+                                orderNumber,
+                                "Paid",
+                                "paystack"
+                            );
+
+                        },
+                        800
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Order save error:",
+                        error
+                    );
+
+
+                    message.innerHTML =
+
+                        "⚠️ Payment was successful, " +
+                        "but there was a problem saving your order.<br><br>" +
+
+                        "<strong>Order Number:</strong> " +
+
+                        escapeHtml(
+                            orderNumber
+                        ) +
+
+                        "<br><br>" +
+
+                        "Please contact Hasbunallahu Store and provide this order number.";
+
+
+                    button.disabled =
+                        false;
+
+
+                    button.textContent =
+                        "Place Order";
+
+                }
+
+            },
+
+
+        /* ==============================
+           PAYMENT CANCELLED
+        ============================== */
+
+        onCancel:
+            function () {
+
+                console.log(
+                    "Paystack transaction cancelled."
+                );
+
+
+                message.textContent =
+                    "Payment was cancelled.";
+
+
+                button.disabled =
+                    false;
+
+
+                button.textContent =
+                    "Place Order";
+
+            },
+
+
+        /* ==============================
+           PAYSTACK ERROR
+        ============================== */
+
+        onError:
+            function (error) {
+
+                console.error(
+                    "Paystack error:",
+                    error
+                );
+
+
+                message.textContent =
+
+                    "❌ Paystack error: " +
+
+                    (
+                        error &&
+                        error.message
+                            ? error.message
+                            : "Unable to start payment."
+                    );
+
+
+                button.disabled =
+                    false;
+
+
+                button.textContent =
+                    "Place Order";
+
+            },
+
+
+        /* ==============================
+           PAYSTACK LOADED
+        ============================== */
+
+        onLoad:
+            function (response) {
+
+                console.log(
+                    "Paystack checkout loaded:",
+                    response
+                );
+
+
+                message.textContent =
+                    "Please complete your payment.";
+
+            }
+
+    });
 
 }
 
-// ==========================================
-// PAGE READY
-// ==========================================
+
+/* ==========================================
+   PLACE OFFLINE ORDER
+========================================== */
+
+async function placeOfflineOrder(
+    customer,
+    orderNumber,
+    paymentMethod
+) {
+
+    const button =
+        document.getElementById(
+            "place-order"
+        );
+
+
+    const message =
+        getCheckoutMessage();
+
+
+    let status =
+        "Pending Payment";
+
+
+    await saveOrderToSupabase(
+        customer,
+        orderNumber,
+        status,
+        paymentMethod
+    );
+
+
+    /*
+     * Clear cart.
+     */
+
+    localStorage.removeItem(
+        "cart"
+    );
+
+
+    if (
+        paymentMethod ===
+        "cod"
+    ) {
+
+        message.textContent =
+            "✅ Your Cash on Delivery order has been placed!";
+
+    }
+
+    else if (
+        paymentMethod ===
+        "bank"
+    ) {
+
+        message.textContent =
+            "✅ Your Bank Transfer order has been placed!";
+
+    }
+
+
+    button.textContent =
+        "Order Placed";
+
+
+    /*
+     * Send WhatsApp.
+     */
+
+    setTimeout(
+        function () {
+
+            openWhatsApp(
+                orderNumber,
+                status,
+                paymentMethod
+            );
+
+        },
+        800
+    );
+
+}
+
+
+/* ==========================================
+   PLACE ORDER BUTTON
+========================================== */
+
+function setupPlaceOrder() {
+
+    const button =
+        document.getElementById(
+            "place-order"
+        );
+
+
+    if (!button) {
+        return;
+    }
+
+
+    button.addEventListener(
+        "click",
+        async function () {
+
+            const form =
+                document.getElementById(
+                    "checkout-form"
+                );
+
+
+            const message =
+                getCheckoutMessage();
+
+
+            /*
+             * Validate form.
+             */
+
+            if (
+                form &&
+                !form.checkValidity()
+            ) {
+
+                form.reportValidity();
+
+                return;
+
+            }
+
+
+            /*
+             * Get cart.
+             */
+
+            cart =
+                getCheckoutCart();
+
+
+            if (cart.length === 0) {
+
+                alert(
+                    "Your cart is empty."
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Check customer login.
+             */
+
+            const customer =
+                await getLoggedInCustomer();
+
+
+            if (!customer) {
+
+                alert(
+                    "Please login or create an account before placing an order."
+                );
+
+
+                window.location.href =
+                    "login.html?redirect=checkout.html";
+
+
+                return;
+
+            }
+
+
+            /*
+             * Calculate total.
+             */
+
+            calculateCheckoutTotal();
+
+
+            if (finalTotal <= 0) {
+
+                alert(
+                    "Invalid order total."
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Get payment method.
+             */
+
+            const paymentMethod =
+                getPaymentMethod();
+
+
+            if (!paymentMethod) {
+
+                alert(
+                    "Please select a payment method."
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Generate order number.
+             */
+
+            const orderNumber =
+                generateOrderNumber();
+
+
+            /*
+             * Disable button.
+             */
+
+            button.disabled =
+                true;
+
+
+            message.textContent =
+                "";
+
+
+            try {
+
+                /*
+                 * PAYSTACK
+                 */
+
+                if (
+                    paymentMethod ===
+                    "paystack"
+                ) {
+
+                    button.textContent =
+                        "Opening Payment...";
+
+
+                    startPaystackPayment(
+                        customer,
+                        orderNumber
+                    );
+
+
+                    return;
+
+                }
+
+
+                /*
+                 * CASH ON DELIVERY
+                 */
+
+                if (
+                    paymentMethod ===
+                    "cod"
+                ) {
+
+                    button.textContent =
+                        "Placing Order...";
+
+
+                    await placeOfflineOrder(
+                        customer,
+                        orderNumber,
+                        "cod"
+                    );
+
+
+                    return;
+
+                }
+
+
+                /*
+                 * BANK TRANSFER
+                 */
+
+                if (
+                    paymentMethod ===
+                    "bank"
+                ) {
+
+                    button.textContent =
+                        "Placing Order...";
+
+
+                    await placeOfflineOrder(
+                        customer,
+                        orderNumber,
+                        "bank"
+                    );
+
+
+                    return;
+
+                }
+
+
+                throw new Error(
+                    "Invalid payment method selected."
+                );
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Checkout error:",
+                    error
+                );
+
+
+                message.innerHTML =
+
+                    "❌ " +
+
+                    escapeHtml(
+                        error.message ||
+                        "Unable to place your order."
+                    );
+
+
+                button.disabled =
+                    false;
+
+
+                button.textContent =
+                    "Place Order";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ==========================================
+   INITIALIZE CHECKOUT
+========================================== */
 
 document.addEventListener(
-"DOMContentLoaded",
-function () {
+    "DOMContentLoaded",
+    async function () {
 
-    updateCheckoutTotal();
+        /*
+         * Load cart.
+         */
 
-    setupCoupon();
+        cart =
+            getCheckoutCart();
 
-    setupCheckout();
 
-}
+        /*
+         * Calculate total.
+         */
 
+        calculateCheckoutTotal();
+
+
+        /*
+         * Display products.
+         */
+
+        displayCheckoutSummary();
+
+
+        /*
+         * Setup payment methods.
+         */
+
+        setupPaymentMethods();
+
+
+        /*
+         * Setup coupon.
+         */
+
+        setupCoupon();
+
+
+        /*
+         * Check login.
+         */
+
+        const customer =
+            await getLoggedInCustomer();
+
+
+        const loginRequired =
+            document.getElementById(
+                "login-required"
+            );
+
+
+        if (!customer) {
+
+            if (loginRequired) {
+
+                loginRequired.style.display =
+                    "block";
+
+            }
+
+        }
+
+        else {
+
+            if (loginRequired) {
+
+                loginRequired.style.display =
+                    "none";
+
+            }
+
+
+            /*
+             * Fill email.
+             */
+
+            const emailInput =
+                document.getElementById(
+                    "email"
+                );
+
+
+            if (
+                emailInput &&
+                customer.email
+            ) {
+
+                emailInput.value =
+                    customer.email;
+
+            }
+
+
+            /*
+             * Fill full name.
+             */
+
+            const fullnameInput =
+                document.getElementById(
+                    "fullname"
+                );
+
+
+            const fullName =
+                customer.user_metadata &&
+                customer.user_metadata.full_name
+                    ? customer.user_metadata.full_name
+                    : "";
+
+
+            if (
+                fullnameInput &&
+                fullName
+            ) {
+
+                fullnameInput.value =
+                    fullName;
+
+            }
+
+        }
+
+
+        /*
+         * Setup Place Order button.
+         */
+
+        setupPlaceOrder();
+
+
+        console.log(
+            "Hasbunallahu Store checkout loaded successfully."
+        );
+
+    }
 );

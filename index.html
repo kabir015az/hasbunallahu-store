@@ -22,41 +22,80 @@
 </button>
             <ul class="nav-links">
 
-                <li>
-                    <a href="index.html">Home</a>
-                </li>
+    <li>
+        <a href="index.html">
+            Home
+        </a>
+    </li>
 
-                <li>
-                    <a href="products.html">Products</a>
-                </li>
+    <li>
+        <a href="products.html">
+            Products
+        </a>
+    </li>
 
-                <li>
-                    <a href="wishlist.html">
-                        Wishlist ❤️
-                        <span id="wishlist-count">0</span>
-                    </a>
-                </li>
+    <li>
+        <a href="wishlist.html">
+            Wishlist ❤️
+            <span id="wishlist-count">0</span>
+        </a>
+    </li>
 
-                <li>
-                    <a href="cart.html">
-                        Cart 🛒
-                        <span id="cart-count">0</span>
-                    </a>
-                </li>
+    <li>
+        <a href="cart.html">
+            Cart 🛒
+            <span id="cart-count">0</span>
+        </a>
+    </li>
 
-                <li>
-                    <a href="order.html">
-                        My Orders 📦
-                    </a>
-                </li>
+    <li>
+        <a href="order.html">
+            My Orders 📦
+        </a>
+    </li>
 
-                <li>
-                    <a href="about.html">About</a>
-                </li>
+    <li>
+        <a href="about.html">
+            About
+        </a>
+    </li>
 
-                <li>
-                    <a href="contact.html">Contact</a>
-                </li>
+    <li>
+        <a href="contact.html">
+            Contact
+        </a>
+    </li>
+
+    <!-- Customer Authentication -->
+
+    <li class="login-link">
+        <a href="login.html">
+            Login 🔐
+        </a>
+    </li>
+
+    <li class="register-link">
+        <a href="register.html">
+            Register 👤
+        </a>
+    </li>
+
+    <li>
+        <span
+            class="account-user"
+            style="font-weight:bold;"
+        ></span>
+    </li>
+
+    <li>
+        <button
+            class="logout-btn"
+            onclick="logoutCustomer()"
+            style="display:none;"
+        >
+            Logout 🚪
+        </button>
+    </li>
 
             </ul>
         </nav>
@@ -98,6 +137,8 @@
     <footer>
         <p>&copy; 2026 Hasbunallahu Store. All Rights Reserved.</p>
     </footer>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script src="js/auth.js"></script>
 </body>
 </html>

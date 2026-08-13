@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Register | Hasbunallahu Store</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <style>
+
+        .auth-container {
+            max-width: 450px;
+            margin: 60px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .auth-container h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .auth-form label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .auth-form button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #198754;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .auth-form button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .auth-message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .auth-link a {
+            color: #198754;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+
+    <header>
+
+        <nav class="navbar">
+
+            <h2 class="logo">
+                Hasbunallahu Store
+            </h2>
+
+            <button
+                class="menu-toggle"
+                id="menu-toggle"
+                type="button"
+            >
+                ☰
+            </button>
+
+            <ul class="nav-links">
+
+                <li>
+                    <a href="index.html">
+                        Home
+                    </a>
+                </li>
+
+                <li>
+                    <a href="products.html">
+                        Products
+                    </a>
+                </li>
+
+                <li>
+                    <a href="cart.html">
+                        Cart 🛒
+                        <span id="cart-count">0</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="order.html">
+                        My Orders 📦
+                    </a>
+                </li>
+
+                <li>
+                    <a href="login.html">
+                        Login
+                    </a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </header>
+
+
+    <!-- Registration -->
+
+    <main>
+
+        <div class="auth-container">
+
+            <h1>
+                Create Account
+            </h1>
+
+            <form
+                id="register-form"
+                class="auth-form"
+            >
+
+                <label for="fullname">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="fullname"
+                    placeholder="Enter your full name"
+                    required
+                >
+
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email address"
+                    required
+                >
+
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Create a password"
+                    minlength="6"
+                    required
+                >
+
+
+                <label for="confirm-password">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirm-password"
+                    placeholder="Confirm your password"
+                    minlength="6"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                    id="register-button"
+                >
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <p
+                id="register-message"
+                class="auth-message"
+            ></p>
+
+
+            <div class="auth-link">
+
+                Already have an account?
+
+                <a href="login.html">
+                    Login
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>
+            &copy; 2026 Hasbunallahu Store.
+            All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- Supabase -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://qreliegujlmmsnyewtaq.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        // ==========================================
+        // REGISTER CUSTOMER
+        // ==========================================
+
+        const registerForm =
+            document.getElementById(
+                "register-form"
+            );
+
+        const registerButton =
+            document.getElementById(
+                "register-button"
+            );
+
+        const registerMessage =
+            document.getElementById(
+                "register-message"
+            );
+
+
+        registerForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const fullname =
+                    document.getElementById(
+                        "fullname"
+                    ).value.trim();
+
+
+                const email =
+                    document.getElementById(
+                        "email"
+                    ).value.trim();
+
+
+                const password =
+                    document.getElementById(
+                        "password"
+                    ).value;
+
+
+                const confirmPassword =
+                    document.getElementById(
+                        "confirm-password"
+                    ).value;
+
+
+                // Password check
+
+                if (
+                    password !==
+                    confirmPassword
+                ) {
+
+                    registerMessage.textContent =
+                        "❌ Passwords do not match.";
+
+                    return;
+
+                }
+
+
+                if (password.length < 6) {
+
+                    registerMessage.textContent =
+                        "❌ Password must be at least 6 characters.";
+
+                    return;
+
+                }
+
+
+                // Disable button
+
+                registerButton.disabled =
+                    true;
+
+                registerButton.textContent =
+                    "Creating Account...";
+
+                registerMessage.textContent =
+                    "";
+
+
+                try {
+
+                    // Create Supabase account
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient
+                            .auth
+                            .signUp({
+
+                                email:
+                                    email,
+
+                                password:
+                                    password,
+
+                                options: {
+
+                                    data: {
+
+                                        full_name:
+                                            fullname
+
+                                    },
+
+                                    emailRedirectTo:
+                                        window.location.origin +
+                                        "/login.html"
+
+                                }
+
+                            });
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    // Success
+
+                    registerMessage.textContent =
+                        "✅ Account created successfully! Please check your email to confirm your account.";
+
+
+                    registerForm.reset();
+
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Registration error:",
+                        error
+                    );
+
+
+                    registerMessage.textContent =
+                        "❌ " +
+                        (
+                            error.message ||
+                            "Unable to create account."
+                        );
+
+                }
+
+
+                registerButton.disabled =
+                    false;
+
+                registerButton.textContent =
+                    "Create Account";
+
+            }
+
+        );
+
+    </script>
+
+
+    <script
+        src="js/main.js"
+    ></script>
+
+</body>
+
+</html>

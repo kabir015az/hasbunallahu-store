@@ -82,6 +82,16 @@
         src="js/wishlist.js"
     ></script>
 
+
+    <!-- ==========================================
+         AUTHENTICATION
+    =========================================== -->
+
+    <script
+        defer
+        src="js/auth.js"
+    ></script>
+
 </head>
 
 
@@ -181,6 +191,64 @@
                 <a href="contact.html">
                     Contact
                 </a>
+
+            </li>
+
+
+            <!-- ==========================================
+                 CUSTOMER LOGIN
+            =========================================== -->
+
+            <li class="login-link">
+
+                <a href="login.html">
+                    Login 🔐
+                </a>
+
+            </li>
+
+
+            <!-- ==========================================
+                 CUSTOMER REGISTER
+            =========================================== -->
+
+            <li class="register-link">
+
+                <a href="register.html">
+                    Register 👤
+                </a>
+
+            </li>
+
+
+            <!-- ==========================================
+                 CUSTOMER NAME
+            =========================================== -->
+
+            <li>
+
+                <span
+                    class="account-user"
+                    style="font-weight:bold;"
+                ></span>
+
+            </li>
+
+
+            <!-- ==========================================
+                 LOGOUT
+            =========================================== -->
+
+            <li>
+
+                <button
+                    class="logout-btn"
+                    onclick="logoutCustomer()"
+                    style="display:none;"
+                    type="button"
+                >
+                    Logout 🚪
+                </button>
 
             </li>
 

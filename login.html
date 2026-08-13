@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Login | Hasbunallahu Store</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <style>
+
+        .auth-container {
+            max-width: 450px;
+            margin: 60px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .auth-container h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .auth-form label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .auth-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .auth-form button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #198754;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .auth-form button:disabled {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .auth-message {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .auth-link a {
+            color: #198754;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+
+    <header>
+
+        <nav class="navbar">
+
+            <h2 class="logo">
+                Hasbunallahu Store
+            </h2>
+
+            <button
+                class="menu-toggle"
+                id="menu-toggle"
+                type="button"
+            >
+                ☰
+            </button>
+
+            <ul class="nav-links">
+
+                <li>
+                    <a href="index.html">
+                        Home
+                    </a>
+                </li>
+
+                <li>
+                    <a href="products.html">
+                        Products
+                    </a>
+                </li>
+
+                <li>
+                    <a href="cart.html">
+                        Cart 🛒
+                        <span id="cart-count">0</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="order.html">
+                        My Orders 📦
+                    </a>
+                </li>
+
+                <li>
+                    <a href="register.html">
+                        Register
+                    </a>
+                </li>
+
+            </ul>
+
+        </nav>
+
+    </header>
+
+
+    <!-- Login -->
+
+    <main>
+
+        <div class="auth-container">
+
+            <h1>
+                Customer Login
+            </h1>
+
+            <form
+                id="login-form"
+                class="auth-form"
+            >
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email address"
+                    required
+                >
+
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    required
+                >
+
+
+                <button
+                    type="submit"
+                    id="login-button"
+                >
+                    Login
+                </button>
+
+            </form>
+
+
+            <p
+                id="login-message"
+                class="auth-message"
+            ></p>
+
+
+            <div class="auth-link">
+
+                Don't have an account?
+
+                <a href="register.html">
+                    Create Account
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- Footer -->
+
+    <footer>
+
+        <p>
+            &copy; 2026 Hasbunallahu Store.
+            All Rights Reserved.
+        </p>
+
+    </footer>
+
+
+    <!-- Supabase -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://qreliegujlmmsnyewtaq.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        // ==========================================
+        // LOGIN
+        // ==========================================
+
+        const loginForm =
+            document.getElementById(
+                "login-form"
+            );
+
+        const loginButton =
+            document.getElementById(
+                "login-button"
+            );
+
+        const loginMessage =
+            document.getElementById(
+                "login-message"
+            );
+
+
+        loginForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const email =
+                    document.getElementById(
+                        "email"
+                    ).value.trim();
+
+
+                const password =
+                    document.getElementById(
+                        "password"
+                    ).value;
+
+
+                loginButton.disabled =
+                    true;
+
+                loginButton.textContent =
+                    "Logging in...";
+
+                loginMessage.textContent =
+                    "";
+
+
+                try {
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient
+                            .auth
+                            .signInWithPassword({
+
+                                email:
+                                    email,
+
+                                password:
+                                    password
+
+                            });
+
+
+                    if (error) {
+
+                        throw error;
+
+                    }
+
+
+                    loginMessage.textContent =
+                        "✅ Login successful!";
+
+
+                    setTimeout(
+                        function () {
+
+                            window.location.href =
+                                "index.html";
+
+                        },
+                        800
+                    );
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Login error:",
+                        error
+                    );
+
+
+                    loginMessage.textContent =
+                        "❌ " +
+                        (
+                            error.message ||
+                            "Unable to login."
+                        );
+
+
+                    loginButton.disabled =
+                        false;
+
+                    loginButton.textContent =
+                        "Login";
+
+                }
+
+            }
+
+        );
+
+    </script>
+
+
+    <script
+        src="js/main.js"
+    ></script>
+
+</body>
+
+</html>
