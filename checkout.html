@@ -519,11 +519,50 @@
          CHECKOUT JAVASCRIPT
          ========================================== -->
 
-    <script
-        src="js/checkout.js"
-    ></script>
+    <script src="https://js.paystack.co/v2/inline.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+    emailjs.init({
+        publicKey: "zDU17Xd3CuZ3fJztk"
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/checkout.js"></script>
+
+
+<!-- AUTH TEST -->
+<script>
+    setTimeout(async function () {
+
+        console.log("=== AUTH TEST ===");
+
+        const {
+            data,
+            error
+        } = await supabaseClient.auth.getSession();
+
+        console.log("Session:", data.session);
+        console.log("Auth error:", error);
+
+        if (data.session) {
+            console.log(
+                "✅ USER IS LOGGED IN:",
+                data.session.user.email
+            );
+        } else {
+            console.log(
+                "❌ NO SUPABASE SESSION FOUND"
+            );
+        }
+
+    }, 2000);
+</script>
 
 </body>
-
 </html>

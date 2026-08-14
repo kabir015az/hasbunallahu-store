@@ -356,41 +356,63 @@ async function getLoggedInCustomer() {
         ) {
 
             console.error(
-                "Supabase client unavailable."
+                "Supabase client is unavailable."
             );
 
             return null;
-
         }
+
 
         const {
-            data,
-            error
+            data: sessionData,
+            error: sessionError
         } =
-            await supabaseClient.auth.getUser();
+            await supabaseClient
+                .auth
+                .getSession();
 
-        if (error) {
+
+        if (sessionError) {
 
             console.error(
-                "Auth error:",
-                error
+                "Session error:",
+                sessionError
             );
 
             return null;
-
         }
 
-        return data.user || null;
+
+        if (
+            sessionData &&
+            sessionData.session &&
+            sessionData.session.user
+        ) {
+
+            console.log(
+                "✅ Logged-in user:",
+                sessionData.session.user.email
+            );
+
+            return sessionData.session.user;
+        }
+
+
+        console.log(
+            "❌ No active Supabase session."
+        );
+
+
+        return null;
 
     } catch (error) {
 
         console.error(
-            "Login error:",
+            "Authentication check failed:",
             error
         );
 
         return null;
-
     }
 
 }
