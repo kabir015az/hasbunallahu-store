@@ -61,6 +61,10 @@
             cursor: pointer;
         }
 
+        .auth-form button:hover {
+            background: #157347;
+        }
+
         .auth-form button:disabled {
             background: #999;
             cursor: not-allowed;
@@ -70,6 +74,7 @@
             margin-top: 15px;
             text-align: center;
             font-weight: bold;
+            line-height: 1.5;
         }
 
         .auth-link {
@@ -83,13 +88,21 @@
             text-decoration: none;
         }
 
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+
     </style>
 
 </head>
 
+
 <body>
 
-    <!-- Navigation -->
+
+    <!-- ==========================================
+         NAVIGATION
+         ========================================== -->
 
     <header>
 
@@ -99,6 +112,7 @@
                 Hasbunallahu Store
             </h2>
 
+
             <button
                 class="menu-toggle"
                 id="menu-toggle"
@@ -106,6 +120,7 @@
             >
                 ☰
             </button>
+
 
             <ul class="nav-links">
 
@@ -115,11 +130,13 @@
                     </a>
                 </li>
 
+
                 <li>
                     <a href="products.html">
                         Products
                     </a>
                 </li>
+
 
                 <li>
                     <a href="cart.html">
@@ -128,11 +145,13 @@
                     </a>
                 </li>
 
+
                 <li>
                     <a href="order.html">
                         My Orders 📦
                     </a>
                 </li>
+
 
                 <li>
                     <a href="register.html">
@@ -147,7 +166,10 @@
     </header>
 
 
-    <!-- Login -->
+
+    <!-- ==========================================
+         LOGIN
+         ========================================== -->
 
     <main>
 
@@ -157,10 +179,14 @@
                 Customer Login
             </h1>
 
+
             <form
                 id="login-form"
                 class="auth-form"
             >
+
+
+                <!-- EMAIL -->
 
                 <label for="email">
                     Email Address
@@ -169,10 +195,14 @@
                 <input
                     type="email"
                     id="email"
+                    name="email"
                     placeholder="Enter your email address"
+                    autocomplete="email"
                     required
                 >
 
+
+                <!-- PASSWORD -->
 
                 <label for="password">
                     Password
@@ -181,10 +211,14 @@
                 <input
                     type="password"
                     id="password"
+                    name="password"
                     placeholder="Enter your password"
+                    autocomplete="current-password"
                     required
                 >
 
+
+                <!-- LOGIN BUTTON -->
 
                 <button
                     type="submit"
@@ -196,11 +230,15 @@
             </form>
 
 
+            <!-- MESSAGE -->
+
             <p
                 id="login-message"
                 class="auth-message"
             ></p>
 
+
+            <!-- REGISTER -->
 
             <div class="auth-link">
 
@@ -217,7 +255,10 @@
     </main>
 
 
-    <!-- Footer -->
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
 
     <footer>
 
@@ -229,38 +270,44 @@
     </footer>
 
 
-    <!-- Supabase -->
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- ==========================================
+         SUPABASE LIBRARY
+         ========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+
+    <!-- ==========================================
+         HASBUNALLAHU STORE SUPABASE CLIENT
+         ========================================== -->
+
+    <script
+        src="js/supabase.js"
+    ></script>
+
+
+
+    <!-- ==========================================
+         LOGIN
+         ========================================== -->
 
     <script>
-
-        const SUPABASE_URL =
-            "https://qreliegujlmmsnyewtaq.supabase.co";
-
-        const SUPABASE_KEY =
-            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
-        const supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
-            );
-
-
-        // ==========================================
-        // LOGIN
-        // ==========================================
 
         const loginForm =
             document.getElementById(
                 "login-form"
             );
 
+
         const loginButton =
             document.getElementById(
                 "login-button"
             );
+
 
         const loginMessage =
             document.getElementById(
@@ -287,6 +334,16 @@
                     ).value;
 
 
+                if (!email || !password) {
+
+                    loginMessage.textContent =
+                        "❌ Please enter your email and password.";
+
+                    return;
+
+                }
+
+
                 loginButton.disabled =
                     true;
 
@@ -298,6 +355,10 @@
 
 
                 try {
+
+                    /* ==================================
+                       SUPABASE LOGIN
+                       ================================== */
 
                     const {
                         data,
@@ -323,18 +384,85 @@
                     }
 
 
+                    if (!data || !data.user) {
+
+                        throw new Error(
+                            "Login was not completed."
+                        );
+
+                    }
+
+
+                    /* ==================================
+                       VERIFY SESSION
+                       ================================== */
+
+                    const {
+                        data: sessionData,
+                        error: sessionError
+                    } =
+                        await supabaseClient
+                            .auth
+                            .getSession();
+
+
+                    if (sessionError) {
+
+                        throw sessionError;
+
+                    }
+
+
+                    if (
+                        !sessionData ||
+                        !sessionData.session
+                    ) {
+
+                        throw new Error(
+                            "Login successful, but the session could not be created."
+                        );
+
+                    }
+
+
+                    console.log(
+                        "Login successful:",
+                        data.user.email
+                    );
+
+
                     loginMessage.textContent =
                         "✅ Login successful!";
 
+
+                    /* ==================================
+                       GET REDIRECT PAGE
+                       ================================== */
+
+                    const urlParams =
+                        new URLSearchParams(
+                            window.location.search
+                        );
+
+
+                    const redirect =
+                        urlParams.get(
+                            "redirect"
+                        ) || "index.html";
+
+
+                    /* ==================================
+                       REDIRECT
+                       ================================== */
 
                     setTimeout(
                         function () {
 
                             window.location.href =
-                                "index.html";
+                                redirect;
 
                         },
-                        800
+                        500
                     );
 
                 }
@@ -364,15 +492,20 @@
                 }
 
             }
-
         );
 
     </script>
 
 
+
+    <!-- ==========================================
+         MAIN JAVASCRIPT
+         ========================================== -->
+
     <script
         src="js/main.js"
     ></script>
+
 
 </body>
 
