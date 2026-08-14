@@ -1,433 +1,1022 @@
 // ==========================================
-// Hasbunallahu Store
-// Admin Dashboard
+// HASBUNALLAHU STORE
+// ADMIN DASHBOARD JAVASCRIPT
 // ==========================================
 
 
-const ADMIN_USERNAME = "admin";
-const ADMIN_PASSWORD = "12345";
+// ==========================================
+// ADMIN EMAIL
+// ==========================================
+
+const ADMIN_EMAIL =
+    "kabirabdulazeez45@gmail.com";
 
 
 // ==========================================
-// EmailJS
+// VARIABLES
 // ==========================================
 
-const EMAIL_SERVICE_ID =
-    "service_x0frozt";
-
-const STATUS_EMAIL_TEMPLATE =
-    "template_mo5bvrd";
+let currentAdmin = null;
 
 
 // ==========================================
-// Send Status Update Email
+// ELEMENT HELPER
 // ==========================================
 
-async function sendStatusUpdateEmail(
-    order,
-    newStatus,
-    trackingNumber,
-    deliveryNote
+function getElement(id) {
+
+    return document.getElementById(id);
+
+}
+
+
+// ==========================================
+// FORMAT MONEY
+// ==========================================
+
+function formatMoney(amount) {
+
+    return "₦" +
+        Number(amount || 0).toLocaleString(
+            "en-NG",
+            {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }
+        );
+
+}
+
+
+// ==========================================
+// SHOW LOGIN MESSAGE
+// ==========================================
+
+function showLoginMessage(
+    message,
+    success = false
 ) {
 
-    if (
-        typeof emailjs === "undefined"
-    ) {
+    const element =
+        getElement("login-message");
 
-        console.error(
-            "EmailJS is not loaded."
-        );
+    if (!element) {
+        return;
+    }
 
-        return false;
+    element.textContent =
+        message;
+
+    element.style.color =
+        success
+            ? "green"
+            : "red";
+
+}
+
+
+// ==========================================
+// SHOW DASHBOARD
+// ==========================================
+
+function showDashboard() {
+
+    const login =
+        getElement("admin-login");
+
+    const dashboard =
+        getElement("admin-dashboard");
+
+
+    if (login) {
+
+        login.style.display =
+            "none";
 
     }
 
 
-    if (
-        !order ||
-        !order.customer_email
-    ) {
+    if (dashboard) {
 
-        console.error(
-            "Customer email is missing."
-        );
-
-        return false;
-
-    }
-
-
-    try {
-
-        await emailjs.send(
-
-            EMAIL_SERVICE_ID,
-
-            STATUS_EMAIL_TEMPLATE,
-
-            {
-
-                fullname:
-                    order.customer_name ||
-                    "Customer",
-
-                email:
-                    order.customer_email,
-
-                orderNumber:
-                    order.order_number,
-
-                status:
-                    newStatus,
-
-                trackingNumber:
-                    trackingNumber ||
-                    "Not assigned",
-
-                deliveryNote:
-                    deliveryNote ||
-                    "Order received. Preparing for delivery."
-
-            }
-
-        );
-
-
-        console.log(
-            "Status update email sent."
-        );
-
-
-        return true;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Status email error:",
-            error
-        );
-
-        return false;
+        dashboard.style.display =
+            "block";
 
     }
 
 }
 
 
-
 // ==========================================
-// PAGE READY
-// ==========================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-
-        console.log(
-            "Admin JS loaded."
-        );
-
-
-        const loginForm =
-            document.getElementById(
-                "admin-login-form"
-            );
-
-
-        const loginSection =
-            document.getElementById(
-                "admin-login"
-            );
-
-
-        const dashboard =
-            document.getElementById(
-                "admin-dashboard"
-            );
-
-
-        const loginMessage =
-            document.getElementById(
-                "login-message"
-            );
-
-
-        const logoutButton =
-            document.getElementById(
-                "admin-logout"
-            );
-
-
-        // ==========================================
-        // Existing Login
-        // ==========================================
-
-        if (
-            localStorage.getItem(
-                "adminLoggedIn"
-            ) === "true"
-        ) {
-
-            if (loginSection) {
-
-                loginSection.style.display =
-                    "none";
-
-            }
-
-
-            if (dashboard) {
-
-                dashboard.style.display =
-                    "block";
-
-            }
-
-
-            displayAdminOrders();
-
-            displayAdminProducts();
-
-        }
-
-
-        // ==========================================
-        // Login
-        // ==========================================
-
-        if (loginForm) {
-
-            loginForm.addEventListener(
-                "submit",
-                function (e) {
-
-                    e.preventDefault();
-
-
-                    const username =
-                        document
-                            .getElementById(
-                                "admin-username"
-                            )
-                            .value
-                            .trim();
-
-
-                    const password =
-                        document
-                            .getElementById(
-                                "admin-password"
-                            )
-                            .value;
-
-
-                    if (
-                        username ===
-                            ADMIN_USERNAME &&
-                        password ===
-                            ADMIN_PASSWORD
-                    ) {
-
-
-                        localStorage.setItem(
-                            "adminLoggedIn",
-                            "true"
-                        );
-
-
-                        loginSection.style.display =
-                            "none";
-
-
-                        dashboard.style.display =
-                            "block";
-
-
-                        loginMessage.textContent =
-                            "";
-
-
-                        displayAdminOrders();
-
-                        displayAdminProducts();
-
-                    }
-
-                    else {
-
-                        loginMessage.textContent =
-                            "❌ Incorrect username or password.";
-
-                    }
-
-                }
-            );
-
-        }
-
-
-        // ==========================================
-        // Logout
-        // ==========================================
-
-        if (logoutButton) {
-
-            logoutButton.addEventListener(
-                "click",
-                function () {
-
-                    localStorage.removeItem(
-                        "adminLoggedIn"
-                    );
-
-
-                    dashboard.style.display =
-                        "none";
-
-
-                    loginSection.style.display =
-                        "block";
-
-
-                    loginMessage.textContent =
-                        "";
-
-                }
-            );
-
-        }
-
-
-        // ==========================================
-        // Add Product Form
-        // ==========================================
-
-        const addProductForm =
-            document.getElementById(
-                "add-product-form"
-            );
-
-
-        if (addProductForm) {
-
-            addProductForm.addEventListener(
-                "submit",
-                addProduct
-            );
-
-        }
-
-    }
-);
-
-
-
-// ==========================================
-// ADD PRODUCT
+// SHOW LOGIN
 // ==========================================
 
-async function addProduct(e) {
+function showLogin() {
 
-    e.preventDefault();
+    const login =
+        getElement("admin-login");
 
-
-    const message =
-        document.getElementById(
-            "product-message"
-        );
+    const dashboard =
+        getElement("admin-dashboard");
 
 
-    const button =
-        document.getElementById(
-            "add-product-button"
-        );
+    if (login) {
 
-
-    const name =
-        document.getElementById(
-            "product-name"
-        ).value.trim();
-
-
-    const price =
-        Number(
-            document.getElementById(
-                "product-price"
-            ).value
-        );
-
-
-    const category =
-        document.getElementById(
-            "product-category"
-        ).value.trim();
-
-
-    const image =
-        document.getElementById(
-            "product-image"
-        ).value.trim();
-
-
-    const description =
-        document.getElementById(
-            "product-description"
-        ).value.trim();
-
-
-    const quantity =
-        Number(
-            document.getElementById(
-                "product-quantity"
-            ).value
-        );
-
-
-    if (
-        name === "" ||
-        price < 0 ||
-        category === "" ||
-        image === "" ||
-        description === "" ||
-        quantity < 0
-    ) {
-
-        message.textContent =
-            "❌ Please fill all product information correctly.";
-
-        return;
+        login.style.display =
+            "block";
 
     }
 
 
-    button.disabled = true;
+    if (dashboard) {
 
-    button.textContent =
-        "Adding Product...";
+        dashboard.style.display =
+            "none";
 
+    }
+
+}
+
+
+// ==========================================
+// CHECK ADMIN
+// ==========================================
+
+async function checkAdminSession() {
 
     try {
-
-
-        // IMPORTANT:
-        // We DO NOT send "id".
-        //
-        // Supabase generates it automatically.
-        //
-        // This prevents:
-        // duplicate key value violates
-        // unique constraint "products_pkey"
 
         const {
             data,
             error
         } =
             await supabaseClient
+                .auth
+                .getSession();
+
+
+        if (error) {
+
+            console.error(
+                "Session error:",
+                error
+            );
+
+            showLogin();
+
+            return;
+
+        }
+
+
+        const session =
+            data.session;
+
+
+        if (!session) {
+
+            showLogin();
+
+            return;
+
+        }
+
+
+        const user =
+            session.user;
+
+
+        if (
+            !user ||
+            !user.email
+        ) {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+            showLogin();
+
+            return;
+
+        }
+
+
+        // ==========================================
+        // ONLY ALLOW ADMIN EMAIL
+        // ==========================================
+
+        if (
+            user.email.toLowerCase() !==
+            ADMIN_EMAIL.toLowerCase()
+        ) {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+            showLogin();
+
+
+            showLoginMessage(
+                "❌ You are not authorized to access the admin dashboard."
+            );
+
+
+            return;
+
+        }
+
+
+        currentAdmin =
+            user;
+
+
+        showDashboard();
+
+
+        await loadDashboard();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Admin session error:",
+            error
+        );
+
+        showLogin();
+
+    }
+
+}
+
+
+// ==========================================
+// ADMIN LOGIN
+// ==========================================
+
+async function adminLogin(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const emailInput =
+        getElement("admin-email");
+
+    const passwordInput =
+        getElement("admin-password");
+
+
+    if (
+        !emailInput ||
+        !passwordInput
+    ) {
+
+        showLoginMessage(
+            "❌ Login fields were not found."
+        );
+
+        return;
+
+    }
+
+
+    const email =
+        emailInput.value
+            .trim()
+            .toLowerCase();
+
+
+    const password =
+        passwordInput.value;
+
+
+    if (!email || !password) {
+
+        showLoginMessage(
+            "Please enter your email and password."
+        );
+
+        return;
+
+    }
+
+
+    if (
+        email !==
+        ADMIN_EMAIL.toLowerCase()
+    ) {
+
+        showLoginMessage(
+            "❌ This email is not the admin email."
+        );
+
+        return;
+
+    }
+
+
+    const loginButton =
+        event.submitter ||
+        event.target.querySelector(
+            'button[type="submit"]'
+        );
+
+
+    if (loginButton) {
+
+        loginButton.disabled =
+            true;
+
+        loginButton.textContent =
+            "Logging in...";
+
+    }
+
+
+    showLoginMessage(
+        "Checking login..."
+    );
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .auth
+                .signInWithPassword({
+
+                    email:
+                        email,
+
+                    password:
+                        password
+
+                });
+
+
+        if (error) {
+
+            console.error(
+                "Supabase login error:",
+                error
+            );
+
+
+            showLoginMessage(
+                "❌ Login failed: " +
+                error.message
+            );
+
+
+            return;
+
+        }
+
+
+        if (
+            !data ||
+            !data.user
+        ) {
+
+            showLoginMessage(
+                "❌ Login failed. No user was returned."
+            );
+
+            return;
+
+        }
+
+
+        if (
+            data.user.email
+                .toLowerCase() !==
+            ADMIN_EMAIL.toLowerCase()
+        ) {
+
+            await supabaseClient
+                .auth
+                .signOut();
+
+
+            showLoginMessage(
+                "❌ This account is not authorized as admin."
+            );
+
+
+            return;
+
+        }
+
+
+        currentAdmin =
+            data.user;
+
+
+        showLoginMessage(
+            "✅ Login successful!",
+            true
+        );
+
+
+        showDashboard();
+
+
+        await loadDashboard();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Admin login error:",
+            error
+        );
+
+
+        showLoginMessage(
+            "❌ " +
+            (
+                error.message ||
+                "Unable to login."
+            )
+        );
+
+    }
+
+    finally {
+
+        if (loginButton) {
+
+            loginButton.disabled =
+                false;
+
+            loginButton.textContent =
+                "Login";
+
+        }
+
+    }
+
+}
+
+
+// ==========================================
+// LOGOUT
+// ==========================================
+
+async function adminLogout() {
+
+    try {
+
+        await supabaseClient
+            .auth
+            .signOut();
+
+        currentAdmin =
+            null;
+
+        showLogin();
+
+        showLoginMessage(
+            "You have been logged out.",
+            true
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// LOAD DASHBOARD
+// ==========================================
+
+async function loadDashboard() {
+
+    await Promise.all([
+
+        loadStatistics(),
+
+        loadProducts(),
+
+        loadOrders()
+
+    ]);
+
+}
+
+
+// ==========================================
+// LOAD STATISTICS
+// ==========================================
+
+async function loadStatistics() {
+
+    try {
+
+        // ==========================================
+        // ORDERS
+        // ==========================================
+
+        const {
+            data: orders,
+            error: ordersError
+        } =
+            await supabaseClient
+                .from("orders")
+                .select(
+                    "id,total,customer_email"
+                );
+
+
+        if (ordersError) {
+
+            throw ordersError;
+
+        }
+
+
+        const orderList =
+            orders || [];
+
+
+        const totalOrders =
+            orderList.length;
+
+
+        let totalSales =
+            0;
+
+
+        const customers =
+            new Set();
+
+
+        orderList.forEach(
+            function (order) {
+
+                totalSales +=
+                    Number(
+                        order.total
+                    ) || 0;
+
+
+                if (
+                    order.customer_email
+                ) {
+
+                    customers.add(
+                        order.customer_email
+                            .toLowerCase()
+                    );
+
+                }
+
+            }
+        );
+
+
+        const totalOrdersElement =
+            getElement(
+                "total-orders"
+            );
+
+
+        const totalSalesElement =
+            getElement(
+                "total-sales"
+            );
+
+
+        const totalCustomersElement =
+            getElement(
+                "total-customers"
+            );
+
+
+        if (totalOrdersElement) {
+
+            totalOrdersElement.textContent =
+                totalOrders;
+
+        }
+
+
+        if (totalSalesElement) {
+
+            totalSalesElement.textContent =
+                formatMoney(
+                    totalSales
+                );
+
+        }
+
+
+        if (totalCustomersElement) {
+
+            totalCustomersElement.textContent =
+                customers.size;
+
+        }
+
+
+        // ==========================================
+        // PRODUCTS
+        // ==========================================
+
+        const {
+            count,
+            error: productsError
+        } =
+            await supabaseClient
+                .from("products")
+                .select(
+                    "id",
+                    {
+                        count:
+                            "exact",
+                        head:
+                            true
+                    }
+                );
+
+
+        if (productsError) {
+
+            throw productsError;
+
+        }
+
+
+        const totalProductsElement =
+            getElement(
+                "total-products"
+            );
+
+
+        if (totalProductsElement) {
+
+            totalProductsElement.textContent =
+                count || 0;
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Statistics error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// LOAD PRODUCTS
+// ==========================================
+
+async function loadProducts() {
+
+    const table =
+        getElement(
+            "products-table"
+        );
+
+
+    if (!table) {
+        return;
+    }
+
+
+    table.innerHTML = `
+
+        <tr>
+
+            <td colspan="8">
+                Loading products...
+            </td>
+
+        </tr>
+
+    `;
+
+
+    try {
+
+        const {
+            data: products,
+            error
+        } =
+            await supabaseClient
+                .from("products")
+                .select("*")
+                .order(
+                    "id",
+                    {
+                        ascending:
+                            true
+                    }
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        if (
+            !products ||
+            products.length === 0
+        ) {
+
+            table.innerHTML = `
+
+                <tr>
+
+                    <td colspan="8">
+                        No products found.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        table.innerHTML = "";
+
+
+        products.forEach(
+            function (product) {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${product.id}
+                    </td>
+
+                    <td>
+
+                        <img
+                            src="${escapeHtml(
+                                product.image || ""
+                            )}"
+                            alt="${escapeHtml(
+                                product.name || "Product"
+                            )}"
+                            style="
+                                width:60px;
+                                height:60px;
+                                object-fit:cover;
+                            "
+                            onerror="
+                                this.style.display='none'
+                            "
+                        >
+
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            product.name || ""
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatMoney(
+                            product.price
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            product.category || ""
+                        )}
+                    </td>
+
+                    <td>
+                        ${Number(
+                            product.quantity
+                        ) || 0}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            product.description || ""
+                        )}
+                    </td>
+
+                    <td>
+
+                        <button
+                            type="button"
+                            onclick="editProduct(${product.id})"
+                        >
+                            ✏️ Edit
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="deleteProduct(${product.id})"
+                        >
+                            🗑️ Delete
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(
+                    row
+                );
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Products error:",
+            error
+        );
+
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="8">
+
+                    ❌ Could not load products.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
+
+// ==========================================
+// ESCAPE HTML
+// ==========================================
+
+function escapeHtml(value) {
+
+    return String(
+        value ?? ""
+    )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ==========================================
+// ADD PRODUCT
+// ==========================================
+
+async function addProduct(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const message =
+        getElement(
+            "product-message"
+        );
+
+
+    const name =
+        getElement(
+            "product-name"
+        )?.value.trim();
+
+
+    const price =
+        Number(
+            getElement(
+                "product-price"
+            )?.value
+        );
+
+
+    const category =
+        getElement(
+            "product-category"
+        )?.value.trim();
+
+
+    const image =
+        getElement(
+            "product-image"
+        )?.value.trim();
+
+
+    const description =
+        getElement(
+            "product-description"
+        )?.value.trim();
+
+
+    const quantity =
+        Number(
+            getElement(
+                "product-quantity"
+            )?.value
+        );
+
+
+    if (
+        !name ||
+        !category ||
+        !image ||
+        !description ||
+        Number.isNaN(price) ||
+        Number.isNaN(quantity)
+    ) {
+
+        if (message) {
+
+            message.textContent =
+                "❌ Please complete all product fields.";
+
+        }
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
                 .from("products")
                 .insert([
+
                     {
 
                         name:
@@ -449,58 +1038,50 @@ async function addProduct(e) {
                             quantity
 
                     }
-                ])
-                .select()
-                .single();
+
+                ]);
 
 
         if (error) {
 
-            console.error(
-                "Add product error:",
-                error
-            );
-
-
-            message.textContent =
-                "❌ Failed to add product: " +
-                error.message;
-
-
-            return;
+            throw error;
 
         }
 
 
-        console.log(
-            "Product added:",
-            data
-        );
+        if (message) {
+
+            message.textContent =
+                "✅ Product added successfully.";
+
+            message.style.color =
+                "green";
+
+        }
 
 
-        message.textContent =
-            "✅ Product added successfully!";
+        getElement(
+            "add-product-form"
+        )?.reset();
 
 
-        document
-            .getElementById(
-                "add-product-form"
-            )
-            .reset();
-
-
-        document
-            .getElementById(
+        const quantityInput =
+            getElement(
                 "product-quantity"
-            )
-            .value = 30;
+            );
 
 
-        displayAdminProducts();
+        if (quantityInput) {
+
+            quantityInput.value =
+                "30";
+
+        }
 
 
-        updateProductStatistics();
+        await loadProducts();
 
+        await loadStatistics();
 
     }
 
@@ -512,331 +1093,100 @@ async function addProduct(e) {
         );
 
 
-        message.textContent =
-            "❌ Failed to add product.";
+        if (message) {
 
-    }
-
-    finally {
-
-        button.disabled =
-            false;
-
-        button.textContent =
-            "➕ Add Product";
-
-    }
-
-}
-
-
-
-// ==========================================
-// DISPLAY PRODUCTS
-// ==========================================
-
-async function displayAdminProducts() {
-
-    const table =
-        document.getElementById(
-            "products-table"
-        );
-
-
-    if (!table) return;
-
-
-    table.innerHTML = `
-        <tr>
-            <td colspan="8">
-                Loading products...
-            </td>
-        </tr>
-    `;
-
-
-    try {
-
-        const {
-            data: productList,
-            error
-        } =
-            await supabaseClient
-                .from("products")
-                .select("*")
-                .order(
-                    "id",
-                    {
-                        ascending: true
-                    }
+            message.textContent =
+                "❌ " +
+                (
+                    error.message ||
+                    "Could not add product."
                 );
 
-
-        if (error) {
-
-            console.error(
-                "Products loading error:",
-                error
-            );
-
-
-            table.innerHTML = `
-                <tr>
-                    <td colspan="8">
-                        ❌ Failed to load products.
-                        <br><br>
-                        ${error.message}
-                    </td>
-                </tr>
-            `;
-
-            return;
+            message.style.color =
+                "red";
 
         }
-
-
-        if (
-            !productList ||
-            productList.length === 0
-        ) {
-
-            table.innerHTML = `
-                <tr>
-                    <td colspan="8">
-                        No products found.
-                    </td>
-                </tr>
-            `;
-
-            updateProductStatistics();
-
-            return;
-
-        }
-
-
-        table.innerHTML = "";
-
-
-        productList.forEach(
-            function (product) {
-
-
-                const quantity =
-                    Number(
-                        product.quantity
-                    ) || 0;
-
-
-                let stockText;
-
-
-                if (
-                    quantity === 0
-                ) {
-
-                    stockText =
-                        "❌ Out of stock";
-
-                }
-
-                else if (
-                    quantity <= 5
-                ) {
-
-                    stockText =
-                        "⚠️ " +
-                        quantity;
-
-                }
-
-                else {
-
-                    stockText =
-                        quantity;
-
-                }
-
-
-                table.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            ${product.id}
-                        </td>
-
-
-                        <td>
-
-                            <img
-                                src="${product.image || ""}"
-                                alt="${product.name || "Product"}"
-                                width="70"
-                                height="70"
-                                style="
-                                    object-fit:cover;
-                                    border-radius:8px;
-                                "
-                                onerror="
-                                    this.style.display='none'
-                                "
-                            >
-
-                        </td>
-
-
-                        <td>
-                            <strong>
-                                ${product.name || ""}
-                            </strong>
-                        </td>
-
-
-                        <td>
-                            ₦${Number(
-                                product.price || 0
-                            ).toLocaleString()}
-                        </td>
-
-
-                        <td>
-                            ${product.category || ""}
-                        </td>
-
-
-                        <td>
-
-                            <strong>
-                                ${stockText}
-                            </strong>
-
-                            <br><br>
-
-                            <input
-                                type="number"
-                                min="0"
-                                value="${quantity}"
-                                id="quantity-${product.id}"
-                                style="width:90px;"
-                            >
-
-                            <br><br>
-
-                            <button
-                                type="button"
-                                onclick="
-                                    updateProductQuantity(
-                                        ${product.id}
-                                    )
-                                "
-                            >
-                                💾 Stock
-                            </button>
-
-                        </td>
-
-
-                        <td>
-                            ${product.description || ""}
-                        </td>
-
-
-                        <td>
-
-                            <button
-                                type="button"
-                                onclick="
-                                    editProduct(
-                                        ${product.id}
-                                    )
-                                "
-                            >
-                                ✏️ Edit
-                            </button>
-
-
-                            <br><br>
-
-
-                            <button
-                                type="button"
-                                onclick="
-                                    deleteProduct(
-                                        ${product.id}
-                                    )
-                                "
-                            >
-                                🗑️ Delete
-                            </button>
-
-                        </td>
-
-                    </tr>
-
-                `;
-
-            }
-        );
-
-
-        updateProductStatistics();
-
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Display products error:",
-            error
-        );
-
-
-        table.innerHTML = `
-            <tr>
-                <td colspan="8">
-                    ❌ Unable to load products.
-                </td>
-            </tr>
-        `;
 
     }
 
 }
 
 
-
 // ==========================================
-// UPDATE PRODUCT QUANTITY
+// EDIT PRODUCT
 // ==========================================
 
-async function updateProductQuantity(
+async function editProduct(
     productId
 ) {
 
-    const input =
-        document.getElementById(
-            "quantity-" + productId
-        );
-
-
-    if (!input) return;
-
-
-    const quantity =
-        Number(
-            input.value
+    const newName =
+        prompt(
+            "Enter new product name:"
         );
 
 
     if (
-        quantity < 0 ||
-        !Number.isInteger(quantity)
+        newName ===
+        null
+    ) {
+
+        return;
+
+    }
+
+
+    const newPrice =
+        prompt(
+            "Enter new price:"
+        );
+
+
+    if (
+        newPrice ===
+        null
+    ) {
+
+        return;
+
+    }
+
+
+    const newQuantity =
+        prompt(
+            "Enter new quantity:"
+        );
+
+
+    if (
+        newQuantity ===
+        null
+    ) {
+
+        return;
+
+    }
+
+
+    const price =
+        Number(
+            newPrice
+        );
+
+
+    const quantity =
+        Number(
+            newQuantity
+        );
+
+
+    if (
+        Number.isNaN(price) ||
+        Number.isNaN(quantity)
     ) {
 
         alert(
-            "Please enter a valid quantity."
+            "Invalid price or quantity."
         );
 
         return;
@@ -853,218 +1203,12 @@ async function updateProductQuantity(
                 .from("products")
                 .update({
 
-                    quantity:
-                        quantity
-
-                })
-                .eq(
-                    "id",
-                    productId
-                );
-
-
-        if (error) {
-
-            console.error(
-                "Quantity update error:",
-                error
-            );
-
-
-            alert(
-                "❌ Failed to update quantity.\n\n" +
-                error.message
-            );
-
-            return;
-
-        }
-
-
-        alert(
-            "✅ Product quantity updated."
-        );
-
-
-        displayAdminProducts();
-
-        updateProductStatistics();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Quantity error:",
-            error
-        );
-
-
-        alert(
-            "❌ Failed to update quantity."
-        );
-
-    }
-
-}
-
-
-
-// ==========================================
-// EDIT PRODUCT
-// ==========================================
-
-async function editProduct(
-    productId
-) {
-
-    try {
-
-        const {
-            data: product,
-            error
-        } =
-            await supabaseClient
-                .from("products")
-                .select("*")
-                .eq(
-                    "id",
-                    productId
-                )
-                .single();
-
-
-        if (error) {
-
-            alert(
-                "❌ Could not find product."
-            );
-
-            return;
-
-        }
-
-
-        const name =
-            prompt(
-                "Product name:",
-                product.name
-            );
-
-
-        if (
-            name === null
-        ) return;
-
-
-        const priceInput =
-            prompt(
-                "Price:",
-                product.price
-            );
-
-
-        if (
-            priceInput === null
-        ) return;
-
-
-        const category =
-            prompt(
-                "Category:",
-                product.category
-            );
-
-
-        if (
-            category === null
-        ) return;
-
-
-        const image =
-            prompt(
-                "Image path:",
-                product.image
-            );
-
-
-        if (
-            image === null
-        ) return;
-
-
-        const description =
-            prompt(
-                "Description:",
-                product.description
-            );
-
-
-        if (
-            description === null
-        ) return;
-
-
-        const quantityInput =
-            prompt(
-                "Quantity:",
-                product.quantity
-            );
-
-
-        if (
-            quantityInput === null
-        ) return;
-
-
-        const price =
-            Number(
-                priceInput
-            );
-
-
-        const quantity =
-            Number(
-                quantityInput
-            );
-
-
-        if (
-            price < 0 ||
-            quantity < 0
-        ) {
-
-            alert(
-                "❌ Price and quantity cannot be negative."
-            );
-
-            return;
-
-        }
-
-
-        const {
-            error: updateError
-        } =
-            await supabaseClient
-                .from("products")
-                .update({
-
                     name:
-                        name.trim(),
+                        newName.trim(),
 
                     price:
                         price,
 
-                    category:
-                        category.trim(),
-
-                    image:
-                        image.trim(),
-
-                    description:
-                        description.trim(),
-
                     quantity:
                         quantity
 
@@ -1075,20 +1219,9 @@ async function editProduct(
                 );
 
 
-        if (updateError) {
+        if (error) {
 
-            console.error(
-                "Edit product error:",
-                updateError
-            );
-
-
-            alert(
-                "❌ Failed to edit product.\n\n" +
-                updateError.message
-            );
-
-            return;
+            throw error;
 
         }
 
@@ -1098,28 +1231,31 @@ async function editProduct(
         );
 
 
-        displayAdminProducts();
+        await loadProducts();
 
-        updateProductStatistics();
+        await loadStatistics();
 
     }
 
     catch (error) {
 
         console.error(
-            "Edit error:",
+            "Edit product error:",
             error
         );
 
 
         alert(
-            "❌ Failed to edit product."
+            "❌ " +
+            (
+                error.message ||
+                "Could not update product."
+            )
         );
 
     }
 
 }
-
 
 
 // ==========================================
@@ -1136,7 +1272,11 @@ async function deleteProduct(
         );
 
 
-    if (!confirmed) return;
+    if (!confirmed) {
+
+        return;
+
+    }
 
 
     try {
@@ -1155,18 +1295,7 @@ async function deleteProduct(
 
         if (error) {
 
-            console.error(
-                "Delete product error:",
-                error
-            );
-
-
-            alert(
-                "❌ Failed to delete product.\n\n" +
-                error.message
-            );
-
-            return;
+            throw error;
 
         }
 
@@ -1176,22 +1305,26 @@ async function deleteProduct(
         );
 
 
-        displayAdminProducts();
+        await loadProducts();
 
-        updateProductStatistics();
+        await loadStatistics();
 
     }
 
     catch (error) {
 
         console.error(
-            "Delete error:",
+            "Delete product error:",
             error
         );
 
 
         alert(
-            "❌ Failed to delete product."
+            "❌ " +
+            (
+                error.message ||
+                "Could not delete product."
+            )
         );
 
     }
@@ -1199,108 +1332,33 @@ async function deleteProduct(
 }
 
 
-
 // ==========================================
-// PRODUCT STATISTICS
-// ==========================================
-
-async function updateProductStatistics() {
-
-    const totalProducts =
-        document.getElementById(
-            "total-products"
-        );
-
-
-    if (!totalProducts) return;
-
-
-    try {
-
-        const {
-            count,
-            error
-        } =
-            await supabaseClient
-                .from("products")
-                .select(
-                    "id",
-                    {
-                        count: "exact",
-                        head: true
-                    }
-                );
-
-
-        if (error) {
-
-            console.error(
-                "Product count error:",
-                error
-            );
-
-            return;
-
-        }
-
-
-        totalProducts.textContent =
-            count || 0;
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Statistics error:",
-            error
-        );
-
-    }
-
-}
-
-
-
-// ==========================================
-// DISPLAY ORDERS
+// LOAD ORDERS
 // ==========================================
 
-async function displayAdminOrders() {
+async function loadOrders() {
 
-    const ordersTable =
-        document.getElementById(
+    const table =
+        getElement(
             "orders-table"
         );
 
 
-    if (!ordersTable) return;
-
-
-    if (
-        typeof supabaseClient ===
-        "undefined"
-    ) {
-
-        ordersTable.innerHTML = `
-            <tr>
-                <td colspan="9">
-                    ❌ Supabase is not connected.
-                </td>
-            </tr>
-        `;
-
+    if (!table) {
         return;
-
     }
 
 
-    ordersTable.innerHTML = `
+    table.innerHTML = `
+
         <tr>
+
             <td colspan="9">
                 Loading orders...
             </td>
+
         </tr>
+
     `;
 
 
@@ -1316,30 +1374,15 @@ async function displayAdminOrders() {
                 .order(
                     "created_at",
                     {
-                        ascending: false
+                        ascending:
+                            false
                     }
                 );
 
 
         if (error) {
 
-            console.error(
-                "Supabase orders error:",
-                error
-            );
-
-
-            ordersTable.innerHTML = `
-                <tr>
-                    <td colspan="9">
-                        ❌ Failed to load orders.
-                        <br><br>
-                        ${error.message}
-                    </td>
-                </tr>
-            `;
-
-            return;
+            throw error;
 
         }
 
@@ -1349,196 +1392,193 @@ async function displayAdminOrders() {
             orders.length === 0
         ) {
 
-            ordersTable.innerHTML = `
+            table.innerHTML = `
+
                 <tr>
+
                     <td colspan="9">
-                        No orders yet.
+                        No orders found.
                     </td>
+
                 </tr>
+
             `;
-
-
-            updateAdminStatistics(
-                []
-            );
-
 
             return;
 
         }
 
 
-        ordersTable.innerHTML = "";
+        table.innerHTML = "";
 
 
         orders.forEach(
             function (order) {
 
-
-                const status =
-                    order.status ||
-                    "Paid";
-
-
-                ordersTable.innerHTML += `
-
-                    <tr>
-
-                        <td>
-                            <strong>
-                                ${order.order_number || "N/A"}
-                            </strong>
-                        </td>
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
 
 
-                        <td>
-                            ${order.customer_name || "N/A"}
-                        </td>
+                row.innerHTML = `
 
+                    <td>
+                        ${escapeHtml(
+                            order.order_number || ""
+                        )}
+                    </td>
 
-                        <td>
-                            ${order.customer_email || "N/A"}
-                        </td>
+                    <td>
+                        ${escapeHtml(
+                            order.customer_name || ""
+                        )}
+                    </td>
 
+                    <td>
+                        ${escapeHtml(
+                            order.customer_email || ""
+                        )}
+                    </td>
 
-                        <td>
-                            ${order.phone || "N/A"}
-                        </td>
+                    <td>
+                        ${escapeHtml(
+                            order.phone || ""
+                        )}
+                    </td>
 
+                    <td>
+                        ${formatMoney(
+                            order.total
+                        )}
+                    </td>
 
-                        <td>
-                            ₦${Number(
-                                order.total || 0
-                            ).toLocaleString()}
-                        </td>
+                    <td>
 
+                        <select
+                            data-order-id="${order.id}"
+                            class="order-status"
+                        >
 
-                        <td>
+                            ${createStatusOptions(
+                                order.status
+                            )}
 
-                            <select
-                                id="status-${order.order_number}"
-                            >
+                        </select>
 
-                                <option
-                                    value="Paid"
-                                    ${status === "Paid"
-                                        ? "selected"
-                                        : ""}
-                                >
-                                    Paid
-                                </option>
+                    </td>
 
+                    <td>
 
-                                <option
-                                    value="Processing"
-                                    ${status === "Processing"
-                                        ? "selected"
-                                        : ""}
-                                >
-                                    Processing
-                                </option>
+                        <input
+                            type="text"
+                            value="${escapeHtml(
+                                order.tracking_number || ""
+                            )}"
+                            placeholder="Tracking number"
+                            class="tracking-input"
+                            data-order-id="${order.id}"
+                        >
 
+                        <button
+                            type="button"
+                            onclick="generateTracking(${order.id})"
+                        >
+                            Generate
+                        </button>
 
-                                <option
-                                    value="Shipped"
-                                    ${status === "Shipped"
-                                        ? "selected"
-                                        : ""}
-                                >
-                                    Shipped
-                                </option>
+                    </td>
 
+                    <td>
 
-                                <option
-                                    value="Out for Delivery"
-                                    ${status === "Out for Delivery"
-                                        ? "selected"
-                                        : ""}
-                                >
-                                    Out for Delivery
-                                </option>
+                        <input
+                            type="text"
+                            value="${escapeHtml(
+                                order.delivery_note || ""
+                            )}"
+                            placeholder="Delivery note"
+                            class="delivery-note-input"
+                            data-order-id="${order.id}"
+                        >
 
+                    </td>
 
-                                <option
-                                    value="Delivered"
-                                    ${status === "Delivered"
-                                        ? "selected"
-                                        : ""}
-                                >
-                                    Delivered
-                                </option>
+                    <td>
 
-                            </select>
+                        <button
+                            type="button"
+                            onclick="saveOrderUpdate(${order.id})"
+                        >
+                            💾 Save
+                        </button>
 
-                        </td>
-
-
-                        <td>
-
-                            <input
-                                type="text"
-                                id="tracking-${order.order_number}"
-                                value="${order.tracking_number || ""}"
-                                placeholder="Tracking number"
-                            >
-
-                        </td>
-
-
-                        <td>
-
-                            <textarea
-                                id="note-${order.order_number}"
-                                rows="2"
-                                placeholder="Delivery note"
-                            >${order.delivery_note || ""}</textarea>
-
-                        </td>
-
-
-                        <td>
-
-                            <button
-                                type="button"
-                                onclick="
-                                    saveOrderUpdate(
-                                        '${order.order_number}'
-                                    )
-                                "
-                            >
-                                💾 Save
-                            </button>
-
-                        </td>
-
-                    </tr>
+                    </td>
 
                 `;
+
+
+                table.appendChild(
+                    row
+                );
 
             }
         );
 
 
-        updateAdminStatistics(
-            orders
-        );
+        // ==========================================
+        // STATUS CHANGE
+        // ==========================================
+
+        document
+            .querySelectorAll(
+                ".order-status"
+            )
+            .forEach(
+                function (select) {
+
+                    select.addEventListener(
+                        "change",
+                        function () {
+
+                            console.log(
+                                "Status changed:",
+                                this.value
+                            );
+
+                        }
+                    );
+
+                }
+            );
 
     }
 
     catch (error) {
 
         console.error(
-            "Order loading error:",
+            "Orders error:",
             error
         );
 
 
-        ordersTable.innerHTML = `
+        table.innerHTML = `
+
             <tr>
+
                 <td colspan="9">
-                    ❌ Unable to load orders.
+
+                    ❌ Could not load orders.
+
+                    <br><br>
+
+                    ${escapeHtml(
+                        error.message || ""
+                    )}
+
                 </td>
+
             </tr>
+
         `;
 
     }
@@ -1546,37 +1586,224 @@ async function displayAdminOrders() {
 }
 
 
+// ==========================================
+// CREATE STATUS OPTIONS
+// ==========================================
+
+function createStatusOptions(
+    currentStatus
+) {
+
+    const statuses = [
+
+        "Pending Payment",
+
+        "Paid",
+
+        "Processing",
+
+        "Shipped",
+
+        "Out for Delivery",
+
+        "Delivered",
+
+        "Cancelled"
+
+    ];
+
+
+    return statuses
+        .map(
+            function (status) {
+
+                return `
+
+                    <option
+                        value="${escapeHtml(status)}"
+                        ${
+                            status ===
+                            currentStatus
+                                ? "selected"
+                                : ""
+                        }
+                    >
+                        ${escapeHtml(status)}
+                    </option>
+
+                `;
+
+            }
+        )
+        .join("");
+
+}
+
+
+// ==========================================
+// GENERATE TRACKING NUMBER
+// ==========================================
+
+function generateTrackingNumber() {
+
+    const now =
+        new Date();
+
+
+    const year =
+        now.getFullYear();
+
+
+    const month =
+        String(
+            now.getMonth() + 1
+        )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+    const day =
+        String(
+            now.getDate()
+        )
+            .padStart(
+                2,
+                "0"
+            );
+
+
+    const random =
+        Math.floor(
+            100000 +
+            Math.random() *
+            900000
+        );
+
+
+    return (
+        "HST-" +
+        year +
+        month +
+        day +
+        "-" +
+        random
+    );
+
+}
+
+
+// ==========================================
+// GENERATE TRACKING FOR ORDER
+// ==========================================
+
+async function generateTracking(
+    orderId
+) {
+
+    const input =
+        document.querySelector(
+            `.tracking-input[data-order-id="${orderId}"]`
+        );
+
+
+    if (!input) {
+
+        return;
+
+    }
+
+
+    const trackingNumber =
+        generateTrackingNumber();
+
+
+    input.value =
+        trackingNumber;
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("orders")
+                .update({
+
+                    tracking_number:
+                        trackingNumber
+
+                })
+                .eq(
+                    "id",
+                    orderId
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        alert(
+            "✅ Tracking number generated:\n\n" +
+            trackingNumber
+        );
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Tracking error:",
+            error
+        );
+
+
+        alert(
+            "❌ Could not save tracking number."
+        );
+
+    }
+
+}
+
 
 // ==========================================
 // SAVE ORDER UPDATE
 // ==========================================
 
 async function saveOrderUpdate(
-    orderNumber
+    orderId
 ) {
 
-    const statusElement =
-        document.getElementById(
-            "status-" + orderNumber
+    const statusInput =
+        document.querySelector(
+            `.order-status[data-order-id="${orderId}"]`
         );
 
 
-    const trackingElement =
-        document.getElementById(
-            "tracking-" + orderNumber
+    const trackingInput =
+        document.querySelector(
+            `.tracking-input[data-order-id="${orderId}"]`
         );
 
 
-    const noteElement =
-        document.getElementById(
-            "note-" + orderNumber
+    const deliveryInput =
+        document.querySelector(
+            `.delivery-note-input[data-order-id="${orderId}"]`
         );
 
 
-    if (!statusElement) {
+    if (!statusInput) {
 
         alert(
-            "Order information not found."
+            "Order status field not found."
         );
 
         return;
@@ -1584,65 +1811,23 @@ async function saveOrderUpdate(
     }
 
 
-    const newStatus =
-        statusElement.value;
+    const status =
+        statusInput.value;
 
 
     const trackingNumber =
-        trackingElement
-            ? trackingElement.value.trim()
+        trackingInput
+            ? trackingInput.value.trim()
             : "";
 
 
     const deliveryNote =
-        noteElement
-            ? noteElement.value.trim()
+        deliveryInput
+            ? deliveryInput.value.trim()
             : "";
 
 
     try {
-
-
-        // ==========================================
-        // Get Customer Information
-        // ==========================================
-
-        const {
-            data: order,
-            error: fetchError
-        } =
-            await supabaseClient
-                .from("orders")
-                .select(
-                    "order_number, customer_name, customer_email"
-                )
-                .eq(
-                    "order_number",
-                    orderNumber
-                )
-                .single();
-
-
-        if (fetchError) {
-
-            console.error(
-                "Order fetch error:",
-                fetchError
-            );
-
-
-            alert(
-                "❌ Could not find order."
-            );
-
-            return;
-
-        }
-
-
-        // ==========================================
-        // Update Supabase
-        // ==========================================
 
         const {
             error
@@ -1652,88 +1837,51 @@ async function saveOrderUpdate(
                 .update({
 
                     status:
-                        newStatus,
+                        status,
 
                     tracking_number:
-                        trackingNumber ||
-                        null,
+                        trackingNumber,
 
                     delivery_note:
-                        deliveryNote ||
-                        "Order received. Preparing for delivery."
+                        deliveryNote
 
                 })
                 .eq(
-                    "order_number",
-                    orderNumber
+                    "id",
+                    orderId
                 );
 
 
         if (error) {
 
-            console.error(
-                "Order update error:",
-                error
-            );
-
-
-            alert(
-                "❌ Failed to update order.\n\n" +
-                error.message
-            );
-
-            return;
+            throw error;
 
         }
 
 
-        // ==========================================
-        // Send Customer Email
-        // ==========================================
-
-        const emailSent =
-            await sendStatusUpdateEmail(
-                order,
-                newStatus,
-                trackingNumber,
-                deliveryNote
-            );
+        alert(
+            "✅ Order updated successfully."
+        );
 
 
-        if (emailSent) {
-
-            alert(
-                "✅ Order updated successfully.\n\n" +
-                "📧 Customer notification email sent."
-            );
-
-        }
-
-        else {
-
-            alert(
-                "✅ Order updated successfully.\n\n" +
-                "⚠️ Customer notification email could not be sent."
-            );
-
-        }
-
-
-        displayAdminOrders();
+        await loadOrders();
 
     }
 
     catch (error) {
 
         console.error(
-            "Save order error:",
+            "Order update error:",
             error
         );
 
 
         alert(
-            "❌ Failed to update order.\n\n" +
-            error.message
+            "❌ Could not update order:\n\n" +
+            (
+                error.message ||
+                "Unknown error"
+            )
         );
 
     }
@@ -1741,116 +1889,85 @@ async function saveOrderUpdate(
 }
 
 
-
 // ==========================================
-// ADMIN STATISTICS
+// INITIALIZE ADMIN
 // ==========================================
 
-function updateAdminStatistics(
-    orders
-) {
-
-    if (!orders) {
-
-        orders = [];
-
-    }
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
 
 
-    // ==========================================
-    // Total Orders
-    // ==========================================
+        // ==========================================
+        // LOGIN FORM
+        // ==========================================
 
-    const totalOrders =
-        document.getElementById(
-            "total-orders"
-        );
-
-
-    if (totalOrders) {
-
-        totalOrders.textContent =
-            orders.length;
-
-    }
+        const loginForm =
+            getElement(
+                "admin-login-form"
+            );
 
 
-    // ==========================================
-    // Total Sales
-    // ==========================================
+        if (loginForm) {
 
-    let totalSales = 0;
-
-
-    orders.forEach(
-        function (order) {
-
-            totalSales +=
-                Number(
-                    order.total
-                ) || 0;
+            loginForm.addEventListener(
+                "submit",
+                adminLogin
+            );
 
         }
-    );
 
 
-    const totalSalesElement =
-        document.getElementById(
-            "total-sales"
-        );
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+
+        const logoutButton =
+            getElement(
+                "admin-logout"
+            );
 
 
-    if (totalSalesElement) {
+        if (logoutButton) {
 
-        totalSalesElement.textContent =
-            "₦" +
-            totalSales.toLocaleString();
-
-    }
-
-
-    // ==========================================
-    // Total Customers
-    // ==========================================
-
-    const customers = [];
-
-
-    orders.forEach(
-        function (order) {
-
-            if (
-                order.customer_email &&
-                !customers.includes(
-                    order.customer_email
-                )
-            ) {
-
-                customers.push(
-                    order.customer_email
-                );
-
-            }
+            logoutButton.addEventListener(
+                "click",
+                adminLogout
+            );
 
         }
-    );
 
 
-    const totalCustomers =
-        document.getElementById(
-            "total-customers"
+        // ==========================================
+        // ADD PRODUCT
+        // ==========================================
+
+        const productForm =
+            getElement(
+                "add-product-form"
+            );
+
+
+        if (productForm) {
+
+            productForm.addEventListener(
+                "submit",
+                addProduct
+            );
+
+        }
+
+
+        // ==========================================
+        // CHECK SESSION
+        // ==========================================
+
+        checkAdminSession();
+
+
+        console.log(
+            "Hasbunallahu Store Admin loaded."
         );
 
-
-    if (totalCustomers) {
-
-        totalCustomers.textContent =
-            customers.length;
-
     }
-
-
-    // Product count is handled
-    // by updateProductStatistics()
-
-}
+);

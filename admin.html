@@ -10,7 +10,9 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Admin Dashboard | Hasbunallahu Store</title>
+    <title>
+        Admin Dashboard | Hasbunallahu Store
+    </title>
 
     <link
         rel="stylesheet"
@@ -37,19 +39,21 @@
 
     <h1>🔐 Admin Login</h1>
 
-    <p>Hasbunallahu Store</p>
+    <p>
+        Hasbunallahu Store
+    </p>
 
 
     <form id="admin-login-form">
 
-        <label for="admin-username">
-            Username
+        <label for="admin-email">
+            Admin Email
         </label>
 
         <input
-            type="text"
-            id="admin-username"
-            placeholder="Enter username"
+            type="email"
+            id="admin-email"
+            value="Enter admin email"
             required
         >
 
@@ -77,7 +81,10 @@
         </button>
 
 
-        <p id="login-message"></p>
+        <p
+            id="login-message"
+            style="font-weight:bold;"
+        ></p>
 
     </form>
 
@@ -103,9 +110,13 @@
     <header>
 
         <h1>
-            Hasbunallahu Store
-            - Admin Dashboard
+            Hasbunallahu Store -
+            Admin Dashboard
         </h1>
+
+        <p>
+            Welcome, Admin
+        </p>
 
 
         <button
@@ -153,7 +164,7 @@
                 </h3>
 
                 <p id="total-sales">
-                    ₦0
+                    ₦0.00
                 </p>
 
             </div>
@@ -184,7 +195,6 @@
 
             </div>
 
-
         </div>
 
     </section>
@@ -197,20 +207,16 @@
 
     <section
         class="product-management"
-        style="
-            margin-top:40px;
-        "
+        style="margin-top:40px;"
     >
 
         <h2>
             🛍️ Product Management
         </h2>
 
-
         <p>
             Add, edit, delete and manage product quantities.
         </p>
-
 
 
         <!-- ADD PRODUCT -->
@@ -349,11 +355,7 @@
         </h3>
 
 
-        <div
-            style="
-                overflow-x:auto;
-            "
-        >
+        <div style="overflow-x:auto;">
 
             <table
                 border="1"
@@ -365,37 +367,21 @@
 
                     <tr>
 
-                        <th>
-                            ID
-                        </th>
+                        <th>ID</th>
 
-                        <th>
-                            Image
-                        </th>
+                        <th>Image</th>
 
-                        <th>
-                            Product
-                        </th>
+                        <th>Product</th>
 
-                        <th>
-                            Price
-                        </th>
+                        <th>Price</th>
 
-                        <th>
-                            Category
-                        </th>
+                        <th>Category</th>
 
-                        <th>
-                            Quantity
-                        </th>
+                        <th>Quantity</th>
 
-                        <th>
-                            Description
-                        </th>
+                        <th>Description</th>
 
-                        <th>
-                            Actions
-                        </th>
+                        <th>Actions</th>
 
                     </tr>
 
@@ -429,9 +415,7 @@
 
     <section
         class="recent-orders"
-        style="
-            margin-top:50px;
-        "
+        style="margin-top:50px;"
     >
 
         <h2>
@@ -439,11 +423,7 @@
         </h2>
 
 
-        <div
-            style="
-                overflow-x:auto;
-            "
-        >
+        <div style="overflow-x:auto;">
 
             <table
                 border="1"
@@ -520,31 +500,10 @@
 
 
 <!-- ==================================================
-     EMAILJS
-================================================== -->
-
-<script
-    src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
-></script>
-
-
-<script>
-
-    emailjs.init({
-        publicKey: "zDU17Xd3CuZ3fJztk"
-    });
-
-</script>
-
-
-
-<!-- ==================================================
      SUPABASE
 ================================================== -->
 
-<script
-    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <script>
@@ -564,14 +523,6 @@
         );
 
 </script>
-
-
-
-<!-- ==================================================
-     PRODUCTS
-================================================== -->
-
-<script src="js/products.js"></script>
 
 
 
