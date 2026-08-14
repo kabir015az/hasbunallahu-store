@@ -89,368 +89,408 @@
 
 <body>
 
-    <!-- Navigation -->
 
-    <header>
+<header>
 
-        <nav class="navbar">
+    <nav class="navbar">
 
-            <h2 class="logo">
-                Hasbunallahu Store
-            </h2>
+        <h2 class="logo">
+            Hasbunallahu Store
+        </h2>
 
-            <button
-                class="menu-toggle"
-                id="menu-toggle"
-                type="button"
-            >
-                ☰
-            </button>
+        <button
+            class="menu-toggle"
+            id="menu-toggle"
+            type="button"
+        >
+            ☰
+        </button>
 
-            <ul class="nav-links">
+        <ul class="nav-links">
 
-                <li>
-                    <a href="index.html">
-                        Home
-                    </a>
-                </li>
+            <li>
+                <a href="index.html">
+                    Home
+                </a>
+            </li>
 
-                <li>
-                    <a href="products.html">
-                        Products
-                    </a>
-                </li>
+            <li>
+                <a href="products.html">
+                    Products
+                </a>
+            </li>
 
-                <li>
-                    <a href="cart.html">
-                        Cart 🛒
-                        <span id="cart-count">0</span>
-                    </a>
-                </li>
+            <li>
+                <a href="cart.html">
+                    Cart 🛒
+                    <span id="cart-count">0</span>
+                </a>
+            </li>
 
-                <li>
-                    <a href="order.html">
-                        My Orders 📦
-                    </a>
-                </li>
+            <li>
+                <a href="order.html">
+                    My Orders 📦
+                </a>
+            </li>
 
-                <li>
-                    <a href="login.html">
-                        Login
-                    </a>
-                </li>
-
-            </ul>
-
-        </nav>
-
-    </header>
-
-
-    <!-- Registration -->
-
-    <main>
-
-        <div class="auth-container">
-
-            <h1>
-                Create Account
-            </h1>
-
-            <form
-                id="register-form"
-                class="auth-form"
-            >
-
-                <label for="fullname">
-                    Full Name
-                </label>
-
-                <input
-                    type="text"
-                    id="fullname"
-                    placeholder="Enter your full name"
-                    required
-                >
-
-
-                <label for="email">
-                    Email Address
-                </label>
-
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="Enter your email address"
-                    required
-                >
-
-
-                <label for="password">
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Create a password"
-                    minlength="6"
-                    required
-                >
-
-
-                <label for="confirm-password">
-                    Confirm Password
-                </label>
-
-                <input
-                    type="password"
-                    id="confirm-password"
-                    placeholder="Confirm your password"
-                    minlength="6"
-                    required
-                >
-
-
-                <button
-                    type="submit"
-                    id="register-button"
-                >
-                    Create Account
-                </button>
-
-            </form>
-
-
-            <p
-                id="register-message"
-                class="auth-message"
-            ></p>
-
-
-            <div class="auth-link">
-
-                Already have an account?
-
+            <li>
                 <a href="login.html">
                     Login
                 </a>
+            </li>
 
-            </div>
+        </ul>
+
+    </nav>
+
+</header>
+
+
+
+<main>
+
+    <div class="auth-container">
+
+        <h1>
+            Create Account
+        </h1>
+
+
+        <form
+            id="register-form"
+            class="auth-form"
+        >
+
+            <label for="fullname">
+                Full Name
+            </label>
+
+            <input
+                type="text"
+                id="fullname"
+                placeholder="Enter your full name"
+                autocomplete="name"
+                required
+            >
+
+
+            <label for="email">
+                Email Address
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter your email address"
+                autocomplete="email"
+                required
+            >
+
+
+            <label for="password">
+                Password
+            </label>
+
+            <input
+                type="password"
+                id="password"
+                placeholder="Create a password"
+                minlength="6"
+                autocomplete="new-password"
+                required
+            >
+
+
+            <label for="confirm-password">
+                Confirm Password
+            </label>
+
+            <input
+                type="password"
+                id="confirm-password"
+                placeholder="Confirm your password"
+                minlength="6"
+                autocomplete="new-password"
+                required
+            >
+
+
+            <button
+                type="submit"
+                id="register-button"
+            >
+                Create Account
+            </button>
+
+        </form>
+
+
+        <p
+            id="register-message"
+            class="auth-message"
+        ></p>
+
+
+        <div class="auth-link">
+
+            Already have an account?
+
+            <a href="login.html">
+                Login
+            </a>
 
         </div>
 
-    </main>
+    </div>
+
+</main>
 
 
-    <!-- Footer -->
 
-    <footer>
+<footer>
 
-        <p>
-            &copy; 2026 Hasbunallahu Store.
-            All Rights Reserved.
-        </p>
+    <p>
+        &copy; 2026 Hasbunallahu Store.
+        All Rights Reserved.
+    </p>
 
-    </footer>
-
-
-    <!-- Supabase -->
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</footer>
 
 
-    <script>
 
-        const SUPABASE_URL =
-            "https://qreliegujlmmsnyewtaq.supabase.co";
-
-        const SUPABASE_KEY =
-            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
-        const supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
-            );
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
-        // ==========================================
-        // REGISTER CUSTOMER
-        // ==========================================
+<script>
 
-        const registerForm =
-            document.getElementById(
-                "register-form"
-            );
-
-        const registerButton =
-            document.getElementById(
-                "register-button"
-            );
-
-        const registerMessage =
-            document.getElementById(
-                "register-message"
-            );
+    const SUPABASE_URL =
+        "https://qreliegujlmmsnyewtaq.supabase.co";
 
 
-        registerForm.addEventListener(
-            "submit",
-            async function (event) {
-
-                event.preventDefault();
+    const SUPABASE_KEY =
+        "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
 
 
-                const fullname =
-                    document.getElementById(
-                        "fullname"
-                    ).value.trim();
+    const supabaseClient =
+        window.supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
 
 
-                const email =
-                    document.getElementById(
-                        "email"
-                    ).value.trim();
+
+    // ==========================================
+    // REGISTER CUSTOMER
+    // ==========================================
+
+    const registerForm =
+        document.getElementById(
+            "register-form"
+        );
 
 
-                const password =
-                    document.getElementById(
-                        "password"
-                    ).value;
+    const registerButton =
+        document.getElementById(
+            "register-button"
+        );
 
 
-                const confirmPassword =
-                    document.getElementById(
-                        "confirm-password"
-                    ).value;
+    const registerMessage =
+        document.getElementById(
+            "register-message"
+        );
 
 
-                // Password check
 
-                if (
-                    password !==
-                    confirmPassword
-                ) {
+    registerForm.addEventListener(
+        "submit",
+        async function(event) {
 
-                    registerMessage.textContent =
-                        "❌ Passwords do not match.";
-
-                    return;
-
-                }
+            event.preventDefault();
 
 
-                if (password.length < 6) {
-
-                    registerMessage.textContent =
-                        "❌ Password must be at least 6 characters.";
-
-                    return;
-
-                }
+            const fullname =
+                document.getElementById(
+                    "fullname"
+                ).value.trim();
 
 
-                // Disable button
+            const email =
+                document.getElementById(
+                    "email"
+                ).value.trim();
 
-                registerButton.disabled =
-                    true;
 
-                registerButton.textContent =
-                    "Creating Account...";
+            const password =
+                document.getElementById(
+                    "password"
+                ).value;
+
+
+            const confirmPassword =
+                document.getElementById(
+                    "confirm-password"
+                ).value;
+
+
+
+            // ==========================================
+            // VALIDATION
+            // ==========================================
+
+            if (
+                password !==
+                confirmPassword
+            ) {
 
                 registerMessage.textContent =
-                    "";
+                    "❌ Passwords do not match.";
 
-
-                try {
-
-                    // Create Supabase account
-
-                    const {
-                        data,
-                        error
-                    } =
-                        await supabaseClient
-                            .auth
-                            .signUp({
-
-                                email:
-                                    email,
-
-                                password:
-                                    password,
-
-                                options: {
-
-                                    data: {
-
-                                        full_name:
-                                            fullname
-
-                                    },
-
-                                    emailRedirectTo:
-                                        window.location.origin +
-                                        "/login.html"
-
-                                }
-
-                            });
-
-
-                    if (error) {
-
-                        throw error;
-
-                    }
-
-
-                    // Success
-
-                    registerMessage.textContent =
-                        "✅ Account created successfully! Please check your email to confirm your account.";
-
-
-                    registerForm.reset();
-
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "Registration error:",
-                        error
-                    );
-
-
-                    registerMessage.textContent =
-                        "❌ " +
-                        (
-                            error.message ||
-                            "Unable to create account."
-                        );
-
-                }
-
-
-                registerButton.disabled =
-                    false;
-
-                registerButton.textContent =
-                    "Create Account";
+                return;
 
             }
 
-        );
 
-    </script>
+            if (
+                password.length < 6
+            ) {
+
+                registerMessage.textContent =
+                    "❌ Password must be at least 6 characters.";
+
+                return;
+
+            }
 
 
-    <script
-        src="js/main.js"
-    ></script>
+
+            // ==========================================
+            // DISABLE BUTTON
+            // ==========================================
+
+            registerButton.disabled =
+                true;
+
+            registerButton.textContent =
+                "Creating Account...";
+
+            registerMessage.textContent =
+                "";
+
+
+
+            try {
+
+
+                // ==========================================
+                // GITHUB PAGES REDIRECT
+                // ==========================================
+
+                const redirectURL =
+                    "https://kabir015az.github.io/hasbunallahu-store/login.html";
+
+
+
+                // ==========================================
+                // CREATE SUPABASE ACCOUNT
+                // ==========================================
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .auth
+                        .signUp({
+
+                            email:
+                                email,
+
+                            password:
+                                password,
+
+                            options: {
+
+                                data: {
+
+                                    full_name:
+                                        fullname
+
+                                },
+
+                                emailRedirectTo:
+                                    redirectURL
+
+                            }
+
+                        });
+
+
+
+                if (error) {
+
+                    throw error;
+
+                }
+
+
+
+                // ==========================================
+                // SUCCESS
+                // ==========================================
+
+                registerMessage.style.color =
+                    "#198754";
+
+                registerMessage.textContent =
+                    "✅ Account created successfully! Please check your email and click the confirmation link before logging in.";
+
+
+                registerForm.reset();
+
+
+
+            }
+
+            catch(error) {
+
+                console.error(
+                    "Registration error:",
+                    error
+                );
+
+
+                registerMessage.style.color =
+                    "#dc3545";
+
+
+                registerMessage.textContent =
+                    "❌ " +
+                    (
+                        error.message ||
+                        "Unable to create account."
+                    );
+
+            }
+
+
+
+            registerButton.disabled =
+                false;
+
+
+            registerButton.textContent =
+                "Create Account";
+
+        }
+
+    );
+
+</script>
+
+
+<script src="js/main.js"></script>
+
 
 </body>
 
