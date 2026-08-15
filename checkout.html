@@ -15,14 +15,14 @@
     </title>
 
     <link
-    rel="stylesheet"
-    href="css/style.css"
->
+        rel="stylesheet"
+        href="css/style.css"
+    >
 
-<link
-    rel="stylesheet"
-    href="css/checkout.css"
->
+    <link
+        rel="stylesheet"
+        href="css/checkout.css"
+    >
 
 </head>
 
@@ -60,18 +60,18 @@
                     Cart
                 </a>
 
-            
                 <a href="order.html">
                     My Orders
                 </a>
 
-              <a href="track.html">
-    Track Order
-              </a>
+                <a href="track.html">
+                    Track Order
+                </a>
 
-              <a href="admin.html">
-    Admin Dashboard
-              </a>
+                <a href="admin.html">
+                    Admin Dashboard
+                </a>
+
             </div>
 
         </nav>
@@ -110,6 +110,12 @@
                 Please login or create an account
                 before placing your order.
 
+                <br><br>
+
+                <a href="login.html?redirect=checkout.html">
+                    Login to continue
+                </a>
+
             </div>
 
 
@@ -121,7 +127,9 @@
             <form id="checkout-form">
 
 
-                <!-- CUSTOMER INFORMATION -->
+                <!-- ==================================
+                     CUSTOMER INFORMATION
+                     ================================== -->
 
                 <h2>
                     Customer Information
@@ -138,6 +146,7 @@
                         type="text"
                         id="fullname"
                         name="fullname"
+                        autocomplete="name"
                         required
                     >
 
@@ -154,6 +163,7 @@
                         type="email"
                         id="email"
                         name="email"
+                        autocomplete="email"
                         required
                     >
 
@@ -170,6 +180,7 @@
                         type="tel"
                         id="phone"
                         name="phone"
+                        autocomplete="tel"
                         required
                     >
 
@@ -177,7 +188,9 @@
 
 
 
-                <!-- DELIVERY INFORMATION -->
+                <!-- ==================================
+                     DELIVERY INFORMATION
+                     ================================== -->
 
                 <h2>
                     Delivery Information
@@ -233,9 +246,9 @@
 
 
 
-                <!-- ======================================
+                <!-- ==================================
                      ORDER SUMMARY
-                     ====================================== -->
+                     ================================== -->
 
                 <h2>
                     Order Summary
@@ -255,9 +268,9 @@
 
 
 
-                <!-- ======================================
+                <!-- ==================================
                      COUPON
-                     ====================================== -->
+                     ================================== -->
 
                 <div class="coupon-section">
 
@@ -297,9 +310,9 @@
 
 
 
-                <!-- ======================================
+                <!-- ==================================
                      PAYMENT METHODS
-                     ====================================== -->
+                     ================================== -->
 
                 <h2>
                     Payment Method
@@ -358,15 +371,18 @@
 
 
 
-                <!-- ======================================
+                <!-- ==================================
                      BANK DETAILS
-                     ====================================== -->
+                     ================================== -->
 
                 <div
                     id="bank-details"
                     style="
                         display:none;
                         margin-top:15px;
+                        padding:15px;
+                        border:1px solid #ddd;
+                        border-radius:8px;
                     "
                 >
 
@@ -374,47 +390,65 @@
                         Bank Transfer Details
                     </h3>
 
-                    <p>
-                        Please transfer your payment
-                        to the store bank account.
-                    </p>
 
                     <p>
+                        Please transfer your payment
+                        to the account below.
+                    </p>
+
+
+                    <p>
+
                         Account Name:
+
                         <strong>
                             Hasbunallahu Store
                         </strong>
+
                     </p>
 
+
                     <p>
+
                         Account Number:
+
                         <strong>
-                            YOUR_ACCOUNT_NUMBER
+                            9063962252
                         </strong>
+
                     </p>
 
+
                     <p>
+
                         Bank:
+
                         <strong>
-                            YOUR_BANK_NAME
+                            Opay
                         </strong>
+
                     </p>
 
+
                     <p>
+
                         Your order will remain
+
                         <strong>
                             Pending Payment
                         </strong>
+
                         until payment is confirmed.
+
                     </p>
 
                 </div>
 
 
 
-                <!-- ======================================
+                <!-- ==================================
                      TOTAL
-                     ====================================== -->
+                     ================================== -->
 
                 <div
                     class="checkout-total-box"
@@ -439,9 +473,9 @@
 
 
 
-                <!-- ======================================
+                <!-- ==================================
                      CHECKOUT MESSAGE
-                     ====================================== -->
+                     ================================== -->
 
                 <div
                     id="checkout-message"
@@ -454,9 +488,9 @@
 
 
 
-                <!-- ======================================
+                <!-- ==================================
                      PLACE ORDER
-                     ====================================== -->
+                     ================================== -->
 
                 <button
                     type="button"
@@ -497,8 +531,10 @@
     <script>
 
         emailjs.init({
+
             publicKey:
                 "zDU17Xd3CuZ3fJztk"
+
         });
 
     </script>
@@ -506,12 +542,20 @@
 
 
     <!-- ==========================================
-         SUPABASE
+         SUPABASE LIBRARY
          ========================================== -->
 
     <script
-        src="js/supabase.js"
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
+
+
+
+    <!-- ==========================================
+         SUPABASE CLIENT
+         ========================================== -->
+
+    <script src="js/supabase.js"></script>
 
 
 
@@ -519,50 +563,9 @@
          CHECKOUT JAVASCRIPT
          ========================================== -->
 
-    <script src="https://js.paystack.co/v2/inline.js"></script>
+    <script src="js/checkout.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
-<script>
-    emailjs.init({
-        publicKey: "zDU17Xd3CuZ3fJztk"
-    });
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="js/supabase.js"></script>
-
-<script src="js/checkout.js"></script>
-
-
-<!-- AUTH TEST -->
-<script>
-    setTimeout(async function () {
-
-        console.log("=== AUTH TEST ===");
-
-        const {
-            data,
-            error
-        } = await supabaseClient.auth.getSession();
-
-        console.log("Session:", data.session);
-        console.log("Auth error:", error);
-
-        if (data.session) {
-            console.log(
-                "✅ USER IS LOGGED IN:",
-                data.session.user.email
-            );
-        } else {
-            console.log(
-                "❌ NO SUPABASE SESSION FOUND"
-            );
-        }
-
-    }, 2000);
-</script>
 
 </body>
+
 </html>
