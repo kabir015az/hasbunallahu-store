@@ -356,13 +356,14 @@ async function getLoggedInCustomer() {
         ) {
 
             console.error(
-                "Supabase client is unavailable."
+                "Supabase client is not available."
             );
 
             return null;
         }
 
 
+        // First check the saved session
         const {
             data: sessionData,
             error: sessionError
@@ -384,31 +385,62 @@ async function getLoggedInCustomer() {
 
 
         if (
-            sessionData &&
-            sessionData.session &&
-            sessionData.session.user
+            !sessionData ||
+            !sessionData.session
         ) {
 
             console.log(
-                "✅ Logged-in user:",
-                sessionData.session.user.email
+                "No active Supabase session."
             );
 
-            return sessionData.session.user;
+            return null;
+        }
+
+
+        // Get the actual logged-in user
+        const {
+            data: userData,
+            error: userError
+        } =
+            await supabaseClient
+                .auth
+                .getUser();
+
+
+        if (userError) {
+
+            console.error(
+                "User error:",
+                userError
+            );
+
+            return null;
+        }
+
+
+        if (
+            !userData ||
+            !userData.user
+        ) {
+
+            return null;
         }
 
 
         console.log(
-            "❌ No active Supabase session."
+            "Logged-in customer:",
+            userData.user.email
         );
 
 
-        return null;
+        return userData.user;
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
-            "Authentication check failed:",
+            "Login check error:",
             error
         );
 

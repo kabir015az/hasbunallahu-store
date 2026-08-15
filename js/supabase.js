@@ -9,22 +9,20 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
 
-
-// ==========================================
-// CREATE SUPABASE CLIENT
-// ==========================================
-
 const supabaseClient =
     window.supabase.createClient(
         SUPABASE_URL,
-        SUPABASE_KEY
+        SUPABASE_KEY,
+        {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true,
+                storage: window.localStorage
+            }
+        }
     );
 
-
-// ==========================================
-// CHECK CONNECTION
-// ==========================================
-
 console.log(
-    "Hasbunallahu Store Supabase client loaded."
+    "Supabase client loaded successfully."
 );
