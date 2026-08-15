@@ -440,15 +440,33 @@
                        ================================== */
 
                     const urlParams =
-                        new URLSearchParams(
-                            window.location.search
-                        );
+    new URLSearchParams(
+        window.location.search
+    );
+
+let redirect =
+    urlParams.get("redirect") ||
+    "index.html";
 
 
-                    const redirect =
-                        urlParams.get(
-                            "redirect"
-                        ) || "index.html";
+// Only allow pages inside this website
+if (
+    redirect !== "checkout.html" &&
+    redirect !== "order.html" &&
+    redirect !== "index.html"
+) {
+
+    redirect = "index.html";
+
+}
+
+
+setTimeout(function () {
+
+    window.location.href =
+        redirect;
+
+}, 500);
 
 
                     /* ==================================
