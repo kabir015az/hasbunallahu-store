@@ -219,7 +219,9 @@
         </p>
 
 
-        <!-- ADD PRODUCT -->
+        <!-- ==================================================
+             ADD PRODUCT
+        ================================================== -->
 
         <div
             style="
@@ -238,6 +240,8 @@
             <form id="add-product-form">
 
 
+                <!-- PRODUCT NAME -->
+
                 <label for="product-name">
                     Product Name
                 </label>
@@ -252,6 +256,8 @@
 
                 <br><br>
 
+
+                <!-- PRODUCT PRICE -->
 
                 <label for="product-price">
                     Price (₦)
@@ -269,6 +275,8 @@
                 <br><br>
 
 
+                <!-- PRODUCT CATEGORY -->
+
                 <label for="product-category">
                     Category
                 </label>
@@ -284,20 +292,35 @@
                 <br><br>
 
 
+                <!-- PRODUCT IMAGE -->
+
                 <label for="product-image">
-                    Image Path
+                    Product Image
                 </label>
 
                 <input
-                    type="text"
+                    type="file"
                     id="product-image"
-                    placeholder="images/product.jpg"
+                    name="product-image"
+                    accept="image/*"
                     required
                 >
 
 
+                <!-- IMAGE PREVIEW -->
+
+                <div
+                    id="image-preview"
+                    style="
+                        margin-top:10px;
+                    "
+                ></div>
+
+
                 <br><br>
 
+
+                <!-- PRODUCT DESCRIPTION -->
 
                 <label for="product-description">
                     Description
@@ -313,6 +336,8 @@
 
                 <br><br>
 
+
+                <!-- PRODUCT QUANTITY -->
 
                 <label for="product-quantity">
                     Quantity / Stock
@@ -331,6 +356,8 @@
                 <br><br>
 
 
+                <!-- ADD PRODUCT BUTTON -->
+
                 <button
                     type="submit"
                     id="add-product-button"
@@ -342,13 +369,17 @@
             </form>
 
 
+            <!-- PRODUCT MESSAGE -->
+
             <p id="product-message"></p>
 
         </div>
 
 
 
-        <!-- PRODUCT LIST -->
+        <!-- ==================================================
+             PRODUCT LIST
+        ================================================== -->
 
         <h3>
             📦 Products
@@ -367,21 +398,37 @@
 
                     <tr>
 
-                        <th>ID</th>
+                        <th>
+                            ID
+                        </th>
 
-                        <th>Image</th>
+                        <th>
+                            Image
+                        </th>
 
-                        <th>Product</th>
+                        <th>
+                            Product
+                        </th>
 
-                        <th>Price</th>
+                        <th>
+                            Price
+                        </th>
 
-                        <th>Category</th>
+                        <th>
+                            Category
+                        </th>
 
-                        <th>Quantity</th>
+                        <th>
+                            Quantity
+                        </th>
 
-                        <th>Description</th>
+                        <th>
+                            Description
+                        </th>
 
-                        <th>Actions</th>
+                        <th>
+                            Actions
+                        </th>
 
                     </tr>
 

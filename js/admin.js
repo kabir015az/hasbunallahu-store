@@ -1890,6 +1890,88 @@ async function saveOrderUpdate(
 
 
 // ==========================================
+// PRODUCT IMAGE PREVIEW
+// ==========================================
+
+const productImageInput =
+    document.getElementById(
+        "product-image"
+    );
+
+const imagePreview =
+    document.getElementById(
+        "image-preview"
+    );
+
+
+if (
+    productImageInput &&
+    imagePreview
+) {
+
+    productImageInput.addEventListener(
+        "change",
+        function () {
+
+            const file =
+                this.files[0];
+
+
+            if (!file) {
+
+                imagePreview.innerHTML =
+                    "";
+
+                return;
+
+            }
+
+
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                imagePreview.innerHTML =
+                    "❌ Please select an image.";
+
+                this.value =
+                    "";
+
+                return;
+
+            }
+
+
+            const imageURL =
+                URL.createObjectURL(
+                    file
+                );
+
+
+            imagePreview.innerHTML = `
+
+                <img
+                    src="${imageURL}"
+                    alt="Product preview"
+                    style="
+                        width:150px;
+                        height:150px;
+                        object-fit:cover;
+                        border-radius:10px;
+                        border:1px solid #ddd;
+                    "
+                >
+
+            `;
+
+        }
+    );
+
+}
+
+// ==========================================
 // INITIALIZE ADMIN
 // ==========================================
 
@@ -1939,23 +2021,405 @@ document.addEventListener(
 
 
         // ==========================================
-        // ADD PRODUCT
+// ADD PRODUCT
+// ==========================================
+
+async function addProduct(
+    event
+) {
+
+    event.preventDefault();
+
+
+    const message =
+        getElement(
+            "product-message"
+        );
+
+
+    const name =
+        getElement(
+            "product-name"
+        )?.value.trim();
+
+
+    const price =
+        Number(
+            getElement(
+                "product-price"
+            )?.value
+        );
+
+
+    const category =
+        getElement(
+            "product-category"
+        )?.value.trim();
+
+
+    // ==========================================
+    // GET IMAGE FILE
+    // ==========================================
+
+    const imageInput =
+        getElement(
+            "product-image"
+        );
+
+
+    const imageFile =
+        imageInput?.files?.[0];
+
+
+    const description =
+        getElement(
+            "product-description"
+        )?.value.trim();
+
+
+    const quantity =
+        Number(
+            getElement(
+                "product-quantity"
+            )?.value
+        );
+
+
+    // ==========================================
+    // VALIDATE PRODUCT FIELDS
+    // ==========================================
+
+    if (
+        !name ||
+        !category ||
+        !description ||
+        Number.isNaN(price) ||
+        Number.isNaN(quantity)
+    ) {
+
+        if (message) {
+
+            message.textContent =
+                "❌ Please complete all product fields.";
+
+            message.style.color =
+                "red";
+
+        }
+
+        return;
+
+    }
+
+
+    // ==========================================
+    // VALIDATE IMAGE
+    // ==========================================
+
+    if (!imageFile) {
+
+        if (message) {
+
+            message.textContent =
+                "❌ Please select a product image.";
+
+            message.style.color =
+                "red";
+
+        }
+
+        return;
+
+    }
+
+
+    if (
+        !imageFile.type.startsWith(
+            "image/"
+        )
+    ) {
+
+        if (message) {
+
+            message.textContent =
+                "❌ Please select a valid image file.";
+
+            message.style.color =
+                "red";
+
+        }
+
+        return;
+
+    }
+
+
+    try {
+
+        if (message) {
+
+            message.textContent =
+                "⏳ Uploading product image...";
+
+            message.style.color =
+                "orange";
+
+        }
+
+
+        // ==========================================
+        // CREATE UNIQUE FILE NAME
         // ==========================================
 
-        const productForm =
-            getElement(
-                "add-product-form"
+        const fileExtension =
+            imageFile.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+
+        const fileName =
+            `${Date.now()}-${Math.random()
+                .toString(36)
+                .substring(2, 10)}.${fileExtension}`;
+
+
+        const filePath =
+            `products/${fileName}`;
+
+
+        console.log(
+            "Uploading image:",
+            filePath
+        );
+
+
+        // ==========================================
+        // UPLOAD IMAGE TO SUPABASE STORAGE
+        // ==========================================
+
+        const {
+            data: uploadData,
+            error: uploadError
+        } =
+            await supabaseClient
+                .storage
+                .from(
+                    "product-images"
+                )
+                .upload(
+                    filePath,
+                    imageFile,
+                    {
+                        cacheControl:
+                            "3600",
+
+                        contentType:
+                            imageFile.type,
+
+                        upsert:
+                            false
+                    }
+                );
+
+
+        if (uploadError) {
+
+            console.error(
+                "IMAGE UPLOAD ERROR:",
+                uploadError
             );
 
+            throw uploadError;
 
-        if (productForm) {
+        }
 
-            productForm.addEventListener(
-                "submit",
-                addProduct
+
+        console.log(
+            "Image uploaded:",
+            uploadData
+        );
+
+
+        // ==========================================
+        // GET PUBLIC IMAGE URL
+        // ==========================================
+
+        const {
+            data: publicURLData
+        } =
+            supabaseClient
+                .storage
+                .from(
+                    "product-images"
+                )
+                .getPublicUrl(
+                    filePath
+                );
+
+
+        const imageURL =
+            publicURLData?.publicUrl;
+
+
+        if (!imageURL) {
+
+            throw new Error(
+                "Could not get the public image URL."
             );
 
         }
+
+
+        console.log(
+            "Product image URL:",
+            imageURL
+        );
+
+
+        if (message) {
+
+            message.textContent =
+                "⏳ Saving product...";
+
+            message.style.color =
+                "orange";
+
+        }
+
+
+        // ==========================================
+        // SAVE PRODUCT TO DATABASE
+        // ==========================================
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from(
+                    "products"
+                )
+                .insert([
+
+                    {
+
+                        name:
+                            name,
+
+                        price:
+                            price,
+
+                        category:
+                            category,
+
+                        image:
+                            imageURL,
+
+                        description:
+                            description,
+
+                        quantity:
+                            quantity
+
+                    }
+
+                ]);
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        // ==========================================
+        // SUCCESS
+        // ==========================================
+
+        if (message) {
+
+            message.textContent =
+                "✅ Product added successfully.";
+
+            message.style.color =
+                "green";
+
+        }
+
+
+        // Reset form
+
+        getElement(
+            "add-product-form"
+        )?.reset();
+
+
+        // Reset quantity
+
+        const quantityInput =
+            getElement(
+                "product-quantity"
+            );
+
+
+        if (quantityInput) {
+
+            quantityInput.value =
+                "30";
+
+        }
+
+
+        // Clear image preview
+
+        const imagePreview =
+            getElement(
+                "image-preview"
+            );
+
+
+        if (imagePreview) {
+
+            imagePreview.innerHTML =
+                "";
+
+        }
+
+
+        // Reload dashboard
+
+        await loadProducts();
+
+        await loadStatistics();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Add product error:",
+            error
+        );
+
+
+        if (message) {
+
+            message.textContent =
+                "❌ " +
+                (
+                    error.message ||
+                    "Could not add product."
+                );
+
+            message.style.color =
+                "red";
+
+        }
+
+    }
+
+}
 
 
         // ==========================================

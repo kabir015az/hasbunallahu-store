@@ -28,16 +28,35 @@ document.addEventListener(
             );
 
 
-        if (!button || !input) {
+        if (
+            !button ||
+            !input ||
+            !message ||
+            !result
+        ) {
+
+            console.error(
+                "Tracking elements not found."
+            );
+
             return;
+
         }
 
+
+        // ==========================================
+        // TRACK BUTTON
+        // ==========================================
 
         button.addEventListener(
             "click",
             trackOrder
         );
 
+
+        // ==========================================
+        // ENTER KEY
+        // ==========================================
 
         input.addEventListener(
             "keydown",
@@ -57,6 +76,10 @@ document.addEventListener(
         );
 
 
+        // ==========================================
+        // TRACK ORDER
+        // ==========================================
+
         async function trackOrder() {
 
             const trackingNumber =
@@ -72,7 +95,7 @@ document.addEventListener(
             if (!trackingNumber) {
 
                 message.textContent =
-                    "Please enter your tracking number.";
+                    "❌ Please enter your tracking number.";
 
                 return;
 
@@ -86,10 +109,30 @@ document.addEventListener(
                 "Searching...";
 
             message.textContent =
-                "";
+                "Searching for your order...";
 
 
             try {
+
+                // ==========================================
+                // CHECK SUPABASE
+                // ==========================================
+
+                if (
+                    typeof supabaseClient ===
+                    "undefined"
+                ) {
+
+                    throw new Error(
+                        "Supabase client is not loaded."
+                    );
+
+                }
+
+
+                // ==========================================
+                // FIND ORDER
+                // ==========================================
 
                 const {
                     data,
@@ -97,15 +140,9 @@ document.addEventListener(
                 } =
                     await supabaseClient
                         .from("orders")
-                        .select(`
-                            order_number,
-                            customer_name,
-                            total,
-                            status,
-                            tracking_number,
-                            delivery_note,
-                            created_at
-                        `)
+                        .select(
+                            "order_number,customer_name,total,status,tracking_number,delivery_note,created_at"
+                        )
                         .eq(
                             "tracking_number",
                             trackingNumber
@@ -113,22 +150,35 @@ document.addEventListener(
                         .maybeSingle();
 
 
+                // ==========================================
+                // SUPABASE ERROR
+                // ==========================================
+
                 if (error) {
 
                     console.error(
-                        "Tracking error:",
+                        "SUPABASE TRACKING ERROR:",
                         error
                     );
 
-                    throw error;
+                    throw new Error(
+                        error.message ||
+                        "Supabase could not find the order."
+                    );
 
                 }
 
 
+                // ==========================================
+                // ORDER NOT FOUND
+                // ==========================================
+
                 if (!data) {
 
-                    message.textContent =
-                        "❌ Tracking number not found. Please check the number and try again.";
+                    message.innerHTML =
+                        "❌ <strong>Tracking number not found.</strong>" +
+                        "<br><br>" +
+                        "Please check that you entered the tracking number correctly.";
 
                     return;
 
@@ -136,32 +186,52 @@ document.addEventListener(
 
 
                 // ==========================================
-                // DISPLAY RESULT
+                // DISPLAY ORDER NUMBER
                 // ==========================================
 
                 document.getElementById(
                     "result-order-number"
                 ).textContent =
-                    data.order_number || "-";
+                    data.order_number ||
+                    "-";
 
+
+                // ==========================================
+                // DISPLAY TRACKING NUMBER
+                // ==========================================
 
                 document.getElementById(
                     "result-tracking-number"
                 ).textContent =
-                    data.tracking_number || "-";
+                    data.tracking_number ||
+                    "-";
 
+
+                // ==========================================
+                // DISPLAY CUSTOMER
+                // ==========================================
 
                 document.getElementById(
                     "result-customer"
                 ).textContent =
-                    data.customer_name || "-";
+                    data.customer_name ||
+                    "-";
 
+
+                // ==========================================
+                // DISPLAY STATUS
+                // ==========================================
 
                 document.getElementById(
                     "result-status"
                 ).textContent =
-                    data.status || "Order received";
+                    data.status ||
+                    "Order received";
 
+
+                // ==========================================
+                // DELIVERY NOTE
+                // ==========================================
 
                 document.getElementById(
                     "result-delivery-note"
@@ -170,13 +240,19 @@ document.addEventListener(
                     "Preparing for delivery";
 
 
+                // ==========================================
+                // TOTAL
+                // ==========================================
+
+                const total =
+                    Number(data.total) || 0;
+
+
                 document.getElementById(
                     "result-total"
                 ).textContent =
                     "₦" +
-                    Number(
-                        data.total || 0
-                    ).toLocaleString(
+                    total.toLocaleString(
                         "en-NG",
                         {
                             minimumFractionDigits: 2,
@@ -184,6 +260,10 @@ document.addEventListener(
                         }
                     );
 
+
+                // ==========================================
+                // DATE
+                // ==========================================
 
                 document.getElementById(
                     "result-date"
@@ -197,6 +277,10 @@ document.addEventListener(
                         : "-";
 
 
+                // ==========================================
+                // SHOW RESULT
+                // ==========================================
+
                 result.style.display =
                     "block";
 
@@ -204,17 +288,24 @@ document.addEventListener(
                 message.textContent =
                     "✅ Order found successfully.";
 
+
             }
 
             catch (error) {
 
                 console.error(
-                    "Tracking error:",
+                    "TRACKING ERROR:",
                     error
                 );
 
-                message.textContent =
-                    "❌ Unable to check your order right now. Please try again.";
+
+                message.innerHTML =
+                    "❌ <strong>Unable to track order.</strong>" +
+                    "<br><br>" +
+                    escapeHtml(
+                        error.message ||
+                        "Please try again."
+                    );
 
             }
 
@@ -229,6 +320,42 @@ document.addEventListener(
             }
 
         }
+
+
+        // ==========================================
+        // ESCAPE HTML
+        // ==========================================
+
+        function escapeHtml(value) {
+
+            return String(value)
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+        console.log(
+            "Hasbunallahu Store tracking loaded successfully."
+        );
 
     }
 );
