@@ -2435,3 +2435,5 @@ async function addProduct(
 
     }
 );
+console.log("ADMIN JS VERSION 2 LOADED");
+alert("Admin JavaScript is loaded");
