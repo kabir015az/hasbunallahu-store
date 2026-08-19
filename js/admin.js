@@ -1,66 +1,39 @@
-// ==========================================================
+// ============================================================
 // HASBUNALLAHU STORE
 // ADMIN DASHBOARD
-// COMPLETE ADMIN.JS
-// ==========================================================
+// ============================================================
 
-
-// ==========================================================
-// ADMIN SETTINGS
-// ==========================================================
-
-const ADMIN_EMAIL =
-    "kabirabdulazeez45@gmail.com";
+const ADMIN_EMAIL = "kabirabdulazeez45@gmail.com";
 
 let currentAdmin = null;
 
 
-// ==========================================================
-// HELPER
-// ==========================================================
+// ============================================================
+// HELPERS
+// ============================================================
 
 function getElement(id) {
     return document.getElementById(id);
 }
 
 
-// ==========================================================
-// MONEY FORMAT
-// ==========================================================
-
 function formatMoney(amount) {
-
-    return "₦" +
-        Number(amount || 0).toLocaleString(
-            "en-NG",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        );
-
+    return "₦" + Number(amount || 0).toLocaleString("en-NG", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
 }
 
 
-// ==========================================================
-// ESCAPE HTML
-// ==========================================================
-
 function escapeHtml(value) {
-
     return String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-
 }
 
-
-// ==========================================================
-// PARSE MEDIA
-// ==========================================================
 
 function parseMedia(value) {
 
@@ -72,89 +45,61 @@ function parseMedia(value) {
         return value;
     }
 
-    let result = value;
+    try {
 
-    for (let i = 0; i < 3; i++) {
+        let parsed = JSON.parse(value);
 
-        if (typeof result !== "string") {
-            break;
+        // Handle double encoded JSON
+        if (typeof parsed === "string") {
+            try {
+                parsed = JSON.parse(parsed);
+            } catch (e) {}
         }
 
-        try {
-
-            const parsed =
-                JSON.parse(result);
-
-            result = parsed;
-
-        }
-
-        catch (error) {
-            break;
-        }
-
-    }
-
-    if (Array.isArray(result)) {
-
-        return result.filter(
-            item =>
+        if (Array.isArray(parsed)) {
+            return parsed.filter(item =>
                 typeof item === "string" &&
                 item.trim() !== ""
-        );
+            );
+        }
 
-    }
+    } catch (error) {
 
-    if (
-        typeof result === "string" &&
-        result.trim() !== ""
-    ) {
-
-        return [result];
-
+        // Old single URL format
+        if (typeof value === "string" && value.trim()) {
+            return [value];
+        }
     }
 
     return [];
-
 }
 
 
-// ==========================================================
+// ============================================================
 // LOGIN MESSAGE
-// ==========================================================
+// ============================================================
 
-function showLoginMessage(
-    message,
-    success = false
-) {
+function showLoginMessage(message, success = false) {
 
-    const element =
-        getElement("login-message");
+    const element = getElement("login-message");
 
-    if (!element) {
-        return;
-    }
+    if (!element) return;
 
-    element.textContent =
-        message;
+    element.textContent = message;
 
     element.style.color =
         success ? "green" : "red";
-
 }
 
 
-// ==========================================================
+// ============================================================
 // SHOW DASHBOARD
-// ==========================================================
+// ============================================================
 
 function showDashboard() {
 
-    const login =
-        getElement("admin-login");
-
-    const dashboard =
-        getElement("admin-dashboard");
+    const login = getElement("admin-login");
+    const dashboard = getElement("admin-dashboard");
 
     if (login) {
         login.style.display = "none";
@@ -163,21 +108,17 @@ function showDashboard() {
     if (dashboard) {
         dashboard.style.display = "block";
     }
-
 }
 
 
-// ==========================================================
+// ============================================================
 // SHOW LOGIN
-// ==========================================================
+// ============================================================
 
 function showLogin() {
 
-    const login =
-        getElement("admin-login");
-
-    const dashboard =
-        getElement("admin-dashboard");
+    const login = getElement("admin-login");
+    const dashboard = getElement("admin-dashboard");
 
     if (login) {
         login.style.display = "block";
@@ -186,13 +127,12 @@ function showLogin() {
     if (dashboard) {
         dashboard.style.display = "none";
     }
-
 }
 
 
-// ==========================================================
+// ============================================================
 // CHECK ADMIN SESSION
-// ==========================================================
+// ============================================================
 
 async function checkAdminSession() {
 
@@ -201,42 +141,28 @@ async function checkAdminSession() {
         const {
             data,
             error
-        } =
-            await supabaseClient
-                .auth
-                .getSession();
+        } = await supabaseClient.auth.getSession();
 
         if (error) {
             throw error;
         }
 
-        const session =
-            data.session;
+        const session = data.session;
 
         if (!session) {
-
             showLogin();
-
             return;
-
         }
 
-        const user =
-            session.user;
+        const user = session.user;
 
-        if (
-            !user ||
-            !user.email
-        ) {
+        if (!user || !user.email) {
 
-            await supabaseClient
-                .auth
-                .signOut();
+            await supabaseClient.auth.signOut();
 
             showLogin();
 
             return;
-
         }
 
         if (
@@ -244,9 +170,7 @@ async function checkAdminSession() {
             ADMIN_EMAIL.toLowerCase()
         ) {
 
-            await supabaseClient
-                .auth
-                .signOut();
+            await supabaseClient.auth.signOut();
 
             showLogin();
 
@@ -255,19 +179,15 @@ async function checkAdminSession() {
             );
 
             return;
-
         }
 
-        currentAdmin =
-            user;
+        currentAdmin = user;
 
         showDashboard();
 
         await loadDashboard();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Session error:",
@@ -277,13 +197,12 @@ async function checkAdminSession() {
         showLogin();
 
     }
-
 }
 
 
-// ==========================================================
+// ============================================================
 // ADMIN LOGIN
-// ==========================================================
+// ============================================================
 
 async function adminLogin(event) {
 
@@ -306,7 +225,6 @@ async function adminLogin(event) {
         );
 
         return;
-
     }
 
     if (
@@ -319,18 +237,14 @@ async function adminLogin(event) {
         );
 
         return;
-
     }
 
-    const button =
-        event.submitter;
+    const button = event.submitter;
 
     if (button) {
 
         button.disabled = true;
-
-        button.textContent =
-            "Logging in...";
+        button.textContent = "Logging in...";
 
     }
 
@@ -339,18 +253,12 @@ async function adminLogin(event) {
         const {
             data,
             error
-        } =
-            await supabaseClient
-                .auth
-                .signInWithPassword({
+        } = await supabaseClient.auth.signInWithPassword({
 
-                    email:
-                        email,
+            email: email,
+            password: password
 
-                    password:
-                        password
-
-                });
+        });
 
         if (error) {
             throw error;
@@ -364,16 +272,13 @@ async function adminLogin(event) {
 
         }
 
-        currentAdmin =
-            data.user;
+        currentAdmin = data.user;
 
         showDashboard();
 
         await loadDashboard();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Login error:",
@@ -388,79 +293,55 @@ async function adminLogin(event) {
             )
         );
 
-    }
-
-    finally {
+    } finally {
 
         if (button) {
 
             button.disabled = false;
-
-            button.textContent =
-                "Login";
+            button.textContent = "Login";
 
         }
-
     }
-
 }
 
 
-// ==========================================================
+// ============================================================
 // LOGOUT
-// ==========================================================
+// ============================================================
 
 async function adminLogout() {
 
     try {
-
-        await supabaseClient
-            .auth
-            .signOut();
-
+        await supabaseClient.auth.signOut();
+    } catch (error) {
+        console.error(error);
     }
 
-    catch (error) {
-
-        console.error(
-            "Logout error:",
-            error
-        );
-
-    }
-
-    currentAdmin =
-        null;
+    currentAdmin = null;
 
     showLogin();
-
 }
 
 
-// ==========================================================
+// ============================================================
 // LOAD DASHBOARD
-// ==========================================================
+// ============================================================
 
 async function loadDashboard() {
 
     await Promise.all([
-
         loadStatistics(),
-
         loadProducts(),
-
         loadOrders(),
-
         loadCategories()
-
     ]);
 
 }
 
 
-// ==========================================================
+// ============================================================
 // STATISTICS
-// ==========================================================
+// ============================================================
 
 async function loadStatistics() {
 
@@ -468,44 +349,36 @@ async function loadStatistics() {
 
         const {
             data: orders,
-            error: orderError
-        } =
-            await supabaseClient
-                .from("orders")
-                .select(
-                    "id,total,customer_email"
-                );
+            error
+        } = await supabaseClient
+            .from("orders")
+            .select("id,total,customer_email");
 
-        if (orderError) {
-            throw orderError;
+        if (error) {
+            throw error;
         }
 
-        const orderList =
-            orders || [];
+        const orderList = orders || [];
 
-        let totalSales =
-            0;
+        let totalSales = 0;
 
-        const customers =
-            new Set();
+        const customers = new Set();
 
-        orderList.forEach(
-            order => {
+        orderList.forEach(order => {
 
-                totalSales +=
-                    Number(order.total) || 0;
+            totalSales +=
+                Number(order.total) || 0;
 
-                if (order.customer_email) {
+            if (order.customer_email) {
 
-                    customers.add(
-                        order.customer_email
-                            .toLowerCase()
-                    );
-
-                }
+                customers.add(
+                    order.customer_email
+                        .toLowerCase()
+                );
 
             }
-        );
+
+        });
 
         const totalOrders =
             getElement("total-orders");
@@ -535,16 +408,12 @@ async function loadStatistics() {
         const {
             count,
             error: productError
-        } =
-            await supabaseClient
-                .from("products")
-                .select(
-                    "id",
-                    {
-                        count: "exact",
-                        head: true
-                    }
-                );
+        } = await supabaseClient
+            .from("products")
+            .select("id", {
+                count: "exact",
+                head: true
+            });
 
         if (productError) {
             throw productError;
@@ -554,15 +423,11 @@ async function loadStatistics() {
             getElement("total-products");
 
         if (totalProducts) {
-
             totalProducts.textContent =
                 count || 0;
-
         }
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Statistics error:",
@@ -570,13 +435,12 @@ async function loadStatistics() {
         );
 
     }
-
 }
 
 
-// ==========================================================
+// ============================================================
 // IMAGE PREVIEW
-// ==========================================================
+// ============================================================
 
 function setupImagePreview() {
 
@@ -594,67 +458,53 @@ function setupImagePreview() {
         "change",
         function () {
 
-            preview.innerHTML =
-                "";
+            preview.innerHTML = "";
 
             const files =
-                Array.from(
-                    this.files || []
-                );
+                Array.from(this.files || []);
 
-            files.forEach(
-                file => {
+            files.forEach(file => {
 
-                    if (
-                        !file.type.startsWith(
-                            "image/"
-                        )
-                    ) {
-                        return;
-                    }
-
-                    const url =
-                        URL.createObjectURL(
-                            file
-                        );
-
-                    const div =
-                        document.createElement(
-                            "div"
-                        );
-
-                    div.className =
-                        "preview-item";
-
-                    div.innerHTML = `
-
-                        <img
-                            src="${url}"
-                            alt="Image preview"
-                        >
-
-                        <small>
-                            ${escapeHtml(file.name)}
-                        </small>
-
-                    `;
-
-                    preview.appendChild(
-                        div
-                    );
-
+                if (
+                    !file.type.startsWith("image/")
+                ) {
+                    return;
                 }
-            );
+
+                const url =
+                    URL.createObjectURL(file);
+
+                const div =
+                    document.createElement("div");
+
+                div.className =
+                    "preview-item";
+
+                div.innerHTML = `
+
+                    <img
+                        src="${url}"
+                        alt="Image preview"
+                    >
+
+                    <small>
+                        ${escapeHtml(file.name)}
+                    </small>
+
+                `;
+
+                preview.appendChild(div);
+
+            });
 
         }
     );
-
 }
 
 
-// ==========================================================
+// ============================================================
 // VIDEO PREVIEW
-// ==========================================================
+// ============================================================
 
 function setupVideoPreview() {
 
@@ -672,68 +522,54 @@ function setupVideoPreview() {
         "change",
         function () {
 
-            preview.innerHTML =
-                "";
+            preview.innerHTML = "";
 
             const files =
-                Array.from(
-                    this.files || []
-                );
+                Array.from(this.files || []);
 
-            files.forEach(
-                file => {
+            files.forEach(file => {
 
-                    if (
-                        !file.type.startsWith(
-                            "video/"
-                        )
-                    ) {
-                        return;
-                    }
-
-                    const url =
-                        URL.createObjectURL(
-                            file
-                        );
-
-                    const div =
-                        document.createElement(
-                            "div"
-                        );
-
-                    div.className =
-                        "preview-item";
-
-                    div.innerHTML = `
-
-                        <video
-                            src="${url}"
-                            controls
-                            muted
-                        ></video>
-
-                        <small>
-                            ${escapeHtml(file.name)}
-                        </small>
-
-                    `;
-
-                    preview.appendChild(
-                        div
-                    );
-
+                if (
+                    !file.type.startsWith("video/")
+                ) {
+                    return;
                 }
-            );
+
+                const url =
+                    URL.createObjectURL(file);
+
+                const div =
+                    document.createElement("div");
+
+                div.className =
+                    "preview-item";
+
+                div.innerHTML = `
+
+                    <video
+                        src="${url}"
+                        controls
+                        muted
+                    ></video>
+
+                    <small>
+                        ${escapeHtml(file.name)}
+                    </small>
+
+                `;
+
+                preview.appendChild(div);
+
+            });
 
         }
     );
-
 }
 
 
-// ==========================================================
+// ============================================================
 // UPLOAD FILE
-// ==========================================================
+// ============================================================
 
 async function uploadFile(
     bucket,
@@ -757,24 +593,18 @@ async function uploadFile(
 
     const {
         error
-    } =
-        await supabaseClient
-            .storage
-            .from(bucket)
-            .upload(
-                filePath,
-                file,
-                {
-                    cacheControl:
-                        "3600",
-
-                    contentType:
-                        file.type,
-
-                    upsert:
-                        false
-                }
-            );
+    } = await supabaseClient
+        .storage
+        .from(bucket)
+        .upload(
+            filePath,
+            file,
+            {
+                cacheControl: "3600",
+                contentType: file.type,
+                upsert: false
+            }
+        );
 
     if (error) {
         throw error;
@@ -782,85 +612,72 @@ async function uploadFile(
 
     const {
         data
-    } =
-        supabaseClient
-            .storage
-            .from(bucket)
-            .getPublicUrl(
-                filePath
-            );
+    } = supabaseClient
+        .storage
+        .from(bucket)
+        .getPublicUrl(filePath);
 
     if (!data?.publicUrl) {
 
         throw new Error(
             "Could not create public URL."
         );
-
     }
 
     return data.publicUrl;
-
 }
 
 
-// ==========================================================
+// ============================================================
 // ADD PRODUCT
-// ==========================================================
+// ============================================================
 
 async function addProduct(event) {
 
     event.preventDefault();
 
     const message =
-        getElement(
-            "product-message"
-        );
+        getElement("product-message");
 
     const name =
-        getElement(
-            "product-name"
-        )?.value
-        .trim();
+        getElement("product-name")
+            .value
+            .trim();
 
     const price =
         Number(
-            getElement(
-                "product-price"
-            )?.value
+            getElement("product-price")
+                .value
         );
 
     const category =
-        getElement(
-            "product-category"
-        )?.value
-        .trim();
+        getElement("product-category")
+            .value
+            .trim();
 
     const description =
-        getElement(
-            "product-description"
-        )?.value
-        .trim();
+        getElement("product-description")
+            .value
+            .trim();
 
     const quantity =
         Number(
-            getElement(
-                "product-quantity"
-            )?.value
+            getElement("product-quantity")
+                .value
         );
 
     const imageFiles =
         Array.from(
-            getElement(
-                "product-image"
-            )?.files || []
+            getElement("product-image")
+                .files || []
         );
 
     const videoFiles =
         Array.from(
-            getElement(
-                "product-video"
-            )?.files || []
+            getElement("product-video")
+                .files || []
         );
+
 
     if (
         !name ||
@@ -873,36 +690,31 @@ async function addProduct(event) {
         message.textContent =
             "❌ Please complete all product fields.";
 
-        message.style.color =
-            "red";
+        message.style.color = "red";
 
         return;
-
     }
 
-    if (
-        imageFiles.length === 0
-    ) {
+
+    if (imageFiles.length === 0) {
 
         message.textContent =
             "❌ Please select at least one image.";
 
-        message.style.color =
-            "red";
+        message.style.color = "red";
 
         return;
-
     }
 
+
     const button =
-        getElement(
-            "add-product-button"
-        );
+        getElement("add-product-button");
+
 
     try {
 
-        button.disabled =
-            true;
+        button.disabled = true;
+
 
         const imageURLs = [];
 
@@ -915,8 +727,7 @@ async function addProduct(event) {
             message.textContent =
                 `⏳ Uploading image ${i + 1} of ${imageFiles.length}...`;
 
-            message.style.color =
-                "blue";
+            message.style.color = "blue";
 
             const url =
                 await uploadFile(
@@ -925,11 +736,9 @@ async function addProduct(event) {
                     imageFiles[i]
                 );
 
-            imageURLs.push(
-                url
-            );
-
+            imageURLs.push(url);
         }
+
 
         const videoURLs = [];
 
@@ -949,111 +758,72 @@ async function addProduct(event) {
                     videoFiles[i]
                 );
 
-            videoURLs.push(
-                url
-            );
-
+            videoURLs.push(url);
         }
+
 
         message.textContent =
             "⏳ Saving product...";
 
+
         const {
             error
-        } =
-            await supabaseClient
-                .from("products")
-                .insert([
+        } = await supabaseClient
+            .from("products")
+            .insert([{
 
-                    {
+                name: name,
 
-                        name:
-                            name,
+                price: price,
 
-                        price:
-                            price,
+                category: category,
 
-                        category:
-                            category,
+                image:
+                    JSON.stringify(imageURLs),
 
-                        image:
-                            JSON.stringify(
-                                imageURLs
-                            ),
+                videos:
+                    JSON.stringify(videoURLs),
 
-                        videos:
-                            JSON.stringify(
-                                videoURLs
-                            ),
+                description:
+                    description,
 
-                        description:
-                            description,
+                quantity:
+                    quantity
 
-                        quantity:
-                            quantity
+            }]);
 
-                    }
-
-                ]);
 
         if (error) {
             throw error;
         }
 
+
         message.textContent =
-            "✅ Product added successfully.";
+            `✅ Product added successfully!
+Images: ${imageURLs.length}
+Videos: ${videoURLs.length}`;
 
-        message.style.color =
-            "green";
+        message.style.color = "green";
 
-        const form =
-            getElement(
-                "add-product-form"
-            );
 
-        if (form) {
-            form.reset();
-        }
+        getElement("add-product-form")
+            .reset();
 
-        const imagePreview =
-            getElement(
-                "image-preview"
-            );
+        getElement("image-preview")
+            .innerHTML = "";
 
-        const videoPreview =
-            getElement(
-                "video-preview"
-            );
+        getElement("video-preview")
+            .innerHTML = "";
 
-        if (imagePreview) {
-            imagePreview.innerHTML =
-                "";
-        }
+        getElement("product-quantity")
+            .value = "30";
 
-        if (videoPreview) {
-            videoPreview.innerHTML =
-                "";
-        }
-
-        const quantityInput =
-            getElement(
-                "product-quantity"
-            );
-
-        if (quantityInput) {
-            quantityInput.value =
-                "30";
-        }
 
         await loadProducts();
-
         await loadStatistics();
-
         await loadCategories();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Add product error:",
@@ -1067,34 +837,27 @@ async function addProduct(event) {
                 "Could not add product."
             );
 
-        message.style.color =
-            "red";
+        message.style.color = "red";
 
-    }
+    } finally {
 
-    finally {
-
-        button.disabled =
-            false;
+        button.disabled = false;
 
         button.textContent =
             "➕ Add Product";
 
     }
-
 }
 
 
-// ==========================================================
+// ============================================================
 // LOAD PRODUCTS
-// ==========================================================
+// ============================================================
 
 async function loadProducts() {
 
     const table =
-        getElement(
-            "products-table"
-        );
+        getElement("products-table");
 
     if (!table) {
         return;
@@ -1105,21 +868,17 @@ async function loadProducts() {
         const {
             data: products,
             error
-        } =
-            await supabaseClient
-                .from("products")
-                .select("*")
-                .order(
-                    "id",
-                    {
-                        ascending:
-                            true
-                    }
-                );
+        } = await supabaseClient
+            .from("products")
+            .select("*")
+            .order("id", {
+                ascending: true
+            });
 
         if (error) {
             throw error;
         }
+
 
         if (
             !products ||
@@ -1129,152 +888,138 @@ async function loadProducts() {
             table.innerHTML = `
 
                 <tr>
-
                     <td colspan="9">
                         No products found.
                     </td>
-
                 </tr>
 
             `;
 
             return;
-
         }
 
-        table.innerHTML =
-            "";
 
-        products.forEach(
-            product => {
+        table.innerHTML = "";
 
-                const images =
-                    parseMedia(
-                        product.image
-                    );
 
-                const videos =
-                    parseMedia(
-                        product.videos
-                    );
+        products.forEach(product => {
 
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
+            const images =
+                parseMedia(product.image);
 
-                row.innerHTML = `
+            const videos =
+                parseMedia(product.videos);
 
-                    <td>
-                        ${escapeHtml(
-                            product.id
-                        )}
-                    </td>
 
-                    <td>
+            const row =
+                document.createElement("tr");
 
-                        ${
-                            images[0]
-                                ? `
-                                    <img
-                                        src="${escapeHtml(images[0])}"
-                                        class="product-main-image"
-                                        alt="Product"
-                                    >
-                                `
-                                : "No image"
-                        }
 
-                        <div class="media-count">
-                            ${images.length}
-                            image${images.length === 1 ? "" : "s"}
-                        </div>
+            row.innerHTML = `
 
-                    </td>
+                <td>
+                    ${escapeHtml(product.id)}
+                </td>
 
-                    <td>
+                <td>
 
-                        ${
-                            videos[0]
-                                ? `
-                                    <video
-                                        src="${escapeHtml(videos[0])}"
-                                        controls
-                                        class="product-video-preview"
-                                    ></video>
-                                `
-                                : "No video"
-                        }
+                    ${
+                        images[0]
+                            ? `
+                                <img
+                                    src="${escapeHtml(images[0])}"
+                                    class="product-main-image"
+                                    alt="Product"
+                                >
+                            `
+                            : "No image"
+                    }
 
-                        <div class="media-count">
-                            ${videos.length}
-                            video${videos.length === 1 ? "" : "s"}
-                        </div>
+                    <div class="media-count">
 
-                    </td>
+                        ${images.length}
+                        image${images.length === 1 ? "" : "s"}
 
-                    <td>
-                        ${escapeHtml(
-                            product.name
-                        )}
-                    </td>
+                    </div>
 
-                    <td>
-                        ${formatMoney(
-                            product.price
-                        )}
-                    </td>
+                </td>
 
-                    <td>
-                        ${escapeHtml(
-                            product.category
-                        )}
-                    </td>
 
-                    <td>
-                        ${Number(
-                            product.quantity
-                        ) || 0}
-                    </td>
+                <td>
 
-                    <td>
-                        ${escapeHtml(
-                            product.description
-                        )}
-                    </td>
+                    ${
+                        videos[0]
+                            ? `
+                                <video
+                                    src="${escapeHtml(videos[0])}"
+                                    controls
+                                    class="product-video-preview"
+                                ></video>
+                            `
+                            : "No video"
+                    }
 
-                    <td>
+                    <div class="media-count">
 
-                        <button
-                            type="button"
-                            onclick="editProduct(${Number(product.id)})"
-                        >
-                            ✏️ Edit
-                        </button>
+                        ${videos.length}
+                        video${videos.length === 1 ? "" : "s"}
 
-                        <br><br>
+                    </div>
 
-                        <button
-                            type="button"
-                            onclick="deleteProduct(${Number(product.id)})"
-                        >
-                            🗑️ Delete
-                        </button>
+                </td>
 
-                    </td>
 
-                `;
+                <td>
+                    ${escapeHtml(product.name)}
+                </td>
 
-                table.appendChild(
-                    row
-                );
 
-            }
-        );
+                <td>
+                    ${formatMoney(product.price)}
+                </td>
 
-    }
 
-    catch (error) {
+                <td>
+                    ${escapeHtml(product.category)}
+                </td>
+
+
+                <td>
+                    ${Number(product.quantity) || 0}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(product.description)}
+                </td>
+
+
+                <td>
+
+                    <button
+                        type="button"
+                        onclick="editProduct(${Number(product.id)})"
+                    >
+                        ✏️ Edit
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="deleteProduct(${Number(product.id)})"
+                    >
+                        🗑️ Delete
+                    </button>
+
+                </td>
+
+            `;
+
+
+            table.appendChild(row);
+
+        });
+
+    } catch (error) {
 
         console.error(
             "Products error:",
@@ -1291,9 +1036,7 @@ async function loadProducts() {
 
                     <br><br>
 
-                    ${escapeHtml(
-                        error.message
-                    )}
+                    ${escapeHtml(error.message)}
 
                 </td>
 
@@ -1302,24 +1045,22 @@ async function loadProducts() {
         `;
 
     }
-
 }
 
 
-// ==========================================================
+// ============================================================
 // LOAD CATEGORIES
-// ==========================================================
+// ============================================================
 
 async function loadCategories() {
 
     const select =
-        getElement(
-            "product-category"
-        );
+        getElement("product-category");
 
     if (!select) {
         return;
     }
+
 
     const defaultCategories = [
 
@@ -1338,44 +1079,33 @@ async function loadCategories() {
 
     ];
 
+
     let categories =
         [...defaultCategories];
+
 
     try {
 
         const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("products")
-                .select(
-                    "category"
+            data
+        } = await supabaseClient
+            .from("products")
+            .select("category");
+
+
+        (data || []).forEach(product => {
+
+            if (product.category) {
+
+                categories.push(
+                    product.category.trim()
                 );
 
-        if (!error) {
+            }
 
-            (data || []).forEach(
-                product => {
+        });
 
-                    if (
-                        product.category
-                    ) {
-
-                        categories.push(
-                            product.category.trim()
-                        );
-
-                    }
-
-                }
-            );
-
-        }
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Category error:",
@@ -1383,6 +1113,7 @@ async function loadCategories() {
         );
 
     }
+
 
     try {
 
@@ -1394,25 +1125,22 @@ async function loadCategories() {
             );
 
         categories =
-            categories.concat(
-                saved
-            );
+            categories.concat(saved);
 
-    }
+    } catch (error) {}
 
-    catch (error) {}
 
     categories =
-        [
-            ...new Set(
-                categories.filter(Boolean)
-            )
-        ];
+        [...new Set(
+            categories.filter(Boolean)
+        )];
+
 
     categories.sort(
         (a, b) =>
             a.localeCompare(b)
     );
+
 
     select.innerHTML = `
 
@@ -1422,33 +1150,25 @@ async function loadCategories() {
 
     `;
 
-    categories.forEach(
-        category => {
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+    categories.forEach(category => {
 
-            option.value =
-                category;
+        const option =
+            document.createElement("option");
 
-            option.textContent =
-                category;
+        option.value = category;
 
-            select.appendChild(
-                option
-            );
+        option.textContent = category;
 
-        }
-    );
+        select.appendChild(option);
 
+    });
 }
 
 
-// ==========================================================
+// ============================================================
 // ADD CATEGORY
-// ==========================================================
+// ============================================================
 
 function addNewCategory() {
 
@@ -1471,8 +1191,8 @@ function addNewCategory() {
         );
 
         return;
-
     }
+
 
     let saved = [];
 
@@ -1485,23 +1205,16 @@ function addNewCategory() {
                 ) || "[]"
             );
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         saved = [];
 
     }
 
-    if (
-        !saved.includes(
-            newCategory
-        )
-    ) {
 
-        saved.push(
-            newCategory
-        );
+    if (!saved.includes(newCategory)) {
+
+        saved.push(newCategory);
 
         localStorage.setItem(
             "hasbunallahu_categories",
@@ -1510,187 +1223,178 @@ function addNewCategory() {
 
     }
 
-    loadCategories()
-        .then(
-            () => {
 
-                const select =
-                    getElement(
-                        "product-category"
-                    );
+    loadCategories().then(() => {
 
-                if (select) {
+        getElement(
+            "product-category"
+        ).value = newCategory;
 
-                    select.value =
-                        newCategory;
-
-                }
-
-            }
-        );
-
+    });
 }
 
 
-// ==========================================================
+// ============================================================
 // EDIT PRODUCT
-// ==========================================================
+// ============================================================
 
-async function editProduct(
-    productId
-) {
+async function editProduct(productId) {
 
     try {
 
         const {
             data: product,
             error
-        } =
-            await supabaseClient
-                .from("products")
-                .select(
-                    "id,name,price,category,quantity,description"
-                )
-                .eq(
-                    "id",
-                    productId
-                )
-                .limit(1);
+        } = await supabaseClient
+            .from("products")
+            .select(
+                "id,name,price,category,quantity,description"
+            )
+            .eq("id", productId)
+            .maybeSingle();
 
         if (error) {
             throw error;
         }
 
-        if (
-            !product ||
-            product.length === 0
-        ) {
+        if (!product) {
 
             alert(
                 "❌ Product not found."
             );
 
             return;
-
         }
 
-        const current =
-            product[0];
 
         const name =
             prompt(
                 "Product name:",
-                current.name || ""
+                product.name || ""
             );
 
         if (name === null) {
             return;
         }
 
-        const priceText =
+
+        const priceInput =
             prompt(
-                "Price:",
-                current.price || "0"
+                "Price (₦):",
+                product.price ?? ""
             );
 
-        if (priceText === null) {
+        if (priceInput === null) {
             return;
         }
+
 
         const category =
             prompt(
                 "Category:",
-                current.category || ""
+                product.category || ""
             );
 
         if (category === null) {
             return;
         }
 
-        const quantityText =
+
+        const quantityInput =
             prompt(
-                "Quantity:",
-                current.quantity || "0"
+                "Quantity / Stock:",
+                product.quantity ?? 0
             );
 
-        if (quantityText === null) {
+        if (quantityInput === null) {
             return;
         }
+
 
         const description =
             prompt(
                 "Description:",
-                current.description || ""
+                product.description || ""
             );
 
         if (description === null) {
             return;
         }
 
+
         const price =
-            Number(priceText);
+            Number(priceInput);
 
         const quantity =
-            Number(quantityText);
+            Number(quantityInput);
+
 
         if (
             Number.isNaN(price) ||
-            Number.isNaN(quantity)
+            price < 0
         ) {
 
             alert(
-                "❌ Price and quantity must be numbers."
+                "❌ Invalid price."
             );
 
             return;
-
         }
+
+
+        if (
+            Number.isNaN(quantity) ||
+            quantity < 0
+        ) {
+
+            alert(
+                "❌ Invalid quantity."
+            );
+
+            return;
+        }
+
 
         const {
             error: updateError
-        } =
-            await supabaseClient
-                .from("products")
-                .update({
+        } = await supabaseClient
+            .from("products")
+            .update({
 
-                    name:
-                        name.trim(),
+                name:
+                    name.trim(),
 
-                    price:
-                        price,
+                price:
+                    price,
 
-                    category:
-                        category.trim(),
+                category:
+                    category.trim(),
 
-                    quantity:
-                        quantity,
+                quantity:
+                    quantity,
 
-                    description:
-                        description.trim()
+                description:
+                    description.trim()
 
-                })
-                .eq(
-                    "id",
-                    productId
-                );
+            })
+            .eq("id", productId);
+
 
         if (updateError) {
             throw updateError;
         }
 
+
         alert(
             "✅ Product updated successfully."
         );
 
+
         await loadProducts();
-
         await loadStatistics();
-
         await loadCategories();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Edit product error:",
@@ -1704,57 +1408,49 @@ async function editProduct(
                 "Unknown error"
             )
         );
-
     }
-
 }
 
 
-// ==========================================================
+// ============================================================
 // DELETE PRODUCT
-// ==========================================================
+// ============================================================
 
-async function deleteProduct(
-    productId
-) {
+async function deleteProduct(productId) {
 
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             "Are you sure you want to delete this product?"
-        );
-
-    if (!confirmed) {
+        )
+    ) {
         return;
     }
+
 
     try {
 
         const {
             error
-        } =
-            await supabaseClient
-                .from("products")
-                .delete()
-                .eq(
-                    "id",
-                    productId
-                );
+        } = await supabaseClient
+            .from("products")
+            .delete()
+            .eq("id", productId);
+
 
         if (error) {
             throw error;
         }
 
+
         alert(
             "✅ Product deleted successfully."
         );
 
-        await loadProducts();
 
+        await loadProducts();
         await loadStatistics();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Delete product error:",
@@ -1768,21 +1464,16 @@ async function deleteProduct(
                 "Unknown error"
             )
         );
-
     }
-
 }
 
 
-// ==========================================================
-// DATABASE STATUS VALUES
-// ==========================================================
-//
+// ============================================================
+// STATUS DEFINITIONS
+// ============================================================
 // IMPORTANT:
-// These values MUST match the values stored in
-// the orders.status column.
-//
-// ==========================================================
+// These values MUST match the database.
+// We use "shipping", NOT "shipped".
 
 const ORDER_STATUSES = [
 
@@ -1807,6 +1498,11 @@ const ORDER_STATUSES = [
     },
 
     {
+        value: "out_for_delivery",
+        label: "Out for Delivery"
+    },
+
+    {
         value: "delivered",
         label: "Delivered"
     },
@@ -1819,83 +1515,61 @@ const ORDER_STATUSES = [
 ];
 
 
-// ==========================================================
-// NORMALIZE DATABASE STATUS
-// ==========================================================
+// ============================================================
+// CREATE STATUS OPTIONS
+// ============================================================
 
-function normalizeOrderStatus(
-    status
-) {
+function createStatusOptions(currentStatus) {
 
-    if (!status) {
-        return "pending";
-    }
-
-    const value =
-        String(status)
+    const current =
+        String(currentStatus || "")
             .trim()
             .toLowerCase();
 
-    return value;
+
+    return ORDER_STATUSES.map(status => {
+
+        const selected =
+            status.value === current
+                ? "selected"
+                : "";
+
+
+        return `
+
+            <option
+                value="${status.value}"
+                ${selected}
+            >
+                ${status.label}
+            </option>
+
+        `;
+
+    }).join("");
 
 }
 
 
-// ==========================================================
-// CREATE STATUS OPTIONS
-// ==========================================================
-
-function createStatusOptions(
-    currentStatus
-) {
-
-    const current =
-        normalizeOrderStatus(
-            currentStatus
-        );
-
-    return ORDER_STATUSES
-        .map(
-            item => `
-
-                <option
-                    value="${escapeHtml(item.value)}"
-                    ${
-                        item.value === current
-                            ? "selected"
-                            : ""
-                    }
-                >
-                    ${escapeHtml(item.label)}
-                </option>
-
-            `
-        )
-        .join("");
-
-}
-
-
-// ==========================================================
+// ============================================================
 // LOAD ORDERS
-// ==========================================================
+// ============================================================
 
 async function loadOrders() {
 
     const table =
-        getElement(
-            "orders-table"
-        );
+        getElement("orders-table");
 
     if (!table) {
         return;
     }
 
+
     table.innerHTML = `
 
         <tr>
 
-            <td colspan="10">
+            <td colspan="9">
                 Loading orders...
             </td>
 
@@ -1903,26 +1577,27 @@ async function loadOrders() {
 
     `;
 
+
     try {
 
         const {
             data: orders,
             error
-        } =
-            await supabaseClient
-                .from("orders")
-                .select("*")
-                .order(
-                    "created_at",
-                    {
-                        ascending:
-                            false
-                    }
-                );
+        } = await supabaseClient
+            .from("orders")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
 
         if (error) {
             throw error;
         }
+
 
         if (
             !orders ||
@@ -1933,7 +1608,7 @@ async function loadOrders() {
 
                 <tr>
 
-                    <td colspan="10">
+                    <td colspan="9">
                         No orders found.
                     </td>
 
@@ -1942,159 +1617,141 @@ async function loadOrders() {
             `;
 
             return;
-
         }
 
-        table.innerHTML =
-            "";
 
-        orders.forEach(
-            order => {
+        table.innerHTML = "";
 
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
 
-                const databaseStatus =
-                    normalizeOrderStatus(
-                        order.status
-                    );
+        orders.forEach(order => {
 
-                row.innerHTML = `
+            const row =
+                document.createElement("tr");
 
-                    <td>
-                        ${escapeHtml(
-                            order.id
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHtml(
+                        order.order_number
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        order.customer_name
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        order.customer_email
+                    )}
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        order.phone
+                    )}
+                </td>
+
+
+                <td>
+                    ${formatMoney(
+                        order.total
+                    )}
+                </td>
+
+
+                <td>
+
+                    <select
+                        data-order-id="${Number(order.id)}"
+                        class="order-status"
+                    >
+
+                        ${createStatusOptions(
+                            order.status
                         )}
-                    </td>
 
-                    <td>
-                        ${escapeHtml(
-                            order.order_number
-                        )}
-                    </td>
+                    </select>
 
-                    <td>
-                        ${escapeHtml(
-                            order.customer_name
-                        )}
-                    </td>
+                </td>
 
-                    <td>
-                        ${escapeHtml(
-                            order.customer_email
-                        )}
-                    </td>
 
-                    <td>
-                        ${escapeHtml(
-                            order.phone
-                        )}
-                    </td>
+                <td>
 
-                    <td>
-                        ${formatMoney(
-                            order.total
-                        )}
-                    </td>
+                    <input
+                        type="text"
+                        class="tracking-input"
+                        data-order-id="${Number(order.id)}"
+                        value="${escapeHtml(
+                            order.tracking_number || ""
+                        )}"
+                        placeholder="Tracking number"
+                    >
 
-                    <td>
+                    <br><br>
 
-                        <select
-                            class="order-status"
-                            data-order-id="${escapeHtml(order.id)}"
-                        >
+                    <button
+                        type="button"
+                        onclick="generateTracking(${Number(order.id)})"
+                    >
+                        Generate
+                    </button>
 
-                            ${createStatusOptions(
-                                databaseStatus
-                            )}
+                </td>
 
-                        </select>
 
-                        <br>
+                <td>
 
-                        <small>
-                            Database:
-                            <strong class="database-status-display">
-                                ${escapeHtml(databaseStatus)}
-                            </strong>
-                        </small>
+                    <input
+                        type="text"
+                        class="delivery-note-input"
+                        data-order-id="${Number(order.id)}"
+                        value="${escapeHtml(
+                            order.delivery_note || ""
+                        )}"
+                        placeholder="Delivery note"
+                    >
 
-                    </td>
+                </td>
 
-                    <td>
 
-                        <input
-                            type="text"
-                            class="tracking-input"
-                            data-order-id="${escapeHtml(order.id)}"
-                            value="${escapeHtml(
-                                order.tracking_number || ""
-                            )}"
-                            placeholder="Tracking number"
-                        >
+                <td>
 
-                        <br><br>
+                    <button
+                        type="button"
+                        onclick="saveOrderUpdate(${Number(order.id)})"
+                    >
+                        💾 Save
+                    </button>
 
-                        <button
-                            type="button"
-                            onclick="generateTracking(${Number(order.id)})"
-                        >
-                            Generate
-                        </button>
+                </td>
 
-                    </td>
+            `;
 
-                    <td>
 
-                        <input
-                            type="text"
-                            class="delivery-note-input"
-                            data-order-id="${escapeHtml(order.id)}"
-                            value="${escapeHtml(
-                                order.delivery_note || ""
-                            )}"
-                            placeholder="Delivery note"
-                        >
+            table.appendChild(row);
 
-                    </td>
+        });
 
-                    <td>
-
-                        <button
-                            type="button"
-                            class="save-order-button"
-                            onclick="saveOrderUpdate(${Number(order.id)})"
-                        >
-                            💾 Save
-                        </button>
-
-                    </td>
-
-                `;
-
-                table.appendChild(
-                    row
-                );
-
-            }
-        );
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
-            "Load orders error:",
+            "Orders error:",
             error
         );
+
 
         table.innerHTML = `
 
             <tr>
 
-                <td colspan="10">
+                <td colspan="9">
 
                     ❌ Could not load orders.
 
@@ -2111,18 +1768,16 @@ async function loadOrders() {
         `;
 
     }
-
 }
 
 
-// ==========================================================
+// ============================================================
 // GENERATE TRACKING NUMBER
-// ==========================================================
+// ============================================================
 
 function generateTrackingNumber() {
 
-    const now =
-        new Date();
+    const now = new Date();
 
     const date =
         now.getFullYear() +
@@ -2131,8 +1786,8 @@ function generateTrackingNumber() {
         ).padStart(2, "0") +
         String(
             now.getDate()
-        ).padStart(2, "0"
-        );
+        ).padStart(2, "0");
+
 
     const random =
         Math.floor(
@@ -2140,28 +1795,27 @@ function generateTrackingNumber() {
             Math.random() * 900000
         );
 
+
     return (
         "HST-" +
         date +
         "-" +
         random
     );
-
 }
 
 
-// ==========================================================
+// ============================================================
 // GENERATE AND SAVE TRACKING
-// ==========================================================
+// ============================================================
 
-async function generateTracking(
-    orderId
-) {
+async function generateTracking(orderId) {
 
     const input =
         document.querySelector(
             `.tracking-input[data-order-id="${orderId}"]`
         );
+
 
     if (!input) {
 
@@ -2170,52 +1824,55 @@ async function generateTracking(
         );
 
         return;
-
     }
+
 
     const tracking =
         generateTrackingNumber();
 
+
     input.value =
         tracking;
+
 
     try {
 
         const {
             error
-        } =
-            await supabaseClient
-                .from("orders")
-                .update({
+        } = await supabaseClient
+            .from("orders")
+            .update({
 
-                    tracking_number:
-                        tracking
+                tracking_number:
+                    tracking
 
-                })
-                .eq(
-                    "id",
-                    orderId
-                );
+            })
+            .eq(
+                "id",
+                orderId
+            );
+
 
         if (error) {
             throw error;
         }
+
 
         alert(
             "✅ Tracking number saved:\n\n" +
             tracking
         );
 
+
         await loadOrders();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Tracking update error:",
             error
         );
+
 
         alert(
             "❌ Could not save tracking number.\n\n" +
@@ -2226,291 +1883,205 @@ async function generateTracking(
         );
 
     }
-
 }
 
 
-// ==========================================================
+// ============================================================
 // SAVE ORDER UPDATE
-// ==========================================================
-//
-// VERY IMPORTANT:
-//
-// This function sends the selected database value directly.
-//
-// Example:
-//
-// Selecting "Delivered"
-// sends:
-//
-// status: "delivered"
-//
-// Selecting "Shipping"
-// sends:
-//
-// status: "shipping"
-//
-// There is NO conversion from delivered -> shipping.
-//
-// There is NO .single().
-//
-// ==========================================================
+// ============================================================
+// IMPORTANT:
+// No .single()
+// No .select()
+// This prevents the
+// "Cannot coerce the result to a single JSON object" error.
+// ============================================================
 
-async function saveOrderUpdate(
-    orderId
-) {
-
-    console.log(
-        "=========================================="
-    );
-
-    console.log(
-        "SAVE ORDER STARTED"
-    );
-
-    console.log(
-        "Order ID:",
-        orderId
-    );
+async function saveOrderUpdate(orderId) {
 
     const statusElement =
         document.querySelector(
             `.order-status[data-order-id="${orderId}"]`
         );
 
+
     const trackingElement =
         document.querySelector(
             `.tracking-input[data-order-id="${orderId}"]`
         );
+
 
     const noteElement =
         document.querySelector(
             `.delivery-note-input[data-order-id="${orderId}"]`
         );
 
+
     if (!statusElement) {
 
         alert(
-            "❌ Could not find the status selector for order " +
-            orderId
+            "❌ Could not find order status."
         );
 
         return;
-
     }
 
-    // ------------------------------------------------------
-    // GET EXACT SELECTED DATABASE VALUE
-    // ------------------------------------------------------
 
-    const selectedStatus =
-        statusElement.value;
+    const status =
+        statusElement.value
+            .trim()
+            .toLowerCase();
+
 
     const tracking =
         trackingElement
             ? trackingElement.value.trim()
             : "";
 
+
     const note =
         noteElement
             ? noteElement.value.trim()
             : "";
 
-    console.log(
-        "Selected status:",
-        selectedStatus
-    );
 
-    console.log(
-        "Tracking:",
-        tracking
-    );
-
-    console.log(
-        "Note:",
-        note
-    );
-
-    // ------------------------------------------------------
+    // ========================================================
     // VALIDATE STATUS
-    // ------------------------------------------------------
+    // ========================================================
 
     const validStatus =
         ORDER_STATUSES.some(
             item =>
-                item.value ===
-                selectedStatus
+                item.value === status
         );
+
 
     if (!validStatus) {
 
         alert(
-            "❌ Invalid order status:\n\n" +
-            selectedStatus
+            "❌ Invalid order status: " +
+            status
         );
 
         return;
-
     }
+
+
+    console.log(
+        "Saving order:",
+        {
+            orderId,
+            status,
+            tracking,
+            note
+        }
+    );
+
 
     try {
 
-        // --------------------------------------------------
+        // ====================================================
         // UPDATE DATABASE
-        // --------------------------------------------------
-
-        console.log(
-            "Updating Supabase..."
-        );
-
-        console.log(
-            {
-                id: orderId,
-                status: selectedStatus,
-                tracking_number:
-                    tracking || null,
-                delivery_note:
-                    note || null
-            }
-        );
+        // ====================================================
 
         const {
             error
-        } =
-            await supabaseClient
-                .from("orders")
-                .update({
+        } = await supabaseClient
+            .from("orders")
+            .update({
 
-                    status:
-                        selectedStatus,
+                status:
+                    status,
 
-                    tracking_number:
-                        tracking || null,
+                tracking_number:
+                    tracking || null,
 
-                    delivery_note:
-                        note || null
+                delivery_note:
+                    note || null
 
-                })
-                .eq(
-                    "id",
-                    orderId
-                );
+            })
+            .eq(
+                "id",
+                orderId
+            );
+
 
         if (error) {
 
             console.error(
-                "SUPABASE UPDATE ERROR:",
+                "Order update error:",
                 error
             );
 
             throw error;
-
         }
 
-        console.log(
-            "Supabase update completed."
-        );
 
-
-        // --------------------------------------------------
-        // READ THE ORDER AGAIN
-        // --------------------------------------------------
-
-        console.log(
-            "Checking database..."
-        );
+        // ====================================================
+        // VERIFY FROM DATABASE
+        // ====================================================
 
         const {
-            data: checkOrders,
-            error: checkError
-        } =
-            await supabaseClient
-                .from("orders")
-                .select(
-                    "id,status,tracking_number,delivery_note"
-                )
-                .eq(
-                    "id",
-                    orderId
-                );
-
-        if (checkError) {
-
-            console.error(
-                "Verification error:",
-                checkError
+            data: verifyData,
+            error: verifyError
+        } = await supabaseClient
+            .from("orders")
+            .select(
+                "id,order_number,status,tracking_number,delivery_note"
+            )
+            .eq(
+                "id",
+                orderId
             );
 
-            throw checkError;
 
+        if (verifyError) {
+            throw verifyError;
         }
 
+
+        console.log(
+            "Database verification:",
+            verifyData
+        );
+
+
         if (
-            !checkOrders ||
-            checkOrders.length === 0
+            !verifyData ||
+            verifyData.length === 0
         ) {
 
             throw new Error(
                 "Order was not found after update."
             );
-
         }
 
-        const savedOrder =
-            checkOrders[0];
 
         const savedStatus =
-            normalizeOrderStatus(
-                savedOrder.status
-            );
+            String(
+                verifyData[0].status || ""
+            )
+            .trim()
+            .toLowerCase();
 
-        console.log(
-            "DATABASE STATUS AFTER UPDATE:",
-            savedStatus
-        );
-
-
-        // --------------------------------------------------
-        // CHECK WHETHER DATABASE REALLY SAVED IT
-        // --------------------------------------------------
 
         if (
-            savedStatus !==
-            selectedStatus
+            savedStatus !== status
         ) {
 
-            console.error(
-                "STATUS MISMATCH",
-                {
-                    selected:
-                        selectedStatus,
-
-                    database:
-                        savedStatus
-                }
-            );
-
-            alert(
-                "⚠️ The database returned a different status.\n\n" +
+            throw new Error(
+                "The database returned a different status.\n\n" +
                 "Selected: " +
-                selectedStatus +
-                "\n\n" +
+                status +
+                "\n" +
                 "Database: " +
-                savedStatus +
-                "\n\n" +
-                "This means something outside this status selector is changing the order."
+                savedStatus
             );
-
-            await loadOrders();
-
-            return;
-
         }
 
 
-        // --------------------------------------------------
+        // ====================================================
         // SUCCESS
-        // --------------------------------------------------
+        // ====================================================
 
         alert(
             "✅ Order updated successfully.\n\n" +
@@ -2519,20 +2090,15 @@ async function saveOrderUpdate(
         );
 
 
-        // --------------------------------------------------
-        // RELOAD FROM DATABASE
-        // --------------------------------------------------
-
         await loadOrders();
 
-    }
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
-            "ORDER UPDATE FAILED:",
+            "Save order error:",
             error
         );
+
 
         alert(
             "❌ Could not update order.\n\n" +
@@ -2543,73 +2109,19 @@ async function saveOrderUpdate(
         );
 
     }
-
 }
 
 
-// ==========================================================
-// LOAD ORDERS SAFELY
-// ==========================================================
-
-window.saveOrderUpdate =
-    saveOrderUpdate;
-
-window.generateTracking =
-    generateTracking;
-
-window.editProduct =
-    editProduct;
-
-window.deleteProduct =
-    deleteProduct;
-
-
-// ==========================================================
+// ============================================================
 // INITIALIZE
-// ==========================================================
+// ============================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
         console.log(
-            "=========================================="
-        );
-
-        console.log(
-            "HASBUNALLAHU ADMIN JS LOADED"
-        );
-
-        console.log(
-            "STATUS SYSTEM:"
-        );
-
-        console.log(
-            "pending → Pending Payment"
-        );
-
-        console.log(
-            "paid → Paid"
-        );
-
-        console.log(
-            "processing → Processing"
-        );
-
-        console.log(
-            "shipping → Shipping"
-        );
-
-        console.log(
-            "delivered → Delivered"
-        );
-
-        console.log(
-            "cancelled → Cancelled"
-        );
-
-        console.log(
-            "=========================================="
+            "HASBUNALLAHU ADMIN JS - SHIPPING STATUS VERSION"
         );
 
 
@@ -2618,14 +2130,8 @@ document.addEventListener(
         setupVideoPreview();
 
 
-        // --------------------------------------------------
-        // LOGIN
-        // --------------------------------------------------
-
         const loginForm =
-            getElement(
-                "admin-login-form"
-            );
+            getElement("admin-login-form");
 
         if (loginForm) {
 
@@ -2637,14 +2143,8 @@ document.addEventListener(
         }
 
 
-        // --------------------------------------------------
-        // LOGOUT
-        // --------------------------------------------------
-
         const logout =
-            getElement(
-                "admin-logout"
-            );
+            getElement("admin-logout");
 
         if (logout) {
 
@@ -2656,14 +2156,8 @@ document.addEventListener(
         }
 
 
-        // --------------------------------------------------
-        // ADD PRODUCT
-        // --------------------------------------------------
-
         const productForm =
-            getElement(
-                "add-product-form"
-            );
+            getElement("add-product-form");
 
         if (productForm) {
 
@@ -2675,14 +2169,8 @@ document.addEventListener(
         }
 
 
-        // --------------------------------------------------
-        // ADD CATEGORY
-        // --------------------------------------------------
-
         const categoryButton =
-            getElement(
-                "add-category-button"
-            );
+            getElement("add-category-button");
 
         if (categoryButton) {
 
@@ -2693,10 +2181,6 @@ document.addEventListener(
 
         }
 
-
-        // --------------------------------------------------
-        // CHECK LOGIN
-        // --------------------------------------------------
 
         checkAdminSession();
 
