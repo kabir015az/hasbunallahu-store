@@ -1,156 +1,108 @@
-// ==========================================
+// ==========================================================
 // HASBUNALLAHU STORE
 // ADMIN DASHBOARD
 // COMPLETE ADMIN JAVASCRIPT
-// ==========================================
+// ==========================================================
 
-
-// ==========================================
-// ADMIN SETTINGS
-// ==========================================
-
-const ADMIN_EMAIL =
-    "kabirabdulazeez45@gmail.com";
-
+const ADMIN_EMAIL = "kabirabdulazeez45@gmail.com";
 
 let currentAdmin = null;
 
 
-// ==========================================
+// ==========================================================
 // ELEMENT HELPER
-// ==========================================
+// ==========================================================
 
 function getElement(id) {
-
     return document.getElementById(id);
-
 }
 
 
-// ==========================================
-// FORMAT MONEY
-// ==========================================
+// ==========================================================
+// MONEY
+// ==========================================================
 
 function formatMoney(amount) {
-
     return "₦" +
-        Number(amount || 0).toLocaleString(
-            "en-NG",
-            {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }
-        );
-
+        Number(amount || 0).toLocaleString("en-NG", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
 }
 
 
-// ==========================================
+// ==========================================================
 // ESCAPE HTML
-// ==========================================
+// ==========================================================
 
 function escapeHtml(value) {
-
     return String(value ?? "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
-
 }
 
 
-// ==========================================
-// SHOW LOGIN MESSAGE
-// ==========================================
+// ==========================================================
+// LOGIN MESSAGE
+// ==========================================================
 
-function showLoginMessage(
-    message,
-    success = false
-) {
+function showLoginMessage(message, success = false) {
 
-    const element =
-        getElement("login-message");
+    const element = getElement("login-message");
 
     if (!element) return;
 
-    element.textContent =
-        message;
+    element.textContent = message;
 
     element.style.color =
-        success
-            ? "green"
-            : "red";
-
+        success ? "green" : "red";
 }
 
 
-// ==========================================
+// ==========================================================
 // SHOW DASHBOARD
-// ==========================================
+// ==========================================================
 
 function showDashboard() {
 
-    const login =
-        getElement("admin-login");
-
-    const dashboard =
-        getElement("admin-dashboard");
-
+    const login = getElement("admin-login");
+    const dashboard = getElement("admin-dashboard");
 
     if (login) {
-
-        login.style.display =
-            "none";
-
+        login.style.display = "none";
     }
-
 
     if (dashboard) {
-
-        dashboard.style.display =
-            "block";
-
+        dashboard.style.display = "block";
     }
-
 }
 
 
-// ==========================================
+// ==========================================================
 // SHOW LOGIN
-// ==========================================
+// ==========================================================
 
 function showLogin() {
 
-    const login =
-        getElement("admin-login");
-
-    const dashboard =
-        getElement("admin-dashboard");
-
+    const login = getElement("admin-login");
+    const dashboard = getElement("admin-dashboard");
 
     if (login) {
-
-        login.style.display =
-            "block";
-
+        login.style.display = "block";
     }
-
 
     if (dashboard) {
-
-        dashboard.style.display =
-            "none";
-
+        dashboard.style.display = "none";
     }
-
 }
 
 
-// ==========================================
+// ==========================================================
 // CHECK ADMIN SESSION
-// ==========================================
+// ==========================================================
 
 async function checkAdminSession() {
 
@@ -159,81 +111,54 @@ async function checkAdminSession() {
         const {
             data,
             error
-        } =
-            await supabaseClient
-                .auth
-                .getSession();
-
+        } = await supabaseClient.auth.getSession();
 
         if (error) {
-
             throw error;
-
         }
 
-
-        const session =
-            data?.session;
-
+        const session = data.session;
 
         if (!session) {
 
             showLogin();
 
             return;
-
         }
 
-
-        const user =
-            session.user;
-
+        const user = session.user;
 
         if (
             !user ||
             !user.email
         ) {
 
-            await supabaseClient
-                .auth
-                .signOut();
+            await supabaseClient.auth.signOut();
 
             showLogin();
 
             return;
-
         }
-
 
         if (
             user.email.toLowerCase() !==
             ADMIN_EMAIL.toLowerCase()
         ) {
 
-            await supabaseClient
-                .auth
-                .signOut();
-
+            await supabaseClient.auth.signOut();
 
             showLogin();
-
 
             showLoginMessage(
                 "❌ You are not authorized to access the admin dashboard."
             );
 
-
             return;
-
         }
 
-
-        currentAdmin =
-            user;
-
+        currentAdmin = user;
 
         showDashboard();
-
 
         await loadDashboard();
 
@@ -246,36 +171,28 @@ async function checkAdminSession() {
             error
         );
 
-
         showLogin();
-
     }
-
 }
 
 
-// ==========================================
+// ==========================================================
 // ADMIN LOGIN
-// ==========================================
+// ==========================================================
 
 async function adminLogin(event) {
 
     event.preventDefault();
 
-
     const email =
-        getElement(
-            "admin-email"
-        )?.value
-        .trim()
-        .toLowerCase();
-
+        getElement("admin-email")
+            ?.value
+            .trim()
+            .toLowerCase();
 
     const password =
-        getElement(
-            "admin-password"
-        )?.value;
-
+        getElement("admin-password")
+            ?.value;
 
     if (!email || !password) {
 
@@ -284,9 +201,7 @@ async function adminLogin(event) {
         );
 
         return;
-
     }
-
 
     if (
         email !==
@@ -298,66 +213,46 @@ async function adminLogin(event) {
         );
 
         return;
-
     }
 
-
-    const button =
-        event.submitter;
-
+    const button = event.submitter;
 
     if (button) {
 
-        button.disabled =
-            true;
+        button.disabled = true;
 
         button.textContent =
             "Logging in...";
-
     }
-
 
     try {
 
         const {
             data,
             error
-        } =
-            await supabaseClient
-                .auth
-                .signInWithPassword({
+        } = await supabaseClient.auth.signInWithPassword({
 
-                    email:
-                        email,
+            email: email,
 
-                    password:
-                        password
+            password: password
 
-                });
-
+        });
 
         if (error) {
-
             throw error;
-
         }
 
-
-        if (!data?.user) {
+        if (!data.user) {
 
             throw new Error(
                 "No user returned."
             );
-
         }
-
 
         currentAdmin =
             data.user;
 
-
         showDashboard();
-
 
         await loadDashboard();
 
@@ -370,7 +265,6 @@ async function adminLogin(event) {
             error
         );
 
-
         showLoginMessage(
             "❌ Login failed: " +
             (
@@ -378,83 +272,55 @@ async function adminLogin(event) {
                 "Unknown error"
             )
         );
-
     }
 
     finally {
 
         if (button) {
 
-            button.disabled =
-                false;
+            button.disabled = false;
 
             button.textContent =
                 "Login";
-
         }
-
     }
-
 }
 
 
-// ==========================================
-// ADMIN LOGOUT
-// ==========================================
+// ==========================================================
+// LOGOUT
+// ==========================================================
 
 async function adminLogout() {
 
-    try {
+    await supabaseClient
+        .auth
+        .signOut();
 
-        await supabaseClient
-            .auth
-            .signOut();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Logout error:",
-            error
-        );
-
-    }
-
-
-    currentAdmin =
-        null;
-
+    currentAdmin = null;
 
     showLogin();
-
 }
 
 
-// ==========================================
+// ==========================================================
 // LOAD DASHBOARD
-// ==========================================
+// ==========================================================
 
 async function loadDashboard() {
 
     await Promise.all([
-
         loadStatistics(),
-
         loadProducts(),
-
         loadOrders(),
-
         loadCategories()
-
     ]);
-
 }
 
 
-// ==========================================
+// ==========================================================
 // STATISTICS
-// ==========================================
+// ==========================================================
 
 async function loadStatistics() {
 
@@ -463,137 +329,87 @@ async function loadStatistics() {
         const {
             data: orders,
             error
-        } =
-            await supabaseClient
-                .from("orders")
-                .select(
-                    "id,total,customer_email"
-                );
-
+        } = await supabaseClient
+            .from("orders")
+            .select(
+                "id,total,customer_email"
+            );
 
         if (error) {
-
             throw error;
-
         }
-
 
         const orderList =
             orders || [];
 
-
-        let totalSales =
-            0;
-
+        let totalSales = 0;
 
         const customers =
             new Set();
 
+        orderList.forEach(order => {
 
-        orderList.forEach(
-            order => {
+            totalSales +=
+                Number(order.total) || 0;
 
-                totalSales +=
-                    Number(
-                        order.total
-                    ) || 0;
+            if (order.customer_email) {
 
-
-                if (
+                customers.add(
                     order.customer_email
-                ) {
-
-                    customers.add(
-                        order.customer_email
-                            .toLowerCase()
-                    );
-
-                }
-
+                        .toLowerCase()
+                );
             }
-        );
+        });
 
-
-        const totalOrdersElement =
-            getElement(
-                "total-orders"
-            );
-
+        const totalOrders =
+            getElement("total-orders");
 
         const totalSalesElement =
-            getElement(
-                "total-sales"
-            );
+            getElement("total-sales");
 
+        const totalCustomers =
+            getElement("total-customers");
 
-        const totalCustomersElement =
-            getElement(
-                "total-customers"
-            );
-
-
-        if (totalOrdersElement) {
-
-            totalOrdersElement.textContent =
+        if (totalOrders) {
+            totalOrders.textContent =
                 orderList.length;
-
         }
-
 
         if (totalSalesElement) {
-
             totalSalesElement.textContent =
-                formatMoney(
-                    totalSales
-                );
-
+                formatMoney(totalSales);
         }
 
-
-        if (totalCustomersElement) {
-
-            totalCustomersElement.textContent =
+        if (totalCustomers) {
+            totalCustomers.textContent =
                 customers.size;
-
         }
 
 
         const {
             count,
             error: productError
-        } =
-            await supabaseClient
-                .from("products")
-                .select(
-                    "id",
-                    {
-                        count:
-                            "exact",
-
-                        head:
-                            true
-                    }
-                );
-
-
-        if (productError) {
-
-            throw productError;
-
-        }
-
-
-        const totalProductsElement =
-            getElement(
-                "total-products"
+        } = await supabaseClient
+            .from("products")
+            .select(
+                "id",
+                {
+                    count: "exact",
+                    head: true
+                }
             );
 
+        if (productError) {
+            throw productError;
+        }
 
-        if (totalProductsElement) {
+        const totalProducts =
+            getElement("total-products");
 
-            totalProductsElement.textContent =
+        if (totalProducts) {
+
+            totalProducts.textContent =
                 count || 0;
-
         }
 
     }
@@ -604,326 +420,208 @@ async function loadStatistics() {
             "Statistics error:",
             error
         );
-
     }
-
 }
 
 
-// ==========================================
+// ==========================================================
 // PARSE MEDIA
-// Handles:
-// 1. JSON array
-// 2. JSON string containing array
-// 3. Plain URL
-// ==========================================
+// ==========================================================
 
 function parseMedia(value) {
 
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-
+    if (!value) {
         return [];
-
     }
 
-
-    if (
-        Array.isArray(value)
-    ) {
-
-        return value.filter(
-            item =>
-                typeof item === "string" &&
-                item.trim() !== ""
-        );
-
+    if (Array.isArray(value)) {
+        return value;
     }
 
+    try {
 
-    let current =
-        value;
-
-
-    for (
-        let attempt = 0;
-        attempt < 3;
-        attempt++
-    ) {
+        let parsed =
+            JSON.parse(value);
 
         if (
-            Array.isArray(current)
+            typeof parsed === "string"
         ) {
 
-            return current.filter(
+            try {
+                parsed =
+                    JSON.parse(parsed);
+            }
+
+            catch (error) {}
+        }
+
+        if (Array.isArray(parsed)) {
+
+            return parsed.filter(
                 item =>
                     typeof item === "string" &&
                     item.trim() !== ""
             );
-
-        }
-
-
-        if (
-            typeof current !== "string"
-        ) {
-
-            break;
-
-        }
-
-
-        const trimmed =
-            current.trim();
-
-
-        if (!trimmed) {
-
-            return [];
-
-        }
-
-
-        try {
-
-            current =
-                JSON.parse(
-                    trimmed
-                );
-
-        }
-
-        catch (error) {
-
-            break;
-
         }
 
     }
 
+    catch (error) {}
 
-    if (
-        typeof current === "string" &&
-        current.trim() !== ""
-    ) {
-
-        return [
-            current.trim()
-        ];
-
-    }
-
-
-    return [];
-
+    return [
+        String(value)
+    ];
 }
 
 
-// ==========================================
+// ==========================================================
 // IMAGE PREVIEW
-// ==========================================
+// ==========================================================
 
 function setupImagePreview() {
 
     const input =
-        getElement(
-            "product-image"
-        );
-
+        getElement("product-image");
 
     const preview =
-        getElement(
-            "image-preview"
-        );
+        getElement("image-preview");
 
-
-    if (
-        !input ||
-        !preview
-    ) {
-
+    if (!input || !preview) {
         return;
-
     }
-
 
     input.addEventListener(
         "change",
         function() {
 
-            preview.innerHTML =
-                "";
-
+            preview.innerHTML = "";
 
             const files =
                 Array.from(
                     this.files || []
                 );
 
+            files.forEach(file => {
 
-            files.forEach(
-                file => {
+                if (
+                    !file.type.startsWith(
+                        "image/"
+                    )
+                ) {
+                    return;
+                }
 
-                    if (
-                        !file.type.startsWith(
-                            "image/"
-                        )
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    const url =
-                        URL.createObjectURL(
-                            file
-                        );
-
-
-                    const div =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    div.className =
-                        "preview-item";
-
-
-                    div.innerHTML = `
-
-                        <img
-                            src="${url}"
-                            alt="Image preview"
-                        >
-
-                        <small>
-                            ${escapeHtml(file.name)}
-                        </small>
-
-                    `;
-
-
-                    preview.appendChild(
-                        div
+                const url =
+                    URL.createObjectURL(
+                        file
                     );
 
-                }
-            );
+                const div =
+                    document.createElement(
+                        "div"
+                    );
 
+                div.className =
+                    "preview-item";
+
+                div.innerHTML = `
+
+                    <img
+                        src="${url}"
+                        alt="Image preview"
+                    >
+
+                    <small>
+                        ${escapeHtml(file.name)}
+                    </small>
+
+                `;
+
+                preview.appendChild(
+                    div
+                );
+            });
         }
     );
-
 }
 
 
-// ==========================================
+// ==========================================================
 // VIDEO PREVIEW
-// ==========================================
+// ==========================================================
 
 function setupVideoPreview() {
 
     const input =
-        getElement(
-            "product-video"
-        );
-
+        getElement("product-video");
 
     const preview =
-        getElement(
-            "video-preview"
-        );
+        getElement("video-preview");
 
-
-    if (
-        !input ||
-        !preview
-    ) {
-
+    if (!input || !preview) {
         return;
-
     }
-
 
     input.addEventListener(
         "change",
         function() {
 
-            preview.innerHTML =
-                "";
-
+            preview.innerHTML = "";
 
             const files =
                 Array.from(
                     this.files || []
                 );
 
+            files.forEach(file => {
 
-            files.forEach(
-                file => {
+                if (
+                    !file.type.startsWith(
+                        "video/"
+                    )
+                ) {
+                    return;
+                }
 
-                    if (
-                        !file.type.startsWith(
-                            "video/"
-                        )
-                    ) {
-
-                        return;
-
-                    }
-
-
-                    const url =
-                        URL.createObjectURL(
-                            file
-                        );
-
-
-                    const div =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    div.className =
-                        "preview-item";
-
-
-                    div.innerHTML = `
-
-                        <video
-                            src="${url}"
-                            controls
-                            muted
-                        ></video>
-
-                        <small>
-                            ${escapeHtml(file.name)}
-                        </small>
-
-                    `;
-
-
-                    preview.appendChild(
-                        div
+                const url =
+                    URL.createObjectURL(
+                        file
                     );
 
-                }
-            );
+                const div =
+                    document.createElement(
+                        "div"
+                    );
 
+                div.className =
+                    "preview-item";
+
+                div.innerHTML = `
+
+                    <video
+                        src="${url}"
+                        controls
+                        muted
+                    ></video>
+
+                    <small>
+                        ${escapeHtml(file.name)}
+                    </small>
+
+                `;
+
+                preview.appendChild(
+                    div
+                );
+            });
         }
     );
-
 }
 
 
-// ==========================================
+// ==========================================================
 // UPLOAD FILE
-// ==========================================
+// ==========================================================
 
 async function uploadFile(
     bucket,
@@ -937,142 +635,100 @@ async function uploadFile(
             .pop()
             .toLowerCase();
 
-
     const fileName =
         `${Date.now()}-${Math.random()
             .toString(36)
             .substring(2, 10)}.${extension}`;
 
-
     const filePath =
         `${folder}/${fileName}`;
 
-
     const {
         error
-    } =
-        await supabaseClient
-            .storage
-            .from(bucket)
-            .upload(
-                filePath,
-                file,
-                {
-
-                    cacheControl:
-                        "3600",
-
-                    contentType:
-                        file.type,
-
-                    upsert:
-                        false
-
-                }
-            );
-
+    } = await supabaseClient
+        .storage
+        .from(bucket)
+        .upload(
+            filePath,
+            file,
+            {
+                cacheControl: "3600",
+                contentType: file.type,
+                upsert: false
+            }
+        );
 
     if (error) {
-
         throw error;
-
     }
-
 
     const {
         data
-    } =
-        supabaseClient
-            .storage
-            .from(bucket)
-            .getPublicUrl(
-                filePath
-            );
+    } = supabaseClient
+        .storage
+        .from(bucket)
+        .getPublicUrl(filePath);
 
-
-    if (
-        !data?.publicUrl
-    ) {
+    if (!data?.publicUrl) {
 
         throw new Error(
             "Could not create public URL."
         );
-
     }
 
-
     return data.publicUrl;
-
 }
 
 
-// ==========================================
+// ==========================================================
 // ADD PRODUCT
-// ==========================================
+// ==========================================================
 
 async function addProduct(event) {
 
     event.preventDefault();
 
-
     const message =
-        getElement(
-            "product-message"
-        );
-
+        getElement("product-message");
 
     const name =
-        getElement(
-            "product-name"
-        )?.value
-        .trim();
-
+        getElement("product-name")
+            .value
+            .trim();
 
     const price =
         Number(
-            getElement(
-                "product-price"
-            )?.value
+            getElement("product-price")
+                .value
         );
 
-
     const category =
-        getElement(
-            "product-category"
-        )?.value
-        .trim();
-
+        getElement("product-category")
+            .value
+            .trim();
 
     const description =
-        getElement(
-            "product-description"
-        )?.value
-        .trim();
-
+        getElement("product-description")
+            .value
+            .trim();
 
     const quantity =
         Number(
-            getElement(
-                "product-quantity"
-            )?.value
+            getElement("product-quantity")
+                .value
         );
-
 
     const imageFiles =
         Array.from(
-            getElement(
-                "product-image"
-            )?.files || []
+            getElement("product-image")
+                .files || []
         );
-
 
     const videoFiles =
         Array.from(
-            getElement(
-                "product-video"
-            )?.files || []
+            getElement("product-video")
+                .files || []
         );
-
 
     if (
         !name ||
@@ -1082,66 +738,38 @@ async function addProduct(event) {
         Number.isNaN(quantity)
     ) {
 
-        if (message) {
+        message.textContent =
+            "❌ Please complete all product fields.";
 
-            message.textContent =
-                "❌ Please complete all product fields.";
-
-            message.style.color =
-                "red";
-
-        }
+        message.style.color =
+            "red";
 
         return;
-
     }
-
 
     if (
         imageFiles.length === 0
     ) {
 
-        if (message) {
+        message.textContent =
+            "❌ Please select at least one image.";
 
-            message.textContent =
-                "❌ Please select at least one image.";
-
-            message.style.color =
-                "red";
-
-        }
+        message.style.color =
+            "red";
 
         return;
-
     }
-
 
     const button =
         getElement(
             "add-product-button"
         );
 
-
     try {
 
-        if (button) {
+        button.disabled = true;
 
-            button.disabled =
-                true;
-
-            button.textContent =
-                "Uploading...";
-
-        }
-
-
-        const imageURLs =
-            [];
-
-
-        // ==========================================
-        // UPLOAD IMAGES
-        // ==========================================
+        const imageURLs = [];
 
         for (
             let i = 0;
@@ -1149,16 +777,8 @@ async function addProduct(event) {
             i++
         ) {
 
-            if (message) {
-
-                message.textContent =
-                    `⏳ Uploading image ${i + 1} of ${imageFiles.length}...`;
-
-                message.style.color =
-                    "blue";
-
-            }
-
+            message.textContent =
+                `⏳ Uploading image ${i + 1} of ${imageFiles.length}...`;
 
             const url =
                 await uploadFile(
@@ -1167,21 +787,10 @@ async function addProduct(event) {
                     imageFiles[i]
                 );
 
-
-            imageURLs.push(
-                url
-            );
-
+            imageURLs.push(url);
         }
 
-
-        // ==========================================
-        // UPLOAD VIDEOS
-        // ==========================================
-
-        const videoURLs =
-            [];
-
+        const videoURLs = [];
 
         for (
             let i = 0;
@@ -1189,16 +798,8 @@ async function addProduct(event) {
             i++
         ) {
 
-            if (message) {
-
-                message.textContent =
-                    `⏳ Uploading video ${i + 1} of ${videoFiles.length}...`;
-
-                message.style.color =
-                    "blue";
-
-            }
-
+            message.textContent =
+                `⏳ Uploading video ${i + 1} of ${videoFiles.length}...`;
 
             const url =
                 await uploadFile(
@@ -1207,144 +808,66 @@ async function addProduct(event) {
                     videoFiles[i]
                 );
 
-
-            videoURLs.push(
-                url
-            );
-
+            videoURLs.push(url);
         }
 
-
-        // ==========================================
-        // SAVE PRODUCT
-        // ==========================================
-
-        if (message) {
-
-            message.textContent =
-                "⏳ Saving product...";
-
-        }
-
+        message.textContent =
+            "⏳ Saving product...";
 
         const {
             error
-        } =
-            await supabaseClient
-                .from("products")
-                .insert([
+        } = await supabaseClient
+            .from("products")
+            .insert([{
 
-                    {
+                name: name,
 
-                        name:
-                            name,
+                price: price,
 
-                        price:
-                            price,
+                category: category,
 
-                        category:
-                            category,
+                image:
+                    JSON.stringify(
+                        imageURLs
+                    ),
 
-                        image:
-                            JSON.stringify(
-                                imageURLs
-                            ),
+                videos:
+                    JSON.stringify(
+                        videoURLs
+                    ),
 
-                        videos:
-                            JSON.stringify(
-                                videoURLs
-                            ),
+                description:
+                    description,
 
-                        description:
-                            description,
-
-                        quantity:
-                            quantity
-
-                    }
-
-                ]);
-
+                quantity:
+                    quantity
+            }]);
 
         if (error) {
-
             throw error;
-
         }
 
+        message.textContent =
+            "✅ Product added successfully.";
 
-        // ==========================================
-        // SUCCESS
-        // ==========================================
+        message.style.color =
+            "green";
 
-        if (message) {
+        getElement(
+            "add-product-form"
+        ).reset();
 
-            message.textContent =
-                `✅ Product added successfully!
+        getElement(
+            "image-preview"
+        ).innerHTML = "";
 
-Images: ${imageURLs.length}
-Videos: ${videoURLs.length}`;
+        getElement(
+            "video-preview"
+        ).innerHTML = "";
 
-            message.style.color =
-                "green";
-
-        }
-
-
-        const form =
-            getElement(
-                "add-product-form"
-            );
-
-
-        if (form) {
-
-            form.reset();
-
-        }
-
-
-        const imagePreview =
-            getElement(
-                "image-preview"
-            );
-
-
-        const videoPreview =
-            getElement(
-                "video-preview"
-            );
-
-
-        if (imagePreview) {
-
-            imagePreview.innerHTML =
-                "";
-
-        }
-
-
-        if (videoPreview) {
-
-            videoPreview.innerHTML =
-                "";
-
-        }
-
-
-        const quantityInput =
-            getElement(
-                "product-quantity"
-            );
-
-
-        if (quantityInput) {
-
-            quantityInput.value =
-                "30";
-
-        }
-
+        getElement(
+            "product-quantity"
+        ).value = "30";
 
         await loadProducts();
 
@@ -1361,43 +884,30 @@ Videos: ${videoURLs.length}`;
             error
         );
 
+        message.textContent =
+            "❌ " +
+            (
+                error.message ||
+                "Could not add product."
+            );
 
-        if (message) {
-
-            message.textContent =
-                "❌ " +
-                (
-                    error.message ||
-                    "Could not add product."
-                );
-
-            message.style.color =
-                "red";
-
-        }
-
+        message.style.color =
+            "red";
     }
 
     finally {
 
-        if (button) {
+        button.disabled = false;
 
-            button.disabled =
-                false;
-
-            button.textContent =
-                "➕ Add Product";
-
-        }
-
+        button.textContent =
+            "➕ Add Product";
     }
-
 }
 
 
-// ==========================================
+// ==========================================================
 // LOAD PRODUCTS
-// ==========================================
+// ==========================================================
 
 async function loadProducts() {
 
@@ -1406,38 +916,28 @@ async function loadProducts() {
             "products-table"
         );
 
-
     if (!table) {
-
         return;
-
     }
-
 
     try {
 
         const {
             data: products,
             error
-        } =
-            await supabaseClient
-                .from("products")
-                .select("*")
-                .order(
-                    "id",
-                    {
-                        ascending:
-                            true
-                    }
-                );
-
+        } = await supabaseClient
+            .from("products")
+            .select("*")
+            .order(
+                "id",
+                {
+                    ascending: true
+                }
+            );
 
         if (error) {
-
             throw error;
-
         }
-
 
         if (
             !products ||
@@ -1447,166 +947,129 @@ async function loadProducts() {
             table.innerHTML = `
 
                 <tr>
-
                     <td colspan="9">
                         No products found.
                     </td>
-
                 </tr>
 
             `;
 
             return;
-
         }
 
+        table.innerHTML = "";
 
-        table.innerHTML =
-            "";
+        products.forEach(product => {
 
-
-        products.forEach(
-            product => {
-
-                const images =
-                    parseMedia(
-                        product.image
-                    );
-
-
-                const videos =
-                    parseMedia(
-                        product.videos
-                    );
-
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${escapeHtml(product.id)}
-                    </td>
-
-
-                    <td>
-
-                        ${
-                            images[0]
-                                ? `
-                                    <img
-                                        src="${escapeHtml(images[0])}"
-                                        class="product-main-image"
-                                        alt="Product"
-                                        onerror="this.style.display='none'"
-                                    >
-                                `
-                                : "No image"
-                        }
-
-                        <div class="media-count">
-
-                            ${images.length}
-                            image${images.length === 1 ? "" : "s"}
-
-                        </div>
-
-                    </td>
-
-
-                    <td>
-
-                        ${
-                            videos[0]
-                                ? `
-                                    <video
-                                        src="${escapeHtml(videos[0])}"
-                                        controls
-                                        class="product-video-preview"
-                                    ></video>
-                                `
-                                : "No video"
-                        }
-
-                        <div class="media-count">
-
-                            ${videos.length}
-                            video${videos.length === 1 ? "" : "s"}
-
-                        </div>
-
-                    </td>
-
-
-                    <td>
-                        ${escapeHtml(
-                            product.name
-                        )}
-                    </td>
-
-
-                    <td>
-                        ${formatMoney(
-                            product.price
-                        )}
-                    </td>
-
-
-                    <td>
-                        ${escapeHtml(
-                            product.category
-                        )}
-                    </td>
-
-
-                    <td>
-                        ${Number(
-                            product.quantity
-                        ) || 0}
-                    </td>
-
-
-                    <td>
-                        ${escapeHtml(
-                            product.description
-                        )}
-                    </td>
-
-
-                    <td>
-
-                        <button
-                            type="button"
-                            onclick="editProduct(${product.id})"
-                        >
-                            ✏️ Edit
-                        </button>
-
-                        <br><br>
-
-                        <button
-                            type="button"
-                            onclick="deleteProduct(${product.id})"
-                        >
-                            🗑️ Delete
-                        </button>
-
-                    </td>
-
-                `;
-
-
-                table.appendChild(
-                    row
+            const images =
+                parseMedia(
+                    product.image
                 );
 
-            }
-        );
+            const videos =
+                parseMedia(
+                    product.videos
+                );
 
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHtml(product.id)}
+                </td>
+
+                <td>
+
+                    ${
+                        images[0]
+                        ? `
+                            <img
+                                src="${escapeHtml(images[0])}"
+                                class="product-main-image"
+                                alt="Product"
+                            >
+                        `
+                        : "No image"
+                    }
+
+                    <div class="media-count">
+
+                        ${images.length}
+                        image${images.length === 1 ? "" : "s"}
+
+                    </div>
+
+                </td>
+
+                <td>
+
+                    ${
+                        videos[0]
+                        ? `
+                            <video
+                                src="${escapeHtml(videos[0])}"
+                                controls
+                                class="product-video-preview"
+                            ></video>
+                        `
+                        : "No video"
+                    }
+
+                    <div class="media-count">
+
+                        ${videos.length}
+                        video${videos.length === 1 ? "" : "s"}
+
+                    </div>
+
+                </td>
+
+                <td>
+                    ${escapeHtml(product.name)}
+                </td>
+
+                <td>
+                    ${formatMoney(product.price)}
+                </td>
+
+                <td>
+                    ${escapeHtml(product.category)}
+                </td>
+
+                <td>
+                    ${Number(product.quantity) || 0}
+                </td>
+
+                <td>
+                    ${escapeHtml(product.description)}
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        onclick="editProduct(${Number(product.id)})"
+                    >
+                        ✏️ Edit
+                    </button>
+
+                    <button
+                        type="button"
+                        onclick="deleteProduct(${Number(product.id)})"
+                    >
+                        🗑️ Delete
+                    </button>
+
+                </td>
+
+            `;
+
+            table.appendChild(row);
+        });
     }
 
     catch (error) {
@@ -1616,11 +1079,9 @@ async function loadProducts() {
             error
         );
 
-
         table.innerHTML = `
 
             <tr>
-
                 <td colspan="9">
 
                     ❌ Could not load products.
@@ -1632,19 +1093,16 @@ async function loadProducts() {
                     )}
 
                 </td>
-
             </tr>
 
         `;
-
     }
-
 }
 
 
-// ==========================================
+// ==========================================================
 // LOAD CATEGORIES
-// ==========================================
+// ==========================================================
 
 async function loadCategories() {
 
@@ -1653,100 +1111,47 @@ async function loadCategories() {
             "product-category"
         );
 
-
     if (!select) {
-
         return;
-
     }
-
 
     const defaultCategories = [
 
         "Electronics",
-
         "Phones & Accessories",
-
         "Computers",
-
         "Fashion",
-
         "Shoes",
-
         "Bags",
-
         "Beauty",
-
         "Home & Kitchen",
-
         "School",
-
         "Books",
-
         "Sports",
-
-        "Gift Items",
-
-        "Rugs",
-
-        "Mugs",
-
-        "Kitchen",
-
-        "Baby",
-
-        "Toys",
-
-        "Home",
-
         "Other"
 
     ];
 
-
     let categories =
-        [
-            ...defaultCategories
-        ];
-
+        [...defaultCategories];
 
     try {
 
         const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("products")
-                .select(
-                    "category"
+            data
+        } = await supabaseClient
+            .from("products")
+            .select("category");
+
+        (data || []).forEach(product => {
+
+            if (product.category) {
+
+                categories.push(
+                    product.category.trim()
                 );
-
-
-        if (error) {
-
-            throw error;
-
-        }
-
-
-        (data || []).forEach(
-            product => {
-
-                if (
-                    product.category
-                ) {
-
-                    categories.push(
-                        product.category
-                            .trim()
-                    );
-
-                }
-
             }
-        );
-
+        });
     }
 
     catch (error) {
@@ -1755,9 +1160,7 @@ async function loadCategories() {
             "Category error:",
             error
         );
-
     }
-
 
     try {
 
@@ -1768,39 +1171,21 @@ async function loadCategories() {
                 ) || "[]"
             );
 
-
         categories =
-            categories.concat(
-                saved
-            );
-
+            categories.concat(saved);
     }
 
-    catch (error) {
-
-        console.error(
-            "Saved category error:",
-            error
-        );
-
-    }
-
+    catch (error) {}
 
     categories =
-        [
-            ...new Set(
-                categories.filter(
-                    Boolean
-                )
-            )
-        ];
-
+        [...new Set(
+            categories.filter(Boolean)
+        )];
 
     categories.sort(
         (a, b) =>
             a.localeCompare(b)
     );
-
 
     select.innerHTML = `
 
@@ -1810,37 +1195,25 @@ async function loadCategories() {
 
     `;
 
+    categories.forEach(category => {
 
-    categories.forEach(
-        category => {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                category;
-
-
-            option.textContent =
-                category;
-
-
-            select.appendChild(
-                option
+        const option =
+            document.createElement(
+                "option"
             );
 
-        }
-    );
+        option.value = category;
 
+        option.textContent = category;
+
+        select.appendChild(option);
+    });
 }
 
 
-// ==========================================
-// ADD NEW CATEGORY
-// ==========================================
+// ==========================================================
+// ADD CATEGORY
+// ==========================================================
 
 function addNewCategory() {
 
@@ -1849,19 +1222,12 @@ function addNewCategory() {
             "Enter the new category name:"
         );
 
-
-    if (
-        category === null
-    ) {
-
+    if (category === null) {
         return;
-
     }
-
 
     const newCategory =
         category.trim();
-
 
     if (!newCategory) {
 
@@ -1870,13 +1236,9 @@ function addNewCategory() {
         );
 
         return;
-
     }
 
-
-    let saved =
-        [];
-
+    let saved = [];
 
     try {
 
@@ -1891,11 +1253,8 @@ function addNewCategory() {
 
     catch (error) {
 
-        saved =
-            [];
-
+        saved = [];
     }
-
 
     if (
         !saved.includes(
@@ -1907,84 +1266,49 @@ function addNewCategory() {
             newCategory
         );
 
-
         localStorage.setItem(
             "hasbunallahu_categories",
-            JSON.stringify(
-                saved
-            )
+            JSON.stringify(saved)
         );
-
     }
 
-
     loadCategories()
-        .then(
-            () => {
+        .then(() => {
 
-                const select =
-                    getElement(
-                        "product-category"
-                    );
+            getElement(
+                "product-category"
+            ).value =
+                newCategory;
 
-
-                if (select) {
-
-                    select.value =
-                        newCategory;
-
-                }
-
-            }
-        );
-
+        });
 }
 
 
-// ==========================================
+// ==========================================================
 // EDIT PRODUCT
-// Name
-// Price
-// Category
-// Quantity
-// Description
-// ==========================================
+// ==========================================================
 
-async function editProduct(
-    productId
-) {
+async function editProduct(productId) {
 
     try {
 
-        // ==========================================
-        // GET PRODUCT
-        // ==========================================
-
         const {
-            data,
+            data: product,
             error
-        } =
-            await supabaseClient
-                .from("products")
-                .select(
-                    "id,name,price,category,quantity,description"
-                )
-                .eq(
-                    "id",
-                    productId
-                );
-
+        } = await supabaseClient
+            .from("products")
+            .select(
+                "id,name,price,category,quantity,description"
+            )
+            .eq(
+                "id",
+                productId
+            )
+            .maybeSingle();
 
         if (error) {
-
             throw error;
-
         }
-
-
-        const product =
-            data?.[0];
-
 
         if (!product) {
 
@@ -1993,13 +1317,7 @@ async function editProduct(
             );
 
             return;
-
         }
-
-
-        // ==========================================
-        // PRODUCT NAME
-        // ==========================================
 
         const name =
             prompt(
@@ -2007,41 +1325,55 @@ async function editProduct(
                 product.name || ""
             );
 
-
-        if (
-            name === null
-        ) {
-
+        if (name === null) {
             return;
-
         }
-
-
-        // ==========================================
-        // PRICE
-        // ==========================================
 
         const priceInput =
             prompt(
-                "Product price (₦):",
-                product.price || "0"
+                "Price (₦):",
+                product.price || 0
             );
 
-
-        if (
-            priceInput === null
-        ) {
-
+        if (priceInput === null) {
             return;
-
         }
 
-
-        const price =
-            Number(
-                priceInput
+        const category =
+            prompt(
+                "Category:",
+                product.category || ""
             );
 
+        if (category === null) {
+            return;
+        }
+
+        const quantityInput =
+            prompt(
+                "Quantity / Stock:",
+                product.quantity ?? 0
+            );
+
+        if (quantityInput === null) {
+            return;
+        }
+
+        const description =
+            prompt(
+                "Description:",
+                product.description || ""
+            );
+
+        if (description === null) {
+            return;
+        }
+
+        const price =
+            Number(priceInput);
+
+        const quantity =
+            Number(quantityInput);
 
         if (
             Number.isNaN(price) ||
@@ -2053,55 +1385,7 @@ async function editProduct(
             );
 
             return;
-
         }
-
-
-        // ==========================================
-        // CATEGORY
-        // ==========================================
-
-        const category =
-            prompt(
-                "Product category:",
-                product.category || ""
-            );
-
-
-        if (
-            category === null
-        ) {
-
-            return;
-
-        }
-
-
-        // ==========================================
-        // QUANTITY
-        // ==========================================
-
-        const quantityInput =
-            prompt(
-                "Product quantity / stock:",
-                product.quantity ?? "0"
-            );
-
-
-        if (
-            quantityInput === null
-        ) {
-
-            return;
-
-        }
-
-
-        const quantity =
-            Number(
-                quantityInput
-            );
-
 
         if (
             Number.isNaN(quantity) ||
@@ -2113,74 +1397,42 @@ async function editProduct(
             );
 
             return;
-
         }
-
-
-        // ==========================================
-        // DESCRIPTION
-        // ==========================================
-
-        const description =
-            prompt(
-                "Product description:",
-                product.description || ""
-            );
-
-
-        if (
-            description === null
-        ) {
-
-            return;
-
-        }
-
-
-        // ==========================================
-        // UPDATE PRODUCT
-        // ==========================================
 
         const {
             error: updateError
-        } =
-            await supabaseClient
-                .from("products")
-                .update({
+        } = await supabaseClient
+            .from("products")
+            .update({
 
-                    name:
-                        name.trim(),
+                name:
+                    name.trim(),
 
-                    price:
-                        price,
+                price:
+                    price,
 
-                    category:
-                        category.trim(),
+                category:
+                    category.trim(),
 
-                    quantity:
-                        quantity,
+                quantity:
+                    quantity,
 
-                    description:
-                        description.trim()
+                description:
+                    description.trim()
 
-                })
-                .eq(
-                    "id",
-                    productId
-                );
-
+            })
+            .eq(
+                "id",
+                productId
+            );
 
         if (updateError) {
-
             throw updateError;
-
         }
-
 
         alert(
             "✅ Product updated successfully."
         );
-
 
         await loadProducts();
 
@@ -2197,66 +1449,47 @@ async function editProduct(
             error
         );
 
-
         alert(
             "❌ Could not update product.\n\n" +
-            (
-                error.message ||
-                "Unknown error"
-            )
+            error.message
         );
-
     }
-
 }
 
 
-// ==========================================
+// ==========================================================
 // DELETE PRODUCT
-// ==========================================
+// ==========================================================
 
-async function deleteProduct(
-    productId
-) {
+async function deleteProduct(productId) {
 
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             "Are you sure you want to delete this product?"
-        );
-
-
-    if (!confirmed) {
-
+        )
+    ) {
         return;
-
     }
-
 
     try {
 
         const {
             error
-        } =
-            await supabaseClient
-                .from("products")
-                .delete()
-                .eq(
-                    "id",
-                    productId
-                );
-
+        } = await supabaseClient
+            .from("products")
+            .delete()
+            .eq(
+                "id",
+                productId
+            );
 
         if (error) {
-
             throw error;
-
         }
-
 
         alert(
             "✅ Product deleted successfully."
         );
-
 
         await loadProducts();
 
@@ -2271,23 +1504,65 @@ async function deleteProduct(
             error
         );
 
-
         alert(
             "❌ Could not delete product.\n\n" +
-            (
-                error.message ||
-                "Unknown error"
-            )
+            error.message
         );
-
     }
-
 }
 
 
-// ==========================================
+// ==========================================================
+// ORDER STATUS OPTIONS
+// ==========================================================
+
+function createStatusOptions(
+    currentStatus
+) {
+
+    const statuses = [
+
+        "Pending Payment",
+        "Paid",
+        "Processing",
+        "Shipped",
+        "Out for Delivery",
+        "Delivered",
+        "Cancelled"
+
+    ];
+
+    const current =
+        String(
+            currentStatus || ""
+        ).trim().toLowerCase();
+
+    return statuses.map(status => {
+
+        const selected =
+            status.toLowerCase() ===
+            current
+                ? "selected"
+                : "";
+
+        return `
+
+            <option
+                value="${escapeHtml(status)}"
+                ${selected}
+            >
+                ${escapeHtml(status)}
+            </option>
+
+        `;
+
+    }).join("");
+}
+
+
+// ==========================================================
 // LOAD ORDERS
-// ==========================================
+// ==========================================================
 
 async function loadOrders() {
 
@@ -2296,13 +1571,9 @@ async function loadOrders() {
             "orders-table"
         );
 
-
     if (!table) {
-
         return;
-
     }
-
 
     table.innerHTML = `
 
@@ -2316,31 +1587,24 @@ async function loadOrders() {
 
     `;
 
-
     try {
 
         const {
             data: orders,
             error
-        } =
-            await supabaseClient
-                .from("orders")
-                .select("*")
-                .order(
-                    "created_at",
-                    {
-                        ascending:
-                            false
-                    }
-                );
-
+        } = await supabaseClient
+            .from("orders")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
 
         if (error) {
-
             throw error;
-
         }
-
 
         if (
             !orders ||
@@ -2360,135 +1624,128 @@ async function loadOrders() {
             `;
 
             return;
-
         }
 
+        table.innerHTML = "";
 
-        table.innerHTML =
-            "";
+        orders.forEach(order => {
 
+            const orderId =
+                Number(order.id);
 
-        orders.forEach(
-            order => {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${escapeHtml(
-                            order.order_number
-                        )}
-                    </td>
-
-
-                    <td>
-                        ${escapeHtml(
-                            order.customer_name
-                        )}
-                    </td>
-
-
-                    <td>
-                        ${escapeHtml(
-                            order.customer_email
-                        )}
-                    </td>
-
-
-                    <td>
-                        ${escapeHtml(
-                            order.phone
-                        )}
-                    </td>
-
-
-                    <td>
-                        ${formatMoney(
-                            order.total
-                        )}
-                    </td>
-
-
-                    <td>
-
-                        <select
-                            data-order-id="${escapeHtml(order.id)}"
-                            class="order-status"
-                        >
-
-                            ${createStatusOptions(
-                                order.status
-                            )}
-
-                        </select>
-
-                    </td>
-
-
-                    <td>
-
-                        <input
-                            type="text"
-                            class="tracking-input"
-                            data-order-id="${escapeHtml(order.id)}"
-                            value="${escapeHtml(
-                                order.tracking_number || ""
-                            )}"
-                            placeholder="Tracking number"
-                        >
-
-                        <br>
-
-                        <button
-                            type="button"
-                            onclick="generateTracking(${Number(order.id)})"
-                        >
-                            Generate
-                        </button>
-
-                    </td>
-
-
-                    <td>
-
-                        <input
-                            type="text"
-                            class="delivery-note-input"
-                            data-order-id="${escapeHtml(order.id)}"
-                            value="${escapeHtml(
-                                order.delivery_note || ""
-                            )}"
-                            placeholder="Delivery note"
-                        >
-
-                    </td>
-
-
-                    <td>
-
-                        <button
-                            type="button"
-                            onclick="saveOrderUpdate(${Number(order.id)})"
-                        >
-                            💾 Save
-                        </button>
-
-                    </td>
-
-                `;
-
-
-                table.appendChild(
-                    row
+            const row =
+                document.createElement(
+                    "tr"
                 );
 
-            }
-        );
+            row.innerHTML = `
+
+                <td>
+
+                    <strong>
+                        ID: ${escapeHtml(order.id)}
+                    </strong>
+
+                    <br>
+
+                    Order:
+                    ${escapeHtml(
+                        order.order_number
+                    )}
+
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        order.customer_name
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        order.customer_email
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHtml(
+                        order.phone
+                    )}
+                </td>
+
+                <td>
+                    ${formatMoney(
+                        order.total
+                    )}
+                </td>
+
+                <td>
+
+                    <select
+                        class="order-status"
+                        data-order-id="${orderId}"
+                    >
+
+                        ${createStatusOptions(
+                            order.status
+                        )}
+
+                    </select>
+
+                </td>
+
+                <td>
+
+                    <input
+                        type="text"
+                        class="tracking-input"
+                        data-order-id="${orderId}"
+                        value="${escapeHtml(
+                            order.tracking_number || ""
+                        )}"
+                        placeholder="Tracking number"
+                    >
+
+                    <br><br>
+
+                    <button
+                        type="button"
+                        onclick="generateTracking(${orderId})"
+                    >
+                        Generate
+                    </button>
+
+                </td>
+
+                <td>
+
+                    <input
+                        type="text"
+                        class="delivery-note-input"
+                        data-order-id="${orderId}"
+                        value="${escapeHtml(
+                            order.delivery_note || ""
+                        )}"
+                        placeholder="Delivery note"
+                    >
+
+                </td>
+
+                <td>
+
+                    <button
+                        type="button"
+                        onclick="saveOrderUpdate(${orderId})"
+                    >
+                        💾 Save
+                    </button>
+
+                </td>
+
+            `;
+
+            table.appendChild(row);
+        });
 
     }
 
@@ -2498,7 +1755,6 @@ async function loadOrders() {
             "Orders error:",
             error
         );
-
 
         table.innerHTML = `
 
@@ -2519,85 +1775,27 @@ async function loadOrders() {
             </tr>
 
         `;
-
     }
-
 }
 
 
-// ==========================================
-// ORDER STATUS OPTIONS
-// ==========================================
-
-function createStatusOptions(
-    currentStatus
-) {
-
-    const statuses = [
-
-        "Pending Payment",
-
-        "Paid",
-
-        "Processing",
-
-        "Shipped",
-
-        "Out for Delivery",
-
-        "Delivered",
-
-        "Cancelled"
-
-    ];
-
-
-    return statuses.map(
-        status => `
-
-            <option
-                value="${escapeHtml(status)}"
-                ${
-                    String(status).toLowerCase() ===
-                    String(currentStatus || "").toLowerCase()
-                        ? "selected"
-                        : ""
-                }
-            >
-                ${escapeHtml(status)}
-            </option>
-
-        `
-    ).join("");
-
-}
-
-
-// ==========================================
+// ==========================================================
 // GENERATE TRACKING NUMBER
-// ==========================================
+// ==========================================================
 
 function generateTrackingNumber() {
 
     const now =
         new Date();
 
-
     const date =
         now.getFullYear() +
         String(
             now.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        ) +
+        ).padStart(2, "0") +
         String(
             now.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
+        ).padStart(2, "0");
 
     const random =
         Math.floor(
@@ -2605,20 +1803,18 @@ function generateTrackingNumber() {
             Math.random() * 900000
         );
 
-
     return (
         "HST-" +
         date +
         "-" +
         random
     );
-
 }
 
 
-// ==========================================
-// GENERATE AND SAVE TRACKING
-// ==========================================
+// ==========================================================
+// GENERATE + SAVE TRACKING
+// ==========================================================
 
 async function generateTracking(
     orderId
@@ -2629,7 +1825,6 @@ async function generateTracking(
             `.tracking-input[data-order-id="${orderId}"]`
         );
 
-
     if (!input) {
 
         alert(
@@ -2637,55 +1832,39 @@ async function generateTracking(
         );
 
         return;
-
     }
-
 
     const tracking =
         generateTrackingNumber();
 
-
     input.value =
         tracking;
 
-
     try {
-
-        // ==========================================
-        // IMPORTANT:
-        // NO .single()
-        // NO .select()
-        // ==========================================
 
         const {
             error
-        } =
-            await supabaseClient
-                .from("orders")
-                .update({
+        } = await supabaseClient
+            .from("orders")
+            .update({
 
-                    tracking_number:
-                        tracking
+                tracking_number:
+                    tracking
 
-                })
-                .eq(
-                    "id",
-                    orderId
-                );
-
+            })
+            .eq(
+                "id",
+                orderId
+            );
 
         if (error) {
-
             throw error;
-
         }
-
 
         alert(
             "✅ Tracking number saved:\n\n" +
             tracking
         );
-
 
         await loadOrders();
 
@@ -2698,54 +1877,41 @@ async function generateTracking(
             error
         );
 
-
         alert(
             "❌ Could not save tracking number.\n\n" +
-            (
-                error.message ||
-                "Unknown error"
-            )
+            error.message
         );
-
     }
-
 }
 
 
-// ==========================================
+// ==========================================================
 // SAVE ORDER UPDATE
-// ==========================================
-// IMPORTANT:
-// There is NO .single() here.
-// This prevents:
-// "Cannot coerce the result to a single JSON object"
-// ==========================================
+// ==========================================================
 
 async function saveOrderUpdate(
     orderId
 ) {
+
+    console.log(
+        "SAVE ORDER CLICKED",
+        orderId
+    );
 
     const statusElement =
         document.querySelector(
             `.order-status[data-order-id="${orderId}"]`
         );
 
-
     const trackingElement =
         document.querySelector(
             `.tracking-input[data-order-id="${orderId}"]`
         );
 
-
     const noteElement =
         document.querySelector(
             `.delivery-note-input[data-order-id="${orderId}"]`
         );
-
-
-    // ==========================================
-    // CHECK STATUS
-    // ==========================================
 
     if (!statusElement) {
 
@@ -2754,107 +1920,128 @@ async function saveOrderUpdate(
         );
 
         return;
-
     }
-
-
-    // ==========================================
-    // GET VALUES
-    // ==========================================
 
     const status =
         statusElement.value.trim();
-
 
     const tracking =
         trackingElement
             ? trackingElement.value.trim()
             : "";
 
-
     const note =
         noteElement
             ? noteElement.value.trim()
             : "";
 
-
     console.log(
-        "Saving order:",
+        "UPDATING ORDER:",
         {
-            orderId,
-            status,
-            tracking,
-            note
+            id: orderId,
+            status: status,
+            tracking: tracking,
+            note: note
         }
     );
 
-
     try {
 
-        // ==========================================
-        // UPDATE ORDER
-        // ==========================================
+        // ==================================================
+        // UPDATE DATABASE
+        // IMPORTANT:
+        // NO .select()
+        // NO .single()
+        // ==================================================
 
         const {
             error
-        } =
-            await supabaseClient
-                .from("orders")
-                .update({
+        } = await supabaseClient
+            .from("orders")
+            .update({
 
-                    status:
-                        status,
+                status:
+                    status,
 
-                    tracking_number:
-                        tracking || null,
+                tracking_number:
+                    tracking || null,
 
-                    delivery_note:
-                        note || null
+                delivery_note:
+                    note || null
 
-                })
-                .eq(
-                    "id",
-                    orderId
-                );
-
-
-        // ==========================================
-        // CHECK ERROR
-        // ==========================================
+            })
+            .eq(
+                "id",
+                orderId
+            );
 
         if (error) {
 
             console.error(
-                "Order update error:",
+                "SUPABASE UPDATE ERROR:",
                 error
             );
 
             throw error;
+        }
+
+        console.log(
+            "ORDER UPDATE SUCCESS:",
+            orderId,
+            status
+        );
+
+        // ==================================================
+        // VERIFY WHAT WAS SAVED
+        // ==================================================
+
+        const {
+            data: verifyData,
+            error: verifyError
+        } = await supabaseClient
+            .from("orders")
+            .select(
+                "id,order_number,status,tracking_number,delivery_note"
+            )
+            .eq(
+                "id",
+                orderId
+            )
+            .limit(1);
+
+        if (verifyError) {
+
+            console.error(
+                "Verification error:",
+                verifyError
+            );
 
         }
 
-
-        // ==========================================
-        // SUCCESS
-        // ==========================================
-
         console.log(
-            "Order updated successfully:",
-            {
-                orderId,
-                status
-            }
+            "DATABASE VALUE AFTER UPDATE:",
+            verifyData
         );
 
+        // ==================================================
+        // IMPORTANT:
+        // UPDATE THE SELECT DIRECTLY
+        // ==================================================
+
+        statusElement.value =
+            status;
 
         alert(
-            "✅ Order updated successfully."
+            "✅ Order updated successfully.\n\n" +
+            "Order ID: " +
+            orderId +
+            "\nStatus: " +
+            status
         );
 
-
-        // ==========================================
+        // ==================================================
         // RELOAD ORDERS
-        // ==========================================
+        // ==================================================
 
         await loadOrders();
 
@@ -2863,10 +2050,9 @@ async function saveOrderUpdate(
     catch (error) {
 
         console.error(
-            "Save order update error:",
+            "SAVE ORDER ERROR:",
             error
         );
-
 
         alert(
             "❌ Could not update order.\n\n" +
@@ -2875,48 +2061,30 @@ async function saveOrderUpdate(
                 "Unknown error"
             )
         );
-
     }
-
 }
 
 
-// ==========================================
-// INITIALIZE ADMIN DASHBOARD
-// ==========================================
+// ==========================================================
+// INITIALIZE
+// ==========================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function() {
 
         console.log(
-            "ADMIN JS VERSION 5 - ORDER UPDATE FIXED"
+            "ADMIN JS - COMPLETE VERSION LOADED"
         );
-
-
-        // ==========================================
-        // IMAGE PREVIEW
-        // ==========================================
 
         setupImagePreview();
 
-
-        // ==========================================
-        // VIDEO PREVIEW
-        // ==========================================
-
         setupVideoPreview();
-
-
-        // ==========================================
-        // LOGIN FORM
-        // ==========================================
 
         const loginForm =
             getElement(
                 "admin-login-form"
             );
-
 
         if (loginForm) {
 
@@ -2924,19 +2092,12 @@ document.addEventListener(
                 "submit",
                 adminLogin
             );
-
         }
-
-
-        // ==========================================
-        // LOGOUT
-        // ==========================================
 
         const logout =
             getElement(
                 "admin-logout"
             );
-
 
         if (logout) {
 
@@ -2944,19 +2105,12 @@ document.addEventListener(
                 "click",
                 adminLogout
             );
-
         }
-
-
-        // ==========================================
-        // ADD PRODUCT FORM
-        // ==========================================
 
         const productForm =
             getElement(
                 "add-product-form"
             );
-
 
         if (productForm) {
 
@@ -2964,19 +2118,12 @@ document.addEventListener(
                 "submit",
                 addProduct
             );
-
         }
-
-
-        // ==========================================
-        // ADD CATEGORY
-        // ==========================================
 
         const categoryButton =
             getElement(
                 "add-category-button"
             );
-
 
         if (categoryButton) {
 
@@ -2984,15 +2131,8 @@ document.addEventListener(
                 "click",
                 addNewCategory
             );
-
         }
 
-
-        // ==========================================
-        // CHECK ADMIN SESSION
-        // ==========================================
-
         checkAdminSession();
-
     }
 );
