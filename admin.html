@@ -21,29 +21,47 @@
 
     <style>
 
+        .admin-input,
+        .admin-select,
+        .admin-textarea {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin-top: 6px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
         .admin-form-group {
             margin-bottom: 18px;
         }
 
-        .admin-form-group label {
-            display: block;
-            margin-bottom: 7px;
-            font-weight: bold;
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
         }
 
-        .admin-form-group input,
-        .admin-form-group select,
-        .admin-form-group textarea {
-            width: 100%;
-            max-width: 600px;
-            padding: 12px;
-            box-sizing: border-box;
+        .preview-item {
+            width: 110px;
+            text-align: center;
+            word-break: break-word;
+        }
+
+        .preview-item img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid #ddd;
         }
 
         .category-row {
             display: flex;
-            gap: 10px;
-            max-width: 600px;
+            gap: 8px;
+            align-items: center;
         }
 
         .category-row select {
@@ -51,29 +69,17 @@
         }
 
         .category-add-button {
-            white-space: nowrap;
-        }
-
-        #image-preview {
-            margin-top: 12px;
-        }
-
-        #image-preview img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 10px;
-            border: 1px solid #ddd;
-        }
-
-        #product-message {
-            font-weight: bold;
-            margin-top: 15px;
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
         }
 
         .stats-container {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns:
+                repeat(auto-fit, minmax(180px, 1fr));
             gap: 15px;
         }
 
@@ -81,22 +87,27 @@
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 10px;
-            min-width: 150px;
         }
 
-        .admin-table-container {
-            overflow-x: auto;
+        .stat-card p {
+            font-size: 25px;
+            font-weight: bold;
         }
 
-        .admin-table-container table {
-            min-width: 900px;
-        }
-
-        .product-table-image {
+        .product-main-image {
             width: 60px;
             height: 60px;
             object-fit: cover;
             border-radius: 6px;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            vertical-align: middle;
         }
 
     </style>
@@ -136,6 +147,7 @@
             id="admin-email"
             placeholder="Enter admin email"
             required
+            class="admin-input"
         >
 
         <br><br>
@@ -149,6 +161,7 @@
             id="admin-password"
             placeholder="Enter password"
             required
+            class="admin-input"
         >
 
         <br><br>
@@ -167,7 +180,6 @@
 </main>
 
 
-
 <!-- ==================================================
      ADMIN DASHBOARD
 ================================================== -->
@@ -180,10 +192,7 @@
     "
 >
 
-
-    <!-- ==================================================
-         HEADER
-    ================================================== -->
+    <!-- HEADER -->
 
     <header>
 
@@ -204,7 +213,6 @@
         </button>
 
     </header>
-
 
 
     <!-- ==================================================
@@ -231,7 +239,6 @@
 
             </div>
 
-
             <div class="stat-card">
 
                 <h3>
@@ -244,7 +251,6 @@
 
             </div>
 
-
             <div class="stat-card">
 
                 <h3>
@@ -256,7 +262,6 @@
                 </p>
 
             </div>
-
 
             <div class="stat-card">
 
@@ -273,7 +278,6 @@
         </div>
 
     </section>
-
 
 
     <!-- ==================================================
@@ -294,9 +298,7 @@
         </p>
 
 
-        <!-- ==================================================
-             ADD PRODUCT
-        ================================================== -->
+        <!-- ADD PRODUCT -->
 
         <div
             style="
@@ -310,7 +312,6 @@
             <h3>
                 ➕ Add New Product
             </h3>
-
 
             <form id="add-product-form">
 
@@ -328,10 +329,10 @@
                         id="product-name"
                         placeholder="Product name"
                         required
+                        class="admin-input"
                     >
 
                 </div>
-
 
 
                 <!-- PRICE -->
@@ -347,12 +348,11 @@
                         id="product-price"
                         placeholder="Product price"
                         min="0"
-                        step="0.01"
                         required
+                        class="admin-input"
                     >
 
                 </div>
-
 
 
                 <!-- CATEGORY -->
@@ -368,6 +368,7 @@
                         <select
                             id="product-category"
                             required
+                            class="admin-select"
                         >
 
                             <option value="">
@@ -376,13 +377,13 @@
 
                         </select>
 
-
                         <button
                             type="button"
                             id="add-category-button"
                             class="category-add-button"
+                            title="Add category"
                         >
-                            ➕ Add Category
+                            ➕
                         </button>
 
                     </div>
@@ -390,29 +391,39 @@
                 </div>
 
 
-
-                <!-- PRODUCT IMAGE -->
+                <!-- PRODUCT IMAGES -->
 
                 <div class="admin-form-group">
 
                     <label for="product-image">
-                        Product Image
+                        Product Images
                     </label>
 
                     <input
                         type="file"
                         id="product-image"
-                        name="product-image"
                         accept="image/*"
+                        multiple
                         required
+                        class="admin-input"
                     >
+
+                    <p
+                        style="
+                            font-size:14px;
+                            color:#666;
+                        "
+                    >
+                        Select one or multiple images
+                        from your Galaxy.
+                    </p>
 
                     <div
                         id="image-preview"
+                        class="image-preview"
                     ></div>
 
                 </div>
-
 
 
                 <!-- DESCRIPTION -->
@@ -426,12 +437,12 @@
                     <textarea
                         id="product-description"
                         placeholder="Product description"
-                        rows="4"
+                        rows="5"
                         required
+                        class="admin-textarea"
                     ></textarea>
 
                 </div>
-
 
 
                 <!-- QUANTITY -->
@@ -449,13 +460,13 @@
                         min="0"
                         value="30"
                         required
+                        class="admin-input"
                     >
 
                 </div>
 
 
-
-                <!-- BUTTON -->
+                <!-- ADD BUTTON -->
 
                 <button
                     type="submit"
@@ -464,26 +475,24 @@
                     ➕ Add Product
                 </button>
 
-
             </form>
 
 
-            <p id="product-message"></p>
+            <p
+                id="product-message"
+                style="font-weight:bold;"
+            ></p>
 
         </div>
 
 
-
-        <!-- ==================================================
-             PRODUCTS
-        ================================================== -->
+        <!-- PRODUCT LIST -->
 
         <h3>
             📦 Products
         </h3>
 
-
-        <div class="admin-table-container">
+        <div style="overflow-x:auto;">
 
             <table
                 border="1"
@@ -515,7 +524,6 @@
 
                 </thead>
 
-
                 <tbody id="products-table">
 
                     <tr>
@@ -535,7 +543,6 @@
     </section>
 
 
-
     <!-- ==================================================
          CUSTOMER ORDERS
     ================================================== -->
@@ -549,8 +556,7 @@
             Customer Orders 📦
         </h2>
 
-
-        <div class="admin-table-container">
+        <div style="overflow-x:auto;">
 
             <table
                 border="1"
@@ -602,7 +608,6 @@
 
                 </thead>
 
-
                 <tbody id="orders-table">
 
                     <tr>
@@ -621,9 +626,7 @@
 
     </section>
 
-
 </main>
-
 
 
 <!-- ==================================================
@@ -632,25 +635,21 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-
 <script>
 
-    const SUPABASE_URL =
-        "https://qreliegujlmmsnyewtaq.supabase.co";
+const SUPABASE_URL =
+    "https://qreliegujlmmsnyewtaq.supabase.co";
 
+const SUPABASE_KEY =
+    "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
 
-    const SUPABASE_KEY =
-        "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
-
-    const supabaseClient =
-        window.supabase.createClient(
-            SUPABASE_URL,
-            SUPABASE_KEY
-        );
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 </script>
-
 
 
 <!-- ==================================================

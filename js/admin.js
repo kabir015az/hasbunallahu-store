@@ -1,6 +1,7 @@
 // ==========================================
 // HASBUNALLAHU STORE
-// ADMIN DASHBOARD JAVASCRIPT
+// ADMIN DASHBOARD
+// MULTIPLE PRODUCT IMAGES
 // ==========================================
 
 
@@ -10,14 +11,6 @@
 
 const ADMIN_EMAIL =
     "kabirabdulazeez45@gmail.com";
-
-
-// ==========================================
-// STORAGE BUCKET
-// ==========================================
-
-const PRODUCT_IMAGE_BUCKET =
-    "product-images";
 
 
 // ==========================================
@@ -52,6 +45,22 @@ function formatMoney(amount) {
                 maximumFractionDigits: 2
             }
         );
+
+}
+
+
+// ==========================================
+// ESCAPE HTML
+// ==========================================
+
+function escapeHtml(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
 }
 
@@ -95,11 +104,9 @@ function showDashboard() {
     const dashboard =
         getElement("admin-dashboard");
 
-
     if (login) {
         login.style.display = "none";
     }
-
 
     if (dashboard) {
         dashboard.style.display = "block";
@@ -120,11 +127,9 @@ function showLogin() {
     const dashboard =
         getElement("admin-dashboard");
 
-
     if (login) {
         login.style.display = "block";
     }
-
 
     if (dashboard) {
         dashboard.style.display = "none";
@@ -149,7 +154,6 @@ async function checkAdminSession() {
                 .auth
                 .getSession();
 
-
         if (error) {
 
             console.error(
@@ -163,10 +167,8 @@ async function checkAdminSession() {
 
         }
 
-
         const session =
-            data?.session;
-
+            data.session;
 
         if (!session) {
 
@@ -176,10 +178,8 @@ async function checkAdminSession() {
 
         }
 
-
         const user =
             session.user;
-
 
         if (
             !user ||
@@ -195,7 +195,6 @@ async function checkAdminSession() {
             return;
 
         }
-
 
         if (
             user.email.toLowerCase() !==
@@ -216,13 +215,10 @@ async function checkAdminSession() {
 
         }
 
-
         currentAdmin =
             user;
 
-
         showDashboard();
-
 
         await loadDashboard();
 
@@ -250,13 +246,11 @@ async function adminLogin(event) {
 
     event.preventDefault();
 
-
     const emailInput =
         getElement("admin-email");
 
     const passwordInput =
         getElement("admin-password");
-
 
     if (
         !emailInput ||
@@ -271,16 +265,13 @@ async function adminLogin(event) {
 
     }
 
-
     const email =
         emailInput.value
             .trim()
             .toLowerCase();
 
-
     const password =
         passwordInput.value;
-
 
     if (!email || !password) {
 
@@ -291,7 +282,6 @@ async function adminLogin(event) {
         return;
 
     }
-
 
     if (
         email !==
@@ -306,29 +296,23 @@ async function adminLogin(event) {
 
     }
 
-
     const loginButton =
         event.submitter ||
         event.target.querySelector(
             'button[type="submit"]'
         );
 
-
     if (loginButton) {
 
-        loginButton.disabled =
-            true;
-
+        loginButton.disabled = true;
         loginButton.textContent =
             "Logging in...";
 
     }
 
-
     showLoginMessage(
         "Checking login..."
     );
-
 
     try {
 
@@ -348,29 +332,37 @@ async function adminLogin(event) {
 
                 });
 
-
         if (error) {
 
-            throw error;
+            console.error(
+                "Supabase login error:",
+                error
+            );
+
+            showLoginMessage(
+                "❌ Login failed: " +
+                error.message
+            );
+
+            return;
 
         }
-
 
         if (
             !data ||
             !data.user
         ) {
 
-            throw new Error(
-                "No user was returned."
+            showLoginMessage(
+                "❌ Login failed. No user was returned."
             );
+
+            return;
 
         }
 
-
         if (
-            data.user.email
-                .toLowerCase() !==
+            data.user.email.toLowerCase() !==
             ADMIN_EMAIL.toLowerCase()
         ) {
 
@@ -378,25 +370,23 @@ async function adminLogin(event) {
                 .auth
                 .signOut();
 
-            throw new Error(
-                "This account is not authorized as admin."
+            showLoginMessage(
+                "❌ This account is not authorized as admin."
             );
+
+            return;
 
         }
 
-
         currentAdmin =
             data.user;
-
 
         showLoginMessage(
             "✅ Login successful!",
             true
         );
 
-
         showDashboard();
-
 
         await loadDashboard();
 
@@ -408,7 +398,6 @@ async function adminLogin(event) {
             "Admin login error:",
             error
         );
-
 
         showLoginMessage(
             "❌ " +
@@ -483,11 +472,11 @@ async function loadDashboard() {
 
         loadStatistics(),
 
-        loadCategories(),
-
         loadProducts(),
 
-        loadOrders()
+        loadOrders(),
+
+        loadCategories()
 
     ]);
 
@@ -512,27 +501,20 @@ async function loadStatistics() {
                     "id,total,customer_email"
                 );
 
-
         if (ordersError) {
             throw ordersError;
         }
 
-
         const orderList =
             orders || [];
-
 
         const totalOrders =
             orderList.length;
 
-
-        let totalSales =
-            0;
-
+        let totalSales = 0;
 
         const customers =
             new Set();
-
 
         orderList.forEach(
             function(order) {
@@ -541,7 +523,6 @@ async function loadStatistics() {
                     Number(
                         order.total
                     ) || 0;
-
 
                 if (
                     order.customer_email
@@ -557,48 +538,28 @@ async function loadStatistics() {
             }
         );
 
-
         const totalOrdersElement =
-            getElement(
-                "total-orders"
-            );
-
+            getElement("total-orders");
 
         const totalSalesElement =
-            getElement(
-                "total-sales"
-            );
-
+            getElement("total-sales");
 
         const totalCustomersElement =
-            getElement(
-                "total-customers"
-            );
-
+            getElement("total-customers");
 
         if (totalOrdersElement) {
-
             totalOrdersElement.textContent =
                 totalOrders;
-
         }
-
 
         if (totalSalesElement) {
-
             totalSalesElement.textContent =
-                formatMoney(
-                    totalSales
-                );
-
+                formatMoney(totalSales);
         }
 
-
         if (totalCustomersElement) {
-
             totalCustomersElement.textContent =
                 customers.size;
-
         }
 
 
@@ -611,24 +572,17 @@ async function loadStatistics() {
                 .select(
                     "id",
                     {
-                        count:
-                            "exact",
-                        head:
-                            true
+                        count: "exact",
+                        head: true
                     }
                 );
-
 
         if (productsError) {
             throw productsError;
         }
 
-
         const totalProductsElement =
-            getElement(
-                "total-products"
-            );
-
+            getElement("total-products");
 
         if (totalProductsElement) {
 
@@ -652,381 +606,49 @@ async function loadStatistics() {
 
 
 // ==========================================
-// CATEGORY STORAGE
+// GET PRODUCT IMAGES
 // ==========================================
 
-const DEFAULT_CATEGORIES = [
+function getProductImages(imageValue) {
 
-    "School",
-
-    "Electronics",
-
-    "Fashion",
-
-    "Beauty",
-
-    "Home",
-
-    "Accessories",
-
-    "Food",
-
-    "Books",
-
-    "Other"
-
-];
-
-
-// ==========================================
-// GET SAVED LOCAL CATEGORIES
-// ==========================================
-
-function getLocalCategories() {
-
-    try {
-
-        const saved =
-            localStorage.getItem(
-                "hasbunallahu_categories"
-            );
-
-
-        if (!saved) {
-
-            return [];
-
-        }
-
-
-        const categories =
-            JSON.parse(saved);
-
-
-        return Array.isArray(categories)
-            ? categories
-            : [];
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Category storage error:",
-            error
-        );
-
+    if (!imageValue) {
         return [];
-
     }
 
-}
-
-
-// ==========================================
-// SAVE LOCAL CATEGORY
-// ==========================================
-
-function saveLocalCategory(
-    category
-) {
-
-    const categories =
-        getLocalCategories();
-
-
-    const exists =
-        categories.some(
-            function(item) {
-
-                return item.toLowerCase() ===
-                    category.toLowerCase();
-
-            }
-        );
-
-
-    if (!exists) {
-
-        categories.push(
-            category
-        );
-
-        localStorage.setItem(
-            "hasbunallahu_categories",
-            JSON.stringify(categories)
-        );
-
-    }
-
-}
-
-
-// ==========================================
-// LOAD CATEGORIES
-// ==========================================
-
-async function loadCategories() {
-
-    const select =
-        getElement(
-            "product-category"
-        );
-
-
-    if (!select) {
-        return;
-    }
-
-
+    // New multiple-image format
     try {
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("products")
-                .select(
-                    "category"
-                );
+        const parsed =
+            JSON.parse(imageValue);
 
+        if (Array.isArray(parsed)) {
 
-        if (error) {
+            return parsed.filter(
+                function(url) {
 
-            console.error(
-                "Could not load categories:",
-                error
+                    return (
+                        typeof url === "string" &&
+                        url.trim() !== ""
+                    );
+
+                }
             );
 
         }
-
-
-        const categories =
-            new Set();
-
-
-        // Default categories
-
-        DEFAULT_CATEGORIES.forEach(
-            function(category) {
-
-                categories.add(
-                    category
-                );
-
-            }
-        );
-
-
-        // Categories already stored locally
-
-        getLocalCategories()
-            .forEach(
-                function(category) {
-
-                    categories.add(
-                        category
-                    );
-
-                }
-            );
-
-
-        // Categories already used by products
-
-        (data || []).forEach(
-            function(product) {
-
-                if (
-                    product.category &&
-                    product.category.trim()
-                ) {
-
-                    categories.add(
-                        product.category.trim()
-                    );
-
-                }
-
-            }
-        );
-
-
-        select.innerHTML = `
-
-            <option value="">
-                Select category
-            </option>
-
-        `;
-
-
-        Array.from(categories)
-            .sort(
-                function(a, b) {
-
-                    return a.localeCompare(b);
-
-                }
-            )
-            .forEach(
-                function(category) {
-
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
-
-
-                    option.value =
-                        category;
-
-                    option.textContent =
-                        category;
-
-
-                    select.appendChild(
-                        option
-                    );
-
-                }
-            );
 
     }
 
     catch (error) {
 
-        console.error(
-            "Category loading error:",
-            error
-        );
+        // Existing single image
+        // is not JSON.
 
     }
 
-}
-
-
-// ==========================================
-// ADD CATEGORY
-// ==========================================
-
-function addCategory() {
-
-    const categoryName =
-        prompt(
-            "Enter the new category name:"
-        );
-
-
-    if (
-        categoryName ===
-        null
-    ) {
-
-        return;
-
-    }
-
-
-    const category =
-        categoryName.trim();
-
-
-    if (!category) {
-
-        alert(
-            "Please enter a category name."
-        );
-
-        return;
-
-    }
-
-
-    const select =
-        getElement(
-            "product-category"
-        );
-
-
-    if (!select) {
-        return;
-    }
-
-
-    const existingOptions =
-        Array.from(
-            select.options
-        );
-
-
-    const exists =
-        existingOptions.some(
-            function(option) {
-
-                return option.value
-                    .toLowerCase() ===
-                    category.toLowerCase();
-
-            }
-        );
-
-
-    if (exists) {
-
-        select.value =
-            existingOptions.find(
-                function(option) {
-
-                    return option.value
-                        .toLowerCase() ===
-                        category.toLowerCase();
-
-                }
-            ).value;
-
-
-        alert(
-            "This category already exists."
-        );
-
-        return;
-
-    }
-
-
-    saveLocalCategory(
-        category
-    );
-
-
-    const option =
-        document.createElement(
-            "option"
-        );
-
-
-    option.value =
-        category;
-
-    option.textContent =
-        category;
-
-
-    select.appendChild(
-        option
-    );
-
-
-    select.value =
-        category;
-
-
-    alert(
-        "✅ Category added: " +
-        category
-    );
+    // Existing products
+    return [
+        String(imageValue)
+    ];
 
 }
 
@@ -1038,15 +660,11 @@ function addCategory() {
 async function loadProducts() {
 
     const table =
-        getElement(
-            "products-table"
-        );
-
+        getElement("products-table");
 
     if (!table) {
         return;
     }
-
 
     table.innerHTML = `
 
@@ -1060,7 +678,6 @@ async function loadProducts() {
 
     `;
 
-
     try {
 
         const {
@@ -1073,16 +690,13 @@ async function loadProducts() {
                 .order(
                     "id",
                     {
-                        ascending:
-                            true
+                        ascending: true
                     }
                 );
-
 
         if (error) {
             throw error;
         }
-
 
         if (
             !products ||
@@ -1105,10 +719,7 @@ async function loadProducts() {
 
         }
 
-
-        table.innerHTML =
-            "";
-
+        table.innerHTML = "";
 
         products.forEach(
             function(product) {
@@ -1118,29 +729,53 @@ async function loadProducts() {
                         "tr"
                     );
 
+                const images =
+                    getProductImages(
+                        product.image
+                    );
+
+                const mainImage =
+                    images.length > 0
+                        ? images[0]
+                        : "";
 
                 row.innerHTML = `
 
                     <td>
-                        ${escapeHtml(
-                            product.id
-                        )}
+                        ${escapeHtml(product.id)}
                     </td>
 
                     <td>
 
-                        <img
-                            src="${escapeHtml(
-                                product.image || ""
-                            )}"
-                            alt="${escapeHtml(
-                                product.name || "Product"
-                            )}"
-                            class="product-table-image"
-                            onerror="
-                                this.style.display='none'
-                            "
-                        >
+                        ${
+                            mainImage
+                                ? `
+                                    <img
+                                        src="${escapeHtml(mainImage)}"
+                                        alt="${escapeHtml(
+                                            product.name ||
+                                            "Product"
+                                        )}"
+                                        class="product-main-image"
+                                        onerror="
+                                            this.style.display='none'
+                                        "
+                                    >
+                                  `
+                                : "No image"
+                        }
+
+                        ${
+                            images.length > 1
+                                ? `
+                                    <br>
+                                    <small>
+                                        ${images.length}
+                                        images
+                                    </small>
+                                  `
+                                : ""
+                        }
 
                     </td>
 
@@ -1163,9 +798,11 @@ async function loadProducts() {
                     </td>
 
                     <td>
-                        ${Number(
-                            product.quantity
-                        ) || 0}
+                        ${
+                            Number(
+                                product.quantity
+                            ) || 0
+                        }
                     </td>
 
                     <td>
@@ -1194,10 +831,7 @@ async function loadProducts() {
 
                 `;
 
-
-                table.appendChild(
-                    row
-                );
+                table.appendChild(row);
 
             }
         );
@@ -1210,7 +844,6 @@ async function loadProducts() {
             "Products error:",
             error
         );
-
 
         table.innerHTML = `
 
@@ -1238,115 +871,82 @@ async function loadProducts() {
 
 
 // ==========================================
-// ESCAPE HTML
-// ==========================================
-
-function escapeHtml(value) {
-
-    return String(
-        value ?? ""
-    )
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-
-}
-
-
-// ==========================================
 // IMAGE PREVIEW
 // ==========================================
 
 function setupImagePreview() {
 
     const imageInput =
-        getElement(
-            "product-image"
-        );
-
+        getElement("product-image");
 
     const preview =
-        getElement(
-            "image-preview"
-        );
-
+        getElement("image-preview");
 
     if (
         !imageInput ||
         !preview
     ) {
-
         return;
-
     }
-
 
     imageInput.addEventListener(
         "change",
         function() {
 
-            const file =
-                this.files?.[0];
+            preview.innerHTML = "";
 
-
-            preview.innerHTML =
-                "";
-
-
-            if (!file) {
-                return;
-            }
-
-
-            if (
-                !file.type.startsWith(
-                    "image/"
-                )
-            ) {
-
-                alert(
-                    "Please select a valid image."
+            const files =
+                Array.from(
+                    this.files || []
                 );
 
-                this.value =
-                    "";
+            files.forEach(
+                function(file) {
 
-                return;
+                    if (
+                        !file.type.startsWith(
+                            "image/"
+                        )
+                    ) {
+                        return;
+                    }
 
-            }
+                    const imageURL =
+                        URL.createObjectURL(
+                            file
+                        );
 
+                    const item =
+                        document.createElement(
+                            "div"
+                        );
 
-            const imageURL =
-                URL.createObjectURL(
-                    file
-                );
+                    item.className =
+                        "preview-item";
 
+                    item.innerHTML = `
 
-            preview.innerHTML = `
+                        <img
+                            src="${imageURL}"
+                            alt="Preview"
+                        >
 
-                <img
-                    src="${imageURL}"
-                    alt="Product preview"
-                >
+                        <br>
 
-            `;
+                        <small>
+                            ${escapeHtml(
+                                file.name
+                            )}
+                        </small>
+
+                    `;
+
+                    preview.appendChild(
+                        item
+                    );
+
+                }
+            );
 
         }
     );
@@ -1362,66 +962,39 @@ async function addProduct(event) {
 
     event.preventDefault();
 
-
-    const form =
-        getElement(
-            "add-product-form"
-        );
-
-
-    const button =
-        getElement(
-            "add-product-button"
-        );
-
-
     const message =
-        getElement(
-            "product-message"
-        );
-
+        getElement("product-message");
 
     const name =
-        getElement(
-            "product-name"
-        )?.value.trim();
-
+        getElement("product-name")
+            ?.value.trim();
 
     const price =
         Number(
-            getElement(
-                "product-price"
-            )?.value
+            getElement("product-price")
+                ?.value
         );
-
 
     const category =
-        getElement(
-            "product-category"
-        )?.value.trim();
-
-
-    const imageInput =
-        getElement(
-            "product-image"
-        );
-
-
-    const imageFile =
-        imageInput?.files?.[0];
-
+        getElement("product-category")
+            ?.value.trim();
 
     const description =
-        getElement(
-            "product-description"
-        )?.value.trim();
-
+        getElement("product-description")
+            ?.value.trim();
 
     const quantity =
         Number(
-            getElement(
-                "product-quantity"
-            )?.value
+            getElement("product-quantity")
+                ?.value
+        );
+
+    const imageInput =
+        getElement("product-image");
+
+    const imageFiles =
+        Array.from(
+            imageInput?.files || []
         );
 
 
@@ -1429,51 +1002,23 @@ async function addProduct(event) {
     // VALIDATION
     // ==========================================
 
-    if (!name) {
-
-        showProductMessage(
-            "❌ Please enter the product name.",
-            false
-        );
-
-        return;
-
-    }
-
-
     if (
+        !name ||
+        !category ||
+        !description ||
         Number.isNaN(price) ||
-        price < 0
+        Number.isNaN(quantity)
     ) {
 
-        showProductMessage(
-            "❌ Please enter a valid price.",
-            false
-        );
+        if (message) {
 
-        return;
+            message.textContent =
+                "❌ Please complete all product fields.";
 
-    }
+            message.style.color =
+                "red";
 
-
-    if (!category) {
-
-        showProductMessage(
-            "❌ Please select a category.",
-            false
-        );
-
-        return;
-
-    }
-
-
-    if (!imageFile) {
-
-        showProductMessage(
-            "❌ Please select a product image.",
-            false
-        );
+        }
 
         return;
 
@@ -1481,203 +1026,196 @@ async function addProduct(event) {
 
 
     if (
-        !imageFile.type.startsWith(
-            "image/"
-        )
+        imageFiles.length === 0
     ) {
 
-        showProductMessage(
-            "❌ Please select a valid image file.",
-            false
-        );
+        if (message) {
+
+            message.textContent =
+                "❌ Please select at least one image.";
+
+            message.style.color =
+                "red";
+
+        }
 
         return;
 
     }
 
 
-    if (!description) {
-
-        showProductMessage(
-            "❌ Please enter a product description.",
-            false
+    const addButton =
+        getElement(
+            "add-product-button"
         );
-
-        return;
-
-    }
-
-
-    if (
-        Number.isNaN(quantity) ||
-        quantity < 0
-    ) {
-
-        showProductMessage(
-            "❌ Please enter a valid quantity.",
-            false
-        );
-
-        return;
-
-    }
 
 
     try {
 
-        if (button) {
+        if (addButton) {
 
-            button.disabled =
+            addButton.disabled =
                 true;
 
-            button.textContent =
-                "Uploading image...";
+            addButton.textContent =
+                "⏳ Uploading...";
+
+        }
+
+        if (message) {
+
+            message.textContent =
+                "⏳ Uploading product images...";
+
+            message.style.color =
+                "blue";
 
         }
 
 
-        showProductMessage(
-            "⏳ Uploading product image...",
-            true
-        );
+        const imageURLs = [];
 
 
         // ==========================================
-        // FILE EXTENSION
+        // UPLOAD ALL IMAGES
         // ==========================================
 
-        let fileExtension =
-            imageFile.name
-                .split(".")
-                .pop()
-                .toLowerCase();
+        for (
+            let i = 0;
+            i < imageFiles.length;
+            i++
+        ) {
 
+            const imageFile =
+                imageFiles[i];
 
-        if (!fileExtension) {
-
-            fileExtension =
-                "jpg";
-
-        }
-
-
-        // ==========================================
-        // UNIQUE FILE NAME
-        // ==========================================
-
-        const fileName =
-            `${Date.now()}-${Math.random()
-                .toString(36)
-                .substring(2, 10)}.${fileExtension}`;
-
-
-        const filePath =
-            `products/${fileName}`;
-
-
-        // ==========================================
-        // UPLOAD TO SUPABASE STORAGE
-        // ==========================================
-
-        const {
-            data: uploadData,
-            error: uploadError
-        } =
-            await supabaseClient
-                .storage
-                .from(
-                    PRODUCT_IMAGE_BUCKET
+            if (
+                !imageFile.type.startsWith(
+                    "image/"
                 )
-                .upload(
-                    filePath,
-                    imageFile,
-                    {
-                        cacheControl:
-                            "3600",
+            ) {
 
-                        contentType:
-                            imageFile.type,
-
-                        upsert:
-                            false
-                    }
+                throw new Error(
+                    `${imageFile.name} is not an image.`
                 );
 
-
-        if (uploadError) {
-
-            console.error(
-                "IMAGE UPLOAD ERROR:",
-                uploadError
-            );
-
-            throw uploadError;
-
-        }
+            }
 
 
-        console.log(
-            "Image uploaded:",
-            uploadData
-        );
+            const extension =
+                imageFile.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
 
 
-        // ==========================================
-        // GET PUBLIC URL
-        // ==========================================
+            const fileName =
+                `${Date.now()}-${Math.random()
+                    .toString(36)
+                    .substring(2, 10)}.${extension}`;
 
-        const {
-            data: publicURLData
-        } =
-            supabaseClient
-                .storage
-                .from(
-                    PRODUCT_IMAGE_BUCKET
-                )
-                .getPublicUrl(
-                    filePath
+
+            const filePath =
+                `products/${fileName}`;
+
+
+            if (message) {
+
+                message.textContent =
+                    `⏳ Uploading image ${
+                        i + 1
+                    } of ${
+                        imageFiles.length
+                    }...`;
+
+            }
+
+
+            const {
+                error: uploadError
+            } =
+                await supabaseClient
+                    .storage
+                    .from("product-images")
+                    .upload(
+                        filePath,
+                        imageFile,
+                        {
+                            cacheControl:
+                                "3600",
+
+                            contentType:
+                                imageFile.type,
+
+                            upsert:
+                                false
+                        }
+                    );
+
+
+            if (uploadError) {
+
+                console.error(
+                    "IMAGE UPLOAD ERROR:",
+                    uploadError
                 );
 
+                throw uploadError;
 
-        const imageURL =
-            publicURLData?.publicUrl;
+            }
 
 
-        if (!imageURL) {
+            const {
+                data:
+                    publicURLData
+            } =
+                supabaseClient
+                    .storage
+                    .from("product-images")
+                    .getPublicUrl(
+                        filePath
+                    );
 
-            throw new Error(
-                "Could not get the public image URL."
+
+            const imageURL =
+                publicURLData?.publicUrl;
+
+
+            if (!imageURL) {
+
+                throw new Error(
+                    "Could not get image URL."
+                );
+
+            }
+
+
+            imageURLs.push(
+                imageURL
             );
 
         }
 
 
-        console.log(
-            "Image URL:",
-            imageURL
-        );
+        // ==========================================
+        // SAVE IMAGE URLS
+        // ==========================================
+
+        const imageValue =
+            JSON.stringify(
+                imageURLs
+            );
 
 
-        if (button) {
+        if (message) {
 
-            button.textContent =
-                "Saving product...";
+            message.textContent =
+                "⏳ Saving product...";
 
         }
 
 
-        showProductMessage(
-            "⏳ Saving product...",
-            true
-        );
-
-
-        // ==========================================
-        // SAVE PRODUCT
-        // ==========================================
-
         const {
-            data,
             error
         } =
             await supabaseClient
@@ -1696,7 +1234,7 @@ async function addProduct(event) {
                             category,
 
                         image:
-                            imageURL,
+                            imageValue,
 
                         description:
                             description,
@@ -1706,9 +1244,7 @@ async function addProduct(event) {
 
                     }
 
-                ])
-                .select()
-                .single();
+                ]);
 
 
         if (error) {
@@ -1723,39 +1259,36 @@ async function addProduct(event) {
         }
 
 
-        console.log(
-            "Product saved:",
-            data
-        );
+        // ==========================================
+        // SUCCESS
+        // ==========================================
 
+        if (message) {
 
-        // Save category locally
+            message.textContent =
+                `✅ Product added successfully with ${
+                    imageURLs.length
+                } image${
+                    imageURLs.length === 1
+                        ? ""
+                        : "s"
+                }.`;
 
-        saveLocalCategory(
-            category
-        );
+            message.style.color =
+                "green";
 
-
-        showProductMessage(
-            "✅ Product added successfully!",
-            true
-        );
-
-
-        // Reset form
-
-        if (form) {
-            form.reset();
         }
 
 
-        // Reset quantity
+        getElement(
+            "add-product-form"
+        )?.reset();
+
 
         const quantityInput =
             getElement(
                 "product-quantity"
             );
-
 
         if (quantityInput) {
 
@@ -1765,13 +1298,10 @@ async function addProduct(event) {
         }
 
 
-        // Clear image preview
-
         const preview =
             getElement(
                 "image-preview"
             );
-
 
         if (preview) {
 
@@ -1781,49 +1311,45 @@ async function addProduct(event) {
         }
 
 
-        // Reload categories
-
-        await loadCategories();
-
-
-        // Reload products
-
         await loadProducts();
 
-
-        // Reload statistics
-
         await loadStatistics();
+
+        await loadCategories();
 
     }
 
     catch (error) {
 
         console.error(
-            "ADD PRODUCT ERROR:",
+            "Add product error:",
             error
         );
 
+        if (message) {
 
-        showProductMessage(
-            "❌ " +
-            (
-                error.message ||
-                "Could not add product."
-            ),
-            false
-        );
+            message.textContent =
+                "❌ " +
+                (
+                    error.message ||
+                    "Could not add product."
+                );
+
+            message.style.color =
+                "red";
+
+        }
 
     }
 
     finally {
 
-        if (button) {
+        if (addButton) {
 
-            button.disabled =
+            addButton.disabled =
                 false;
 
-            button.textContent =
+            addButton.textContent =
                 "➕ Add Product";
 
         }
@@ -1834,33 +1360,287 @@ async function addProduct(event) {
 
 
 // ==========================================
-// SHOW PRODUCT MESSAGE
+// LOAD CATEGORIES
 // ==========================================
 
-function showProductMessage(
-    message,
-    success
-) {
+async function loadCategories() {
 
-    const element =
+    const select =
         getElement(
-            "product-message"
+            "product-category"
         );
 
-
-    if (!element) {
+    if (!select) {
         return;
     }
 
 
-    element.textContent =
-        message;
+    const defaultCategories = [
+
+        "Electronics",
+
+        "Phones & Accessories",
+
+        "Computers",
+
+        "Fashion",
+
+        "Shoes",
+
+        "Bags",
+
+        "Beauty",
+
+        "Home & Kitchen",
+
+        "School",
+
+        "Books",
+
+        "Sports",
+
+        "Other"
+
+    ];
 
 
-    element.style.color =
-        success
-            ? "green"
-            : "red";
+    let categories =
+        [];
+
+
+    try {
+
+        const {
+            data: products,
+            error
+        } =
+            await supabaseClient
+                .from("products")
+                .select(
+                    "category"
+                );
+
+
+        if (!error && products) {
+
+            products.forEach(
+                function(product) {
+
+                    if (
+                        product.category &&
+                        product.category.trim()
+                    ) {
+
+                        categories.push(
+                            product.category.trim()
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Category loading error:",
+            error
+        );
+
+    }
+
+
+    // ==========================================
+    // LOCAL CUSTOM CATEGORIES
+    // ==========================================
+
+    try {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem(
+                    "hasbunallahu_categories"
+                ) || "[]"
+            );
+
+        if (Array.isArray(saved)) {
+
+            categories =
+                categories.concat(
+                    saved
+                );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Saved categories error:",
+            error
+        );
+
+    }
+
+
+    categories =
+        defaultCategories.concat(
+            categories
+        );
+
+
+    categories =
+        [...new Set(
+            categories
+                .map(
+                    function(category) {
+                        return category.trim();
+                    }
+                )
+                .filter(Boolean)
+        )];
+
+
+    categories.sort(
+        function(a, b) {
+
+            return a.localeCompare(
+                b
+            );
+
+        }
+    );
+
+
+    select.innerHTML = `
+
+        <option value="">
+            Select category
+        </option>
+
+    `;
+
+
+    categories.forEach(
+        function(category) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                category;
+
+            option.textContent =
+                category;
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// ADD NEW CATEGORY
+// ==========================================
+
+function addNewCategory() {
+
+    const category =
+        prompt(
+            "Enter the new category name:"
+        );
+
+
+    if (
+        category === null
+    ) {
+        return;
+    }
+
+
+    const newCategory =
+        category.trim();
+
+
+    if (!newCategory) {
+
+        alert(
+            "Please enter a category name."
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        const saved =
+            JSON.parse(
+                localStorage.getItem(
+                    "hasbunallahu_categories"
+                ) || "[]"
+            );
+
+
+        if (
+            !saved.includes(
+                newCategory
+            )
+        ) {
+
+            saved.push(
+                newCategory
+            );
+
+            localStorage.setItem(
+                "hasbunallahu_categories",
+                JSON.stringify(saved)
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Save category error:",
+            error
+        );
+
+    }
+
+
+    loadCategories()
+        .then(
+            function() {
+
+                const select =
+                    getElement(
+                        "product-category"
+                    );
+
+                if (select) {
+
+                    select.value =
+                        newCategory;
+
+                }
+
+            }
+        );
 
 }
 
@@ -1880,12 +1660,9 @@ async function editProduct(
 
 
     if (
-        newName ===
-        null
+        newName === null
     ) {
-
         return;
-
     }
 
 
@@ -1896,12 +1673,9 @@ async function editProduct(
 
 
     if (
-        newPrice ===
-        null
+        newPrice === null
     ) {
-
         return;
-
     }
 
 
@@ -1912,12 +1686,9 @@ async function editProduct(
 
 
     if (
-        newQuantity ===
-        null
+        newQuantity === null
     ) {
-
         return;
-
     }
 
 
@@ -1925,7 +1696,6 @@ async function editProduct(
         Number(
             newPrice
         );
-
 
     const quantity =
         Number(
@@ -2056,8 +1826,6 @@ async function deleteProduct(
 
         await loadStatistics();
 
-        await loadCategories();
-
     }
 
     catch (error) {
@@ -2123,8 +1891,7 @@ async function loadOrders() {
                 .order(
                     "created_at",
                     {
-                        ascending:
-                            false
+                        ascending: false
                     }
                 );
 
@@ -2156,8 +1923,7 @@ async function loadOrders() {
         }
 
 
-        table.innerHTML =
-            "";
+        table.innerHTML = "";
 
 
         orders.forEach(
@@ -2378,21 +2144,19 @@ function generateTrackingNumber() {
     const month =
         String(
             now.getMonth() + 1
-        )
-            .padStart(
-                2,
-                "0"
-            );
+        ).padStart(
+            2,
+            "0"
+        );
 
 
     const day =
         String(
             now.getDate()
-        )
-            .padStart(
-                2,
-                "0"
-            );
+        ).padStart(
+            2,
+            "0"
+        );
 
 
     const random =
@@ -2416,7 +2180,7 @@ function generateTrackingNumber() {
 
 
 // ==========================================
-// GENERATE TRACKING FOR ORDER
+// GENERATE TRACKING
 // ==========================================
 
 async function generateTracking(
@@ -2611,7 +2375,21 @@ document.addEventListener(
     "DOMContentLoaded",
     function() {
 
-        // Login
+        console.log(
+            "ADMIN JS VERSION 3 LOADED"
+        );
+
+
+        // ==========================================
+        // IMAGE PREVIEW
+        // ==========================================
+
+        setupImagePreview();
+
+
+        // ==========================================
+        // LOGIN FORM
+        // ==========================================
 
         const loginForm =
             getElement(
@@ -2629,7 +2407,9 @@ document.addEventListener(
         }
 
 
-        // Logout
+        // ==========================================
+        // LOGOUT
+        // ==========================================
 
         const logoutButton =
             getElement(
@@ -2647,7 +2427,9 @@ document.addEventListener(
         }
 
 
-        // Add product
+        // ==========================================
+        // ADD PRODUCT
+        // ==========================================
 
         const productForm =
             getElement(
@@ -2665,7 +2447,9 @@ document.addEventListener(
         }
 
 
-        // Add category
+        // ==========================================
+        // ADD CATEGORY
+        // ==========================================
 
         const addCategoryButton =
             getElement(
@@ -2677,18 +2461,15 @@ document.addEventListener(
 
             addCategoryButton.addEventListener(
                 "click",
-                addCategory
+                addNewCategory
             );
 
         }
 
 
-        // Image preview
-
-        setupImagePreview();
-
-
-        // Check admin session
+        // ==========================================
+        // CHECK SESSION
+        // ==========================================
 
         checkAdminSession();
 
