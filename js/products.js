@@ -4,11 +4,6 @@
 // Supabase Products
 // ==========================================
 
-
-// ==========================================
-// Product List
-// ==========================================
-
 let products = [];
 
 
@@ -17,76 +12,103 @@ let products = [];
 // ==========================================
 
 const productsContainer =
-    document.getElementById(
-        "products-container"
-    );
+    document.getElementById("products-container");
 
 
 // ==========================================
-// Get Product Image
-// Uses the first uploaded product image
+// Get Product Images
+// Handles JSON string, array, or old image
 // ==========================================
 
-function getProductImage(product) {
+function getProductImages(product) {
 
-    // New format: images array
-    if (
-        Array.isArray(product.images) &&
-        product.images.length > 0
-    ) {
+    // New admin system stores multiple images
+    // inside the "image" column as a JSON string
 
-        return product.images[0];
+    if (typeof product.image === "string") {
+
+        try {
+
+            const parsed =
+                JSON.parse(product.image);
+
+            if (Array.isArray(parsed)) {
+
+                return parsed.filter(function (url) {
+
+                    return (
+                        typeof url === "string" &&
+                        url.trim() !== ""
+                    );
+
+                });
+
+            }
+
+        }
+
+        catch (error) {
+
+            // Not JSON, continue below
+
+        }
+
+
+        // Old single image format
+        if (product.image.trim() !== "") {
+
+            return [
+                product.image
+            ];
+
+        }
 
     }
 
 
-    // Fallback: old single image field
-    if (
-        product.image &&
-        typeof product.image === "string"
-    ) {
+    // Support array just in case
+    if (Array.isArray(product.image)) {
 
         return product.image;
 
     }
 
 
-    // Final fallback
-    return "images/logo.png";
-
-}
-
-
-
-// ==========================================
-// Get Product Images
-// ==========================================
-
-function getProductImages(product) {
-
-    if (
-        Array.isArray(product.images) &&
-        product.images.length > 0
-    ) {
+    // Support future "images" column
+    if (Array.isArray(product.images)) {
 
         return product.images;
 
     }
 
 
+    return [];
+
+}
+
+
+
+// ==========================================
+// Get Main Product Image
+// ==========================================
+
+function getProductImage(product) {
+
+    const images =
+        getProductImages(product);
+
+
     if (
-        product.image &&
-        typeof product.image === "string"
+        images.length > 0 &&
+        images[0]
     ) {
 
-        return [
-            product.image
-        ];
+        return images[0];
 
     }
 
 
-    return [];
+    return "images/logo.png";
 
 }
 
@@ -107,8 +129,6 @@ async function loadProducts() {
         </p>
     `;
 
-
-    // Check Supabase
 
     if (
         typeof supabaseClient ===
@@ -154,7 +174,6 @@ async function loadProducts() {
                 error
             );
 
-
             productsContainer.innerHTML = `
                 <p style="text-align:center;">
                     ❌ Failed to load products.
@@ -191,7 +210,6 @@ async function loadProducts() {
             "Products loading error:",
             error
         );
-
 
         productsContainer.innerHTML = `
             <p style="text-align:center;">
@@ -244,7 +262,8 @@ function displayProducts(
                 ) || 0;
 
 
-            // Get first uploaded image
+            // Get first real uploaded image
+
             const productImage =
                 getProductImage(
                     product
@@ -272,13 +291,17 @@ function displayProducts(
 
                     <div class="product-info">
 
-
                         <h3>
 
                             <a
                                 href="product.html?id=${product.id}"
                             >
-                                ${product.name || "Unnamed Product"}
+
+                                ${
+                                    product.name ||
+                                    "Unnamed Product"
+                                }
+
                             </a>
 
                         </h3>
@@ -298,12 +321,14 @@ function displayProducts(
 
 
                         <p class="product-stock">
+
                             ${
                                 Number(product.quantity) > 0
                                     ? "In stock: " +
                                       Number(product.quantity)
                                     : "❌ Out of stock"
                             }
+
                         </p>
 
 
@@ -328,7 +353,6 @@ function displayProducts(
                         >
                             ❤️ Wishlist
                         </button>
-
 
                     </div>
 
@@ -481,10 +505,6 @@ async function addToCart(productId) {
     }
 
 
-    // ==========================================
-    // Check Real Stock From Supabase
-    // ==========================================
-
     if (
         typeof supabaseClient !==
         "undefined"
@@ -530,10 +550,6 @@ async function addToCart(productId) {
                 ) || 0;
 
 
-            // ==========================================
-            // Out Of Stock
-            // ==========================================
-
             if (stock <= 0) {
 
                 alert(
@@ -546,10 +562,6 @@ async function addToCart(productId) {
 
             }
 
-
-            // ==========================================
-            // Check Existing Cart Quantity
-            // ==========================================
 
             const existingItem =
                 cart.find(
@@ -569,10 +581,6 @@ async function addToCart(productId) {
                     ) || 0
                     : 0;
 
-
-            // ==========================================
-            // Prevent More Than Available Stock
-            // ==========================================
 
             if (
                 currentQuantity >=
@@ -596,10 +604,6 @@ async function addToCart(productId) {
             }
 
 
-            // ==========================================
-            // Add / Increase Cart Quantity
-            // ==========================================
-
             if (existingItem) {
 
                 existingItem.quantity =
@@ -620,13 +624,11 @@ async function addToCart(productId) {
                     price:
                         product.price,
 
-                    // Use first uploaded image
                     image:
                         getProductImage(
                             product
                         ),
 
-                    // Keep all images available
                     images:
                         getProductImages(
                             product
@@ -640,14 +642,9 @@ async function addToCart(productId) {
             }
 
 
-            // ==========================================
-            // Save Cart
-            // ==========================================
-
             saveCart(
                 cart
             );
-
 
             updateCartCount();
 
@@ -672,15 +669,13 @@ async function addToCart(productId) {
 
         }
 
-
         return;
 
     }
 
 
-
     // ==========================================
-    // Fallback If Supabase Is Not Loaded
+    // Fallback
     // ==========================================
 
     const existingItem =
@@ -734,7 +729,6 @@ async function addToCart(productId) {
     saveCart(
         cart
     );
-
 
     updateCartCount();
 
@@ -822,13 +816,11 @@ function addToWishlist(
                 product.price
             ) || 0,
 
-        // Use first uploaded image
         image:
             getProductImage(
                 product
             ),
 
-        // Keep all uploaded images
         images:
             getProductImages(
                 product
