@@ -1,7 +1,7 @@
 // ==========================================
 // HASBUNALLAHU STORE
 // ADMIN DASHBOARD
-// COMPLETE VERSION
+// COMPLETE ADMIN JAVASCRIPT
 // ==========================================
 
 
@@ -12,6 +12,7 @@
 const ADMIN_EMAIL =
     "kabirabdulazeez45@gmail.com";
 
+
 let currentAdmin = null;
 
 
@@ -20,7 +21,9 @@ let currentAdmin = null;
 // ==========================================
 
 function getElement(id) {
+
     return document.getElementById(id);
+
 }
 
 
@@ -59,7 +62,7 @@ function escapeHtml(value) {
 
 
 // ==========================================
-// LOGIN MESSAGE
+// SHOW LOGIN MESSAGE
 // ==========================================
 
 function showLoginMessage(
@@ -72,10 +75,13 @@ function showLoginMessage(
 
     if (!element) return;
 
-    element.textContent = message;
+    element.textContent =
+        message;
 
     element.style.color =
-        success ? "green" : "red";
+        success
+            ? "green"
+            : "red";
 
 }
 
@@ -92,12 +98,20 @@ function showDashboard() {
     const dashboard =
         getElement("admin-dashboard");
 
+
     if (login) {
-        login.style.display = "none";
+
+        login.style.display =
+            "none";
+
     }
 
+
     if (dashboard) {
-        dashboard.style.display = "block";
+
+        dashboard.style.display =
+            "block";
+
     }
 
 }
@@ -115,12 +129,20 @@ function showLogin() {
     const dashboard =
         getElement("admin-dashboard");
 
+
     if (login) {
-        login.style.display = "block";
+
+        login.style.display =
+            "block";
+
     }
 
+
     if (dashboard) {
-        dashboard.style.display = "none";
+
+        dashboard.style.display =
+            "none";
+
     }
 
 }
@@ -142,12 +164,17 @@ async function checkAdminSession() {
                 .auth
                 .getSession();
 
+
         if (error) {
+
             throw error;
+
         }
 
+
         const session =
-            data.session;
+            data?.session;
+
 
         if (!session) {
 
@@ -157,8 +184,10 @@ async function checkAdminSession() {
 
         }
 
+
         const user =
             session.user;
+
 
         if (
             !user ||
@@ -175,6 +204,7 @@ async function checkAdminSession() {
 
         }
 
+
         if (
             user.email.toLowerCase() !==
             ADMIN_EMAIL.toLowerCase()
@@ -184,20 +214,26 @@ async function checkAdminSession() {
                 .auth
                 .signOut();
 
+
             showLogin();
+
 
             showLoginMessage(
                 "❌ You are not authorized to access the admin dashboard."
             );
 
+
             return;
 
         }
 
+
         currentAdmin =
             user;
 
+
         showDashboard();
+
 
         await loadDashboard();
 
@@ -209,6 +245,7 @@ async function checkAdminSession() {
             "Session error:",
             error
         );
+
 
         showLogin();
 
@@ -225,15 +262,20 @@ async function adminLogin(event) {
 
     event.preventDefault();
 
+
     const email =
-        getElement("admin-email")
-            ?.value
-            .trim()
-            .toLowerCase();
+        getElement(
+            "admin-email"
+        )?.value
+        .trim()
+        .toLowerCase();
+
 
     const password =
-        getElement("admin-password")
-            ?.value;
+        getElement(
+            "admin-password"
+        )?.value;
+
 
     if (!email || !password) {
 
@@ -244,6 +286,7 @@ async function adminLogin(event) {
         return;
 
     }
+
 
     if (
         email !==
@@ -258,17 +301,21 @@ async function adminLogin(event) {
 
     }
 
+
     const button =
         event.submitter;
 
+
     if (button) {
 
-        button.disabled = true;
+        button.disabled =
+            true;
 
         button.textContent =
             "Logging in...";
 
     }
+
 
     try {
 
@@ -288,11 +335,15 @@ async function adminLogin(event) {
 
                 });
 
+
         if (error) {
+
             throw error;
+
         }
 
-        if (!data.user) {
+
+        if (!data?.user) {
 
             throw new Error(
                 "No user returned."
@@ -300,10 +351,13 @@ async function adminLogin(event) {
 
         }
 
+
         currentAdmin =
             data.user;
 
+
         showDashboard();
+
 
         await loadDashboard();
 
@@ -315,6 +369,7 @@ async function adminLogin(event) {
             "Login error:",
             error
         );
+
 
         showLoginMessage(
             "❌ Login failed: " +
@@ -330,7 +385,8 @@ async function adminLogin(event) {
 
         if (button) {
 
-            button.disabled = false;
+            button.disabled =
+                false;
 
             button.textContent =
                 "Login";
@@ -343,7 +399,7 @@ async function adminLogin(event) {
 
 
 // ==========================================
-// LOGOUT
+// ADMIN LOGOUT
 // ==========================================
 
 async function adminLogout() {
@@ -365,8 +421,10 @@ async function adminLogout() {
 
     }
 
+
     currentAdmin =
         null;
+
 
     showLogin();
 
@@ -412,25 +470,38 @@ async function loadStatistics() {
                     "id,total,customer_email"
                 );
 
+
         if (error) {
+
             throw error;
+
         }
+
 
         const orderList =
             orders || [];
 
-        let totalSales = 0;
+
+        let totalSales =
+            0;
+
 
         const customers =
             new Set();
+
 
         orderList.forEach(
             order => {
 
                 totalSales +=
-                    Number(order.total) || 0;
+                    Number(
+                        order.total
+                    ) || 0;
 
-                if (order.customer_email) {
+
+                if (
+                    order.customer_email
+                ) {
 
                     customers.add(
                         order.customer_email
@@ -442,14 +513,24 @@ async function loadStatistics() {
             }
         );
 
+
         const totalOrdersElement =
-            getElement("total-orders");
+            getElement(
+                "total-orders"
+            );
+
 
         const totalSalesElement =
-            getElement("total-sales");
+            getElement(
+                "total-sales"
+            );
+
 
         const totalCustomersElement =
-            getElement("total-customers");
+            getElement(
+                "total-customers"
+            );
+
 
         if (totalOrdersElement) {
 
@@ -458,12 +539,16 @@ async function loadStatistics() {
 
         }
 
+
         if (totalSalesElement) {
 
             totalSalesElement.textContent =
-                formatMoney(totalSales);
+                formatMoney(
+                    totalSales
+                );
 
         }
+
 
         if (totalCustomersElement) {
 
@@ -482,17 +567,27 @@ async function loadStatistics() {
                 .select(
                     "id",
                     {
-                        count: "exact",
-                        head: true
+                        count:
+                            "exact",
+
+                        head:
+                            true
                     }
                 );
 
+
         if (productError) {
+
             throw productError;
+
         }
 
+
         const totalProductsElement =
-            getElement("total-products");
+            getElement(
+                "total-products"
+            );
+
 
         if (totalProductsElement) {
 
@@ -517,7 +612,10 @@ async function loadStatistics() {
 
 // ==========================================
 // PARSE MEDIA
-// Handles JSON arrays and old formats
+// Handles:
+// 1. JSON array
+// 2. JSON string containing array
+// 3. Plain URL
 // ==========================================
 
 function parseMedia(value) {
@@ -532,7 +630,10 @@ function parseMedia(value) {
 
     }
 
-    if (Array.isArray(value)) {
+
+    if (
+        Array.isArray(value)
+    ) {
 
         return value.filter(
             item =>
@@ -542,18 +643,29 @@ function parseMedia(value) {
 
     }
 
+
     let current =
         value;
 
-    // Try several times because some old
-    // records may have been JSON-stringified
-    // more than once.
 
     for (
-        let i = 0;
-        i < 4;
-        i++
+        let attempt = 0;
+        attempt < 3;
+        attempt++
     ) {
+
+        if (
+            Array.isArray(current)
+        ) {
+
+            return current.filter(
+                item =>
+                    typeof item === "string" &&
+                    item.trim() !== ""
+            );
+
+        }
+
 
         if (
             typeof current !== "string"
@@ -563,30 +675,24 @@ function parseMedia(value) {
 
         }
 
+
         const trimmed =
             current.trim();
 
+
         if (!trimmed) {
+
             return [];
+
         }
+
 
         try {
 
-            const parsed =
-                JSON.parse(trimmed);
-
-            if (Array.isArray(parsed)) {
-
-                return parsed.filter(
-                    item =>
-                        typeof item === "string" &&
-                        item.trim() !== ""
-                );
-
-            }
-
             current =
-                parsed;
+                JSON.parse(
+                    trimmed
+                );
 
         }
 
@@ -598,6 +704,7 @@ function parseMedia(value) {
 
     }
 
+
     if (
         typeof current === "string" &&
         current.trim() !== ""
@@ -608,6 +715,7 @@ function parseMedia(value) {
         ];
 
     }
+
 
     return [];
 
@@ -621,25 +729,40 @@ function parseMedia(value) {
 function setupImagePreview() {
 
     const input =
-        getElement("product-image");
+        getElement(
+            "product-image"
+        );
+
 
     const preview =
-        getElement("image-preview");
+        getElement(
+            "image-preview"
+        );
 
-    if (!input || !preview) {
+
+    if (
+        !input ||
+        !preview
+    ) {
+
         return;
+
     }
+
 
     input.addEventListener(
         "change",
-        function () {
+        function() {
 
-            preview.innerHTML = "";
+            preview.innerHTML =
+                "";
+
 
             const files =
                 Array.from(
                     this.files || []
                 );
+
 
             files.forEach(
                 file => {
@@ -654,18 +777,22 @@ function setupImagePreview() {
 
                     }
 
+
                     const url =
                         URL.createObjectURL(
                             file
                         );
+
 
                     const div =
                         document.createElement(
                             "div"
                         );
 
+
                     div.className =
                         "preview-item";
+
 
                     div.innerHTML = `
 
@@ -679,6 +806,7 @@ function setupImagePreview() {
                         </small>
 
                     `;
+
 
                     preview.appendChild(
                         div
@@ -700,25 +828,40 @@ function setupImagePreview() {
 function setupVideoPreview() {
 
     const input =
-        getElement("product-video");
+        getElement(
+            "product-video"
+        );
+
 
     const preview =
-        getElement("video-preview");
+        getElement(
+            "video-preview"
+        );
 
-    if (!input || !preview) {
+
+    if (
+        !input ||
+        !preview
+    ) {
+
         return;
+
     }
+
 
     input.addEventListener(
         "change",
-        function () {
+        function() {
 
-            preview.innerHTML = "";
+            preview.innerHTML =
+                "";
+
 
             const files =
                 Array.from(
                     this.files || []
                 );
+
 
             files.forEach(
                 file => {
@@ -733,18 +876,22 @@ function setupVideoPreview() {
 
                     }
 
+
                     const url =
                         URL.createObjectURL(
                             file
                         );
+
 
                     const div =
                         document.createElement(
                             "div"
                         );
 
+
                     div.className =
                         "preview-item";
+
 
                     div.innerHTML = `
 
@@ -759,6 +906,7 @@ function setupVideoPreview() {
                         </small>
 
                     `;
+
 
                     preview.appendChild(
                         div
@@ -789,13 +937,16 @@ async function uploadFile(
             .pop()
             .toLowerCase();
 
+
     const fileName =
         `${Date.now()}-${Math.random()
             .toString(36)
             .substring(2, 10)}.${extension}`;
 
+
     const filePath =
         `${folder}/${fileName}`;
+
 
     const {
         error
@@ -807,6 +958,7 @@ async function uploadFile(
                 filePath,
                 file,
                 {
+
                     cacheControl:
                         "3600",
 
@@ -815,12 +967,17 @@ async function uploadFile(
 
                     upsert:
                         false
+
                 }
             );
 
+
     if (error) {
+
         throw error;
+
     }
+
 
     const {
         data
@@ -832,13 +989,17 @@ async function uploadFile(
                 filePath
             );
 
-    if (!data?.publicUrl) {
+
+    if (
+        !data?.publicUrl
+    ) {
 
         throw new Error(
             "Could not create public URL."
         );
 
     }
+
 
     return data.publicUrl;
 
@@ -853,52 +1014,63 @@ async function addProduct(event) {
 
     event.preventDefault();
 
+
     const message =
         getElement(
             "product-message"
         );
 
+
     const name =
         getElement(
             "product-name"
-        ).value.trim();
+        )?.value
+        .trim();
+
 
     const price =
         Number(
             getElement(
                 "product-price"
-            ).value
+            )?.value
         );
+
 
     const category =
         getElement(
             "product-category"
-        ).value.trim();
+        )?.value
+        .trim();
+
 
     const description =
         getElement(
             "product-description"
-        ).value.trim();
+        )?.value
+        .trim();
+
 
     const quantity =
         Number(
             getElement(
                 "product-quantity"
-            ).value
+            )?.value
         );
+
 
     const imageFiles =
         Array.from(
             getElement(
                 "product-image"
-            ).files || []
+            )?.files || []
         );
+
 
     const videoFiles =
         Array.from(
             getElement(
                 "product-video"
-            ).files || []
+            )?.files || []
         );
 
 
@@ -910,11 +1082,15 @@ async function addProduct(event) {
         Number.isNaN(quantity)
     ) {
 
-        message.textContent =
-            "❌ Please complete all product fields.";
+        if (message) {
 
-        message.style.color =
-            "red";
+            message.textContent =
+                "❌ Please complete all product fields.";
+
+            message.style.color =
+                "red";
+
+        }
 
         return;
 
@@ -925,11 +1101,15 @@ async function addProduct(event) {
         imageFiles.length === 0
     ) {
 
-        message.textContent =
-            "❌ Please select at least one image.";
+        if (message) {
 
-        message.style.color =
-            "red";
+            message.textContent =
+                "❌ Please select at least one image.";
+
+            message.style.color =
+                "red";
+
+        }
 
         return;
 
@@ -941,12 +1121,22 @@ async function addProduct(event) {
             "add-product-button"
         );
 
+
     try {
 
-        button.disabled =
-            true;
+        if (button) {
 
-        const imageURLs = [];
+            button.disabled =
+                true;
+
+            button.textContent =
+                "Uploading...";
+
+        }
+
+
+        const imageURLs =
+            [];
 
 
         // ==========================================
@@ -959,11 +1149,16 @@ async function addProduct(event) {
             i++
         ) {
 
-            message.textContent =
-                `⏳ Uploading image ${i + 1} of ${imageFiles.length}...`;
+            if (message) {
 
-            message.style.color =
-                "blue";
+                message.textContent =
+                    `⏳ Uploading image ${i + 1} of ${imageFiles.length}...`;
+
+                message.style.color =
+                    "blue";
+
+            }
+
 
             const url =
                 await uploadFile(
@@ -971,6 +1166,7 @@ async function addProduct(event) {
                     "products",
                     imageFiles[i]
                 );
+
 
             imageURLs.push(
                 url
@@ -983,7 +1179,9 @@ async function addProduct(event) {
         // UPLOAD VIDEOS
         // ==========================================
 
-        const videoURLs = [];
+        const videoURLs =
+            [];
+
 
         for (
             let i = 0;
@@ -991,8 +1189,16 @@ async function addProduct(event) {
             i++
         ) {
 
-            message.textContent =
-                `⏳ Uploading video ${i + 1} of ${videoFiles.length}...`;
+            if (message) {
+
+                message.textContent =
+                    `⏳ Uploading video ${i + 1} of ${videoFiles.length}...`;
+
+                message.style.color =
+                    "blue";
+
+            }
+
 
             const url =
                 await uploadFile(
@@ -1000,6 +1206,7 @@ async function addProduct(event) {
                     "products",
                     videoFiles[i]
                 );
+
 
             videoURLs.push(
                 url
@@ -1012,8 +1219,13 @@ async function addProduct(event) {
         // SAVE PRODUCT
         // ==========================================
 
-        message.textContent =
-            "⏳ Saving product...";
+        if (message) {
+
+            message.textContent =
+                "⏳ Saving product...";
+
+        }
+
 
         const {
             error
@@ -1023,6 +1235,7 @@ async function addProduct(event) {
                 .insert([
 
                     {
+
                         name:
                             name,
 
@@ -1047,12 +1260,16 @@ async function addProduct(event) {
 
                         quantity:
                             quantity
+
                     }
 
                 ]);
 
+
         if (error) {
+
             throw error;
+
         }
 
 
@@ -1060,33 +1277,73 @@ async function addProduct(event) {
         // SUCCESS
         // ==========================================
 
-        message.textContent =
-            `✅ Product added successfully!
+        if (message) {
+
+            message.textContent =
+                `✅ Product added successfully!
+
 Images: ${imageURLs.length}
 Videos: ${videoURLs.length}`;
 
-        message.style.color =
-            "green";
+            message.style.color =
+                "green";
+
+        }
 
 
-        getElement(
-            "add-product-form"
-        ).reset();
+        const form =
+            getElement(
+                "add-product-form"
+            );
 
-        getElement(
-            "image-preview"
-        ).innerHTML =
-            "";
 
-        getElement(
-            "video-preview"
-        ).innerHTML =
-            "";
+        if (form) {
 
-        getElement(
-            "product-quantity"
-        ).value =
-            "30";
+            form.reset();
+
+        }
+
+
+        const imagePreview =
+            getElement(
+                "image-preview"
+            );
+
+
+        const videoPreview =
+            getElement(
+                "video-preview"
+            );
+
+
+        if (imagePreview) {
+
+            imagePreview.innerHTML =
+                "";
+
+        }
+
+
+        if (videoPreview) {
+
+            videoPreview.innerHTML =
+                "";
+
+        }
+
+
+        const quantityInput =
+            getElement(
+                "product-quantity"
+            );
+
+
+        if (quantityInput) {
+
+            quantityInput.value =
+                "30";
+
+        }
 
 
         await loadProducts();
@@ -1104,25 +1361,34 @@ Videos: ${videoURLs.length}`;
             error
         );
 
-        message.textContent =
-            "❌ " +
-            (
-                error.message ||
-                "Could not add product."
-            );
 
-        message.style.color =
-            "red";
+        if (message) {
+
+            message.textContent =
+                "❌ " +
+                (
+                    error.message ||
+                    "Could not add product."
+                );
+
+            message.style.color =
+                "red";
+
+        }
 
     }
 
     finally {
 
-        button.disabled =
-            false;
+        if (button) {
 
-        button.textContent =
-            "➕ Add Product";
+            button.disabled =
+                false;
+
+            button.textContent =
+                "➕ Add Product";
+
+        }
 
     }
 
@@ -1140,9 +1406,13 @@ async function loadProducts() {
             "products-table"
         );
 
+
     if (!table) {
+
         return;
+
     }
+
 
     try {
 
@@ -1156,12 +1426,16 @@ async function loadProducts() {
                 .order(
                     "id",
                     {
-                        ascending: true
+                        ascending:
+                            true
                     }
                 );
 
+
         if (error) {
+
             throw error;
+
         }
 
 
@@ -1199,10 +1473,12 @@ async function loadProducts() {
                         product.image
                     );
 
+
                 const videos =
                     parseMedia(
                         product.videos
                     );
+
 
                 const row =
                     document.createElement(
@@ -1216,6 +1492,7 @@ async function loadProducts() {
                         ${escapeHtml(product.id)}
                     </td>
 
+
                     <td>
 
                         ${
@@ -1225,17 +1502,21 @@ async function loadProducts() {
                                         src="${escapeHtml(images[0])}"
                                         class="product-main-image"
                                         alt="Product"
+                                        onerror="this.style.display='none'"
                                     >
                                 `
                                 : "No image"
                         }
 
                         <div class="media-count">
+
                             ${images.length}
                             image${images.length === 1 ? "" : "s"}
+
                         </div>
 
                     </td>
+
 
                     <td>
 
@@ -1252,11 +1533,14 @@ async function loadProducts() {
                         }
 
                         <div class="media-count">
+
                             ${videos.length}
                             video${videos.length === 1 ? "" : "s"}
+
                         </div>
 
                     </td>
+
 
                     <td>
                         ${escapeHtml(
@@ -1264,11 +1548,13 @@ async function loadProducts() {
                         )}
                     </td>
 
+
                     <td>
                         ${formatMoney(
                             product.price
                         )}
                     </td>
+
 
                     <td>
                         ${escapeHtml(
@@ -1276,17 +1562,20 @@ async function loadProducts() {
                         )}
                     </td>
 
+
                     <td>
                         ${Number(
                             product.quantity
                         ) || 0}
                     </td>
 
+
                     <td>
                         ${escapeHtml(
                             product.description
                         )}
                     </td>
+
 
                     <td>
 
@@ -1296,6 +1585,8 @@ async function loadProducts() {
                         >
                             ✏️ Edit
                         </button>
+
+                        <br><br>
 
                         <button
                             type="button"
@@ -1307,6 +1598,7 @@ async function loadProducts() {
                     </td>
 
                 `;
+
 
                 table.appendChild(
                     row
@@ -1323,6 +1615,7 @@ async function loadProducts() {
             "Products error:",
             error
         );
+
 
         table.innerHTML = `
 
@@ -1360,43 +1653,82 @@ async function loadCategories() {
             "product-category"
         );
 
+
     if (!select) {
+
         return;
+
     }
 
 
     const defaultCategories = [
 
         "Electronics",
+
         "Phones & Accessories",
+
         "Computers",
+
         "Fashion",
+
         "Shoes",
+
         "Bags",
+
         "Beauty",
+
         "Home & Kitchen",
+
         "School",
+
         "Books",
+
         "Sports",
+
+        "Gift Items",
+
+        "Rugs",
+
+        "Mugs",
+
+        "Kitchen",
+
+        "Baby",
+
+        "Toys",
+
+        "Home",
+
         "Other"
 
     ];
 
 
     let categories =
-        [...defaultCategories];
+        [
+            ...defaultCategories
+        ];
 
 
     try {
 
         const {
-            data
+            data,
+            error
         } =
             await supabaseClient
                 .from("products")
                 .select(
                     "category"
                 );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
 
         (data || []).forEach(
             product => {
@@ -1406,7 +1738,8 @@ async function loadCategories() {
                 ) {
 
                     categories.push(
-                        product.category.trim()
+                        product.category
+                            .trim()
                     );
 
                 }
@@ -1435,6 +1768,7 @@ async function loadCategories() {
                 ) || "[]"
             );
 
+
         categories =
             categories.concat(
                 saved
@@ -1442,13 +1776,22 @@ async function loadCategories() {
 
     }
 
-    catch (error) {}
+    catch (error) {
+
+        console.error(
+            "Saved category error:",
+            error
+        );
+
+    }
 
 
     categories =
         [
             ...new Set(
-                categories.filter(Boolean)
+                categories.filter(
+                    Boolean
+                )
             )
         ];
 
@@ -1476,11 +1819,14 @@ async function loadCategories() {
                     "option"
                 );
 
+
             option.value =
                 category;
 
+
             option.textContent =
                 category;
+
 
             select.appendChild(
                 option
@@ -1493,7 +1839,7 @@ async function loadCategories() {
 
 
 // ==========================================
-// ADD CATEGORY
+// ADD NEW CATEGORY
 // ==========================================
 
 function addNewCategory() {
@@ -1503,12 +1849,19 @@ function addNewCategory() {
             "Enter the new category name:"
         );
 
-    if (category === null) {
+
+    if (
+        category === null
+    ) {
+
         return;
+
     }
+
 
     const newCategory =
         category.trim();
+
 
     if (!newCategory) {
 
@@ -1521,7 +1874,9 @@ function addNewCategory() {
     }
 
 
-    let saved = [];
+    let saved =
+        [];
+
 
     try {
 
@@ -1536,7 +1891,8 @@ function addNewCategory() {
 
     catch (error) {
 
-        saved = [];
+        saved =
+            [];
 
     }
 
@@ -1551,9 +1907,12 @@ function addNewCategory() {
             newCategory
         );
 
+
         localStorage.setItem(
             "hasbunallahu_categories",
-            JSON.stringify(saved)
+            JSON.stringify(
+                saved
+            )
         );
 
     }
@@ -1563,10 +1922,18 @@ function addNewCategory() {
         .then(
             () => {
 
-                getElement(
-                    "product-category"
-                ).value =
-                    newCategory;
+                const select =
+                    getElement(
+                        "product-category"
+                    );
+
+
+                if (select) {
+
+                    select.value =
+                        newCategory;
+
+                }
 
             }
         );
@@ -1590,11 +1957,11 @@ async function editProduct(
     try {
 
         // ==========================================
-        // GET CURRENT PRODUCT
+        // GET PRODUCT
         // ==========================================
 
         const {
-            data: product,
+            data,
             error
         } =
             await supabaseClient
@@ -1605,12 +1972,19 @@ async function editProduct(
                 .eq(
                     "id",
                     productId
-                )
-                .single();
+                );
+
 
         if (error) {
+
             throw error;
+
         }
+
+
+        const product =
+            data?.[0];
+
 
         if (!product) {
 
@@ -1629,12 +2003,17 @@ async function editProduct(
 
         const name =
             prompt(
-                "Product Name:",
+                "Product name:",
                 product.name || ""
             );
 
-        if (name === null) {
+
+        if (
+            name === null
+        ) {
+
             return;
+
         }
 
 
@@ -1644,18 +2023,25 @@ async function editProduct(
 
         const priceInput =
             prompt(
-                "Price (₦):",
-                product.price || 0
+                "Product price (₦):",
+                product.price || "0"
             );
 
-        if (priceInput === null) {
+
+        if (
+            priceInput === null
+        ) {
+
             return;
+
         }
+
 
         const price =
             Number(
                 priceInput
             );
+
 
         if (
             Number.isNaN(price) ||
@@ -1677,12 +2063,17 @@ async function editProduct(
 
         const category =
             prompt(
-                "Category:",
+                "Product category:",
                 product.category || ""
             );
 
-        if (category === null) {
+
+        if (
+            category === null
+        ) {
+
             return;
+
         }
 
 
@@ -1692,18 +2083,25 @@ async function editProduct(
 
         const quantityInput =
             prompt(
-                "Quantity / Stock:",
-                product.quantity ?? 0
+                "Product quantity / stock:",
+                product.quantity ?? "0"
             );
 
-        if (quantityInput === null) {
+
+        if (
+            quantityInput === null
+        ) {
+
             return;
+
         }
+
 
         const quantity =
             Number(
                 quantityInput
             );
+
 
         if (
             Number.isNaN(quantity) ||
@@ -1725,21 +2123,25 @@ async function editProduct(
 
         const description =
             prompt(
-                "Description:",
+                "Product description:",
                 product.description || ""
             );
 
-        if (description === null) {
+
+        if (
+            description === null
+        ) {
+
             return;
+
         }
 
 
         // ==========================================
-        // UPDATE
+        // UPDATE PRODUCT
         // ==========================================
 
         const {
-            data: updatedProduct,
             error: updateError
         } =
             await supabaseClient
@@ -1765,20 +2167,14 @@ async function editProduct(
                 .eq(
                     "id",
                     productId
-                )
-                .select()
-                .single();
+                );
 
 
         if (updateError) {
+
             throw updateError;
+
         }
-
-
-        console.log(
-            "Updated product:",
-            updatedProduct
-        );
 
 
         alert(
@@ -1801,6 +2197,7 @@ async function editProduct(
             error
         );
 
+
         alert(
             "❌ Could not update product.\n\n" +
             (
@@ -1822,11 +2219,13 @@ async function deleteProduct(
     productId
 ) {
 
-    if (
-        !confirm(
+    const confirmed =
+        confirm(
             "Are you sure you want to delete this product?"
-        )
-    ) {
+        );
+
+
+    if (!confirmed) {
 
         return;
 
@@ -1846,8 +2245,11 @@ async function deleteProduct(
                     productId
                 );
 
+
         if (error) {
+
             throw error;
+
         }
 
 
@@ -1869,9 +2271,13 @@ async function deleteProduct(
             error
         );
 
+
         alert(
-            "❌ " +
-            error.message
+            "❌ Could not delete product.\n\n" +
+            (
+                error.message ||
+                "Unknown error"
+            )
         );
 
     }
@@ -1890,8 +2296,11 @@ async function loadOrders() {
             "orders-table"
         );
 
+
     if (!table) {
+
         return;
+
     }
 
 
@@ -1920,12 +2329,16 @@ async function loadOrders() {
                 .order(
                     "created_at",
                     {
-                        ascending: false
+                        ascending:
+                            false
                     }
                 );
 
+
         if (error) {
+
             throw error;
+
         }
 
 
@@ -1972,11 +2385,13 @@ async function loadOrders() {
                         )}
                     </td>
 
+
                     <td>
                         ${escapeHtml(
                             order.customer_name
                         )}
                     </td>
+
 
                     <td>
                         ${escapeHtml(
@@ -1984,11 +2399,13 @@ async function loadOrders() {
                         )}
                     </td>
 
+
                     <td>
                         ${escapeHtml(
                             order.phone
                         )}
                     </td>
+
 
                     <td>
                         ${formatMoney(
@@ -1996,10 +2413,11 @@ async function loadOrders() {
                         )}
                     </td>
 
+
                     <td>
 
                         <select
-                            data-order-id="${order.id}"
+                            data-order-id="${escapeHtml(order.id)}"
                             class="order-status"
                         >
 
@@ -2011,33 +2429,37 @@ async function loadOrders() {
 
                     </td>
 
+
                     <td>
 
                         <input
                             type="text"
                             class="tracking-input"
-                            data-order-id="${order.id}"
+                            data-order-id="${escapeHtml(order.id)}"
                             value="${escapeHtml(
                                 order.tracking_number || ""
                             )}"
                             placeholder="Tracking number"
                         >
 
+                        <br>
+
                         <button
                             type="button"
-                            onclick="generateTracking(${order.id})"
+                            onclick="generateTracking(${Number(order.id)})"
                         >
                             Generate
                         </button>
 
                     </td>
 
+
                     <td>
 
                         <input
                             type="text"
                             class="delivery-note-input"
-                            data-order-id="${order.id}"
+                            data-order-id="${escapeHtml(order.id)}"
                             value="${escapeHtml(
                                 order.delivery_note || ""
                             )}"
@@ -2046,11 +2468,12 @@ async function loadOrders() {
 
                     </td>
 
+
                     <td>
 
                         <button
                             type="button"
-                            onclick="saveOrderUpdate(${order.id})"
+                            onclick="saveOrderUpdate(${Number(order.id)})"
                         >
                             💾 Save
                         </button>
@@ -2159,20 +2582,29 @@ function generateTrackingNumber() {
     const now =
         new Date();
 
+
     const date =
         now.getFullYear() +
         String(
             now.getMonth() + 1
-        ).padStart(2, "0") +
+        ).padStart(
+            2,
+            "0"
+        ) +
         String(
             now.getDate()
-        ).padStart(2, "0");
+        ).padStart(
+            2,
+            "0"
+        );
+
 
     const random =
         Math.floor(
             100000 +
             Math.random() * 900000
         );
+
 
     return (
         "HST-" +
@@ -2197,13 +2629,21 @@ async function generateTracking(
             `.tracking-input[data-order-id="${orderId}"]`
         );
 
+
     if (!input) {
+
+        alert(
+            "❌ Tracking input not found."
+        );
+
         return;
+
     }
 
 
     const tracking =
         generateTrackingNumber();
+
 
     input.value =
         tracking;
@@ -2211,8 +2651,13 @@ async function generateTracking(
 
     try {
 
+        // ==========================================
+        // IMPORTANT:
+        // NO .single()
+        // NO .select()
+        // ==========================================
+
         const {
-            data,
             error
         } =
             await supabaseClient
@@ -2226,22 +2671,14 @@ async function generateTracking(
                 .eq(
                     "id",
                     orderId
-                )
-                .select(
-                    "id,order_number,tracking_number"
-                )
-                .single();
+                );
 
 
         if (error) {
+
             throw error;
+
         }
-
-
-        console.log(
-            "Tracking saved:",
-            data
-        );
 
 
         alert(
@@ -2249,18 +2686,25 @@ async function generateTracking(
             tracking
         );
 
+
+        await loadOrders();
+
     }
 
     catch (error) {
 
         console.error(
-            "Tracking error:",
+            "Tracking update error:",
             error
         );
 
+
         alert(
-            "❌ " +
-            error.message
+            "❌ Could not save tracking number.\n\n" +
+            (
+                error.message ||
+                "Unknown error"
+            )
         );
 
     }
@@ -2270,7 +2714,11 @@ async function generateTracking(
 
 // ==========================================
 // SAVE ORDER UPDATE
-// FIXED VERSION
+// ==========================================
+// IMPORTANT:
+// There is NO .single() here.
+// This prevents:
+// "Cannot coerce the result to a single JSON object"
 // ==========================================
 
 async function saveOrderUpdate(
@@ -2282,10 +2730,12 @@ async function saveOrderUpdate(
             `.order-status[data-order-id="${orderId}"]`
         );
 
+
     const trackingElement =
         document.querySelector(
             `.tracking-input[data-order-id="${orderId}"]`
         );
+
 
     const noteElement =
         document.querySelector(
@@ -2293,10 +2743,14 @@ async function saveOrderUpdate(
         );
 
 
+    // ==========================================
+    // CHECK STATUS
+    // ==========================================
+
     if (!statusElement) {
 
         alert(
-            "❌ Could not find the order status."
+            "❌ Could not find order status."
         );
 
         return;
@@ -2304,13 +2758,19 @@ async function saveOrderUpdate(
     }
 
 
+    // ==========================================
+    // GET VALUES
+    // ==========================================
+
     const status =
-        statusElement.value;
+        statusElement.value.trim();
+
 
     const tracking =
         trackingElement
             ? trackingElement.value.trim()
             : "";
+
 
     const note =
         noteElement
@@ -2331,153 +2791,6 @@ async function saveOrderUpdate(
 
     try {
 
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("orders")
-                .update({
-
-                    status:
-                        status,
-
-                    tracking_number:
-                        tracking,
-
-                    delivery_note:
-                        note
-
-                })
-                .eq(
-                    "id",
-                    orderId
-                )
-                .select(
-                    "id,order_number,status,tracking_number,delivery_note"
-                )
-                .single();
-
-
-        if (error) {
-
-            console.error(
-                "Order update error:",
-                error
-            );
-
-            throw error;
-
-        }
-
-
-        if (!data) {
-
-            throw new Error(
-                "Supabase did not return the updated order."
-            );
-
-        }
-
-
-        console.log(
-            "Updated order returned by Supabase:",
-            data
-        );
-
-
-        // Make sure the dropdown immediately
-        // reflects what was actually saved.
-
-        statusElement.value =
-            data.status;
-
-
-        if (trackingElement) {
-
-            trackingElement.value =
-                data.tracking_number || "";
-
-        }
-
-
-        if (noteElement) {
-
-            noteElement.value =
-                data.delivery_note || "";
-
-        }
-
-
-        alert(
-            "✅ Order updated successfully!\n\n" +
-            "Order: " +
-            (
-                data.order_number ||
-                orderId
-            ) +
-            "\nStatus: " +
-            data.status
-        );
-
-
-// ==========================================
-// SAVE ORDER UPDATE
-// ==========================================
-
-async function saveOrderUpdate(orderId) {
-
-    const statusElement =
-        document.querySelector(
-            `.order-status[data-order-id="${orderId}"]`
-        );
-
-    const trackingElement =
-        document.querySelector(
-            `.tracking-input[data-order-id="${orderId}"]`
-        );
-
-    const noteElement =
-        document.querySelector(
-            `.delivery-note-input[data-order-id="${orderId}"]`
-        );
-
-
-    if (!statusElement) {
-
-        alert("❌ Could not find order status.");
-
-        return;
-
-    }
-
-
-    const status =
-        statusElement.value.trim();
-
-
-    const tracking =
-        trackingElement
-            ? trackingElement.value.trim()
-            : "";
-
-
-    const note =
-        noteElement
-            ? noteElement.value.trim()
-            : "";
-
-
-    console.log("Updating order:", {
-        orderId,
-        status,
-        tracking,
-        note
-    });
-
-
-    try {
-
         // ==========================================
         // UPDATE ORDER
         // ==========================================
@@ -2489,7 +2802,8 @@ async function saveOrderUpdate(orderId) {
                 .from("orders")
                 .update({
 
-                    status: status,
+                    status:
+                        status,
 
                     tracking_number:
                         tracking || null,
@@ -2524,15 +2838,25 @@ async function saveOrderUpdate(orderId) {
         // SUCCESS
         // ==========================================
 
+        console.log(
+            "Order updated successfully:",
+            {
+                orderId,
+                status
+            }
+        );
+
+
         alert(
             "✅ Order updated successfully."
         );
 
 
-        // Reload orders from Supabase
+        // ==========================================
+        // RELOAD ORDERS
+        // ==========================================
 
         await loadOrders();
-
 
     }
 
@@ -2558,15 +2882,15 @@ async function saveOrderUpdate(orderId) {
 
 
 // ==========================================
-// INITIALIZE
+// INITIALIZE ADMIN DASHBOARD
 // ==========================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    function () {
+    function() {
 
         console.log(
-            "ADMIN JS VERSION 5 - PRODUCT EDIT + ORDER STATUS FIX LOADED"
+            "ADMIN JS VERSION 5 - ORDER UPDATE FIXED"
         );
 
 
@@ -2593,6 +2917,7 @@ document.addEventListener(
                 "admin-login-form"
             );
 
+
         if (loginForm) {
 
             loginForm.addEventListener(
@@ -2611,6 +2936,7 @@ document.addEventListener(
             getElement(
                 "admin-logout"
             );
+
 
         if (logout) {
 
@@ -2631,6 +2957,7 @@ document.addEventListener(
                 "add-product-form"
             );
 
+
         if (productForm) {
 
             productForm.addEventListener(
@@ -2649,6 +2976,7 @@ document.addEventListener(
             getElement(
                 "add-category-button"
             );
+
 
         if (categoryButton) {
 
