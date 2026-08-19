@@ -10,9 +10,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>
-        Admin Dashboard | Hasbunallahu Store
-    </title>
+    <title>Admin Dashboard | Hasbunallahu Store</title>
 
     <link
         rel="stylesheet"
@@ -28,11 +26,11 @@
         }
 
         .admin-form-box {
+            background: #fff;
             border: 1px solid #ddd;
+            border-radius: 12px;
             padding: 20px;
             margin-top: 20px;
-            border-radius: 12px;
-            background: #fff;
         }
 
         .admin-form-box input,
@@ -42,54 +40,16 @@
             padding: 12px;
             margin-top: 6px;
             box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
         }
 
         .admin-form-box label {
             font-weight: bold;
         }
 
-        .admin-form-box button {
-            padding: 12px 18px;
+        button {
             cursor: pointer;
-        }
-
-        .media-preview {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .preview-item {
-            width: 140px;
-            border: 1px solid #ddd;
-            padding: 8px;
-            border-radius: 8px;
-            text-align: center;
-            background: #fafafa;
-            box-sizing: border-box;
-        }
-
-        .preview-item img,
-        .preview-item video {
-            width: 120px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 6px;
-            display: block;
-            margin: auto;
-        }
-
-        .product-main-image {
-            width: 80px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-        }
-
-        .product-video-preview {
-            width: 100px;
-            max-height: 80px;
         }
 
         .stats-container {
@@ -105,216 +65,126 @@
             border: 1px solid #ddd;
             border-radius: 10px;
             text-align: center;
+            background: #fff;
         }
 
-        table {
-            border-collapse: collapse;
+        .media-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
         }
 
-        th,
-        td {
+        .preview-item {
+            width: 140px;
             border: 1px solid #ddd;
-            vertical-align: top;
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .preview-item img,
+        .preview-item video {
+            width: 120px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .product-main-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .product-video-preview {
+            width: 100px;
+            max-height: 80px;
         }
 
         .media-count {
             font-size: 12px;
             color: #555;
-        }
-
-        /* ==========================================
-           EDIT PRODUCT MODAL
-        ========================================== */
-
-        .edit-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.65);
-            display: none;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 20px;
-            overflow-y: auto;
-            z-index: 99999;
-            box-sizing: border-box;
-        }
-
-        .edit-modal.active {
-            display: flex;
-        }
-
-        .edit-modal-box {
-            width: 100%;
-            max-width: 850px;
-            background: #fff;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px auto;
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        .edit-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .edit-close {
-            border: none;
-            background: #eee;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 22px;
-            cursor: pointer;
-        }
-
-        .edit-field {
-            margin-bottom: 18px;
-        }
-
-        .edit-field label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
-
-        .edit-field input,
-        .edit-field select,
-        .edit-field textarea {
-            width: 100%;
-            padding: 12px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-        }
-
-        .existing-media {
-            display: grid;
-            grid-template-columns: repeat(
-                auto-fill,
-                minmax(145px, 1fr)
-            );
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .existing-media-item {
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 10px;
-            background: #fafafa;
-            text-align: center;
-        }
-
-        .existing-media-item img,
-        .existing-media-item video {
-            width: 100%;
-            height: 110px;
-            object-fit: cover;
-            border-radius: 7px;
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .existing-media-item label {
-            font-size: 13px;
-            cursor: pointer;
-            display: block;
-        }
-
-        .existing-media-item input[type="checkbox"] {
-            width: auto;
-            margin-right: 5px;
-        }
-
-        .edit-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .edit-buttons button {
-            padding: 13px 20px;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-        }
-
-        #save-edit-product {
-            background: #198754;
-            color: white;
-        }
-
-        #cancel-edit-product {
-            background: #6c757d;
-            color: white;
-        }
-
-        .edit-message {
-            font-weight: bold;
-            margin-top: 15px;
-        }
-
-        .media-help {
-            display: block;
-            color: #666;
             margin-top: 5px;
-            font-size: 13px;
         }
 
-        @media (max-width: 600px) {
+        .table-wrapper {
+            overflow-x: auto;
+        }
 
-            .admin-container {
-                padding: 10px;
-            }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+        }
 
-            .edit-modal {
-                padding: 8px;
-            }
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            vertical-align: top;
+        }
 
-            .edit-modal-box {
-                padding: 15px;
-                margin: 5px auto;
-            }
+        th {
+            background: #f5f5f5;
+        }
 
-            .existing-media {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        .order-status {
+            min-width: 150px;
+            padding: 8px;
+        }
 
+        .tracking-input,
+        .delivery-note-input {
+            width: 150px;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+
+        .save-order-button {
+            margin-top: 8px;
+            padding: 8px 12px;
+        }
+
+        .edit-button {
+            padding: 8px 12px;
+            margin-bottom: 5px;
+        }
+
+        .delete-button {
+            padding: 8px 12px;
+        }
+
+        .status-message {
+            font-weight: bold;
+            margin-top: 10px;
         }
 
     </style>
 
 </head>
 
+
 <body>
 
 
-<!-- ==================================================
+<!-- =====================================================
      ADMIN LOGIN
-================================================== -->
+===================================================== -->
 
 <main
     id="admin-login"
     style="
-        padding:30px;
         max-width:450px;
         margin:50px auto;
+        padding:30px;
     "
 >
 
     <h1>🔐 Admin Login</h1>
 
-    <p>
-        Hasbunallahu Store
-    </p>
+    <p>Hasbunallahu Store</p>
 
     <form id="admin-login-form">
 
@@ -348,10 +218,7 @@
             Login
         </button>
 
-        <p
-            id="login-message"
-            style="font-weight:bold;"
-        ></p>
+        <p id="login-message"></p>
 
     </form>
 
@@ -359,9 +226,9 @@
 
 
 
-<!-- ==================================================
+<!-- =====================================================
      ADMIN DASHBOARD
-================================================== -->
+===================================================== -->
 
 <main
     id="admin-dashboard"
@@ -371,14 +238,15 @@
 <div class="admin-container">
 
 
-    <!-- HEADER -->
-
     <header>
 
         <h1>
-            Hasbunallahu Store -
-            Admin Dashboard
+            Hasbunallahu Store
         </h1>
+
+        <h2>
+            Admin Dashboard
+        </h2>
 
         <p>
             Welcome, Admin
@@ -395,14 +263,14 @@
 
 
 
-    <!-- ==================================================
+    <!-- =====================================================
          STATISTICS
-    ================================================== -->
+    ===================================================== -->
 
     <section>
 
         <h2>
-            Store Statistics 📊
+            📊 Store Statistics
         </h2>
 
         <div class="stats-container">
@@ -419,6 +287,7 @@
 
             </div>
 
+
             <div class="stat-card">
 
                 <h3>
@@ -431,6 +300,7 @@
 
             </div>
 
+
             <div class="stat-card">
 
                 <h3>
@@ -442,6 +312,7 @@
                 </p>
 
             </div>
+
 
             <div class="stat-card">
 
@@ -461,34 +332,23 @@
 
 
 
-    <!-- ==================================================
+    <!-- =====================================================
          PRODUCT MANAGEMENT
-    ================================================== -->
+    ===================================================== -->
 
-    <section
-        class="product-management"
-        style="margin-top:40px;"
-    >
+    <section style="margin-top:40px;">
 
         <h2>
             🛍️ Product Management
         </h2>
 
-        <p>
-            Add products with multiple images and videos.
-        </p>
-
-
-
-        <!-- ==================================================
-             ADD PRODUCT
-        ================================================== -->
 
         <div class="admin-form-box">
 
             <h3>
                 ➕ Add New Product
             </h3>
+
 
             <form id="add-product-form">
 
@@ -500,7 +360,6 @@
                 <input
                     type="text"
                     id="product-name"
-                    placeholder="Product name"
                     required
                 >
 
@@ -514,7 +373,6 @@
                 <input
                     type="number"
                     id="product-price"
-                    placeholder="Product price"
                     min="0"
                     required
                 >
@@ -526,7 +384,7 @@
                     Category
                 </label>
 
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex;gap:10px;">
 
                     <select
                         id="product-category"
@@ -563,10 +421,6 @@
                     required
                 >
 
-                <small>
-                    You can select multiple images.
-                </small>
-
                 <div
                     id="image-preview"
                     class="media-preview"
@@ -586,10 +440,6 @@
                     multiple
                 >
 
-                <small>
-                    You can select multiple product videos.
-                </small>
-
                 <div
                     id="video-preview"
                     class="media-preview"
@@ -604,7 +454,6 @@
 
                 <textarea
                     id="product-description"
-                    placeholder="Product description"
                     rows="5"
                     required
                 ></textarea>
@@ -619,7 +468,6 @@
                 <input
                     type="number"
                     id="product-quantity"
-                    placeholder="30"
                     min="0"
                     value="30"
                     required
@@ -637,48 +485,37 @@
 
             </form>
 
+
             <p id="product-message"></p>
 
         </div>
 
 
 
-        <!-- ==================================================
+        <!-- =====================================================
              PRODUCTS TABLE
-        ================================================== -->
+        ===================================================== -->
 
         <h3>
             📦 Products
         </h3>
 
-        <div style="overflow-x:auto;">
+        <div class="table-wrapper">
 
-            <table
-                border="1"
-                width="100%"
-                cellpadding="10"
-            >
+            <table>
 
                 <thead>
 
                     <tr>
 
                         <th>ID</th>
-
                         <th>Image</th>
-
                         <th>Videos</th>
-
                         <th>Product</th>
-
                         <th>Price</th>
-
                         <th>Category</th>
-
                         <th>Quantity</th>
-
                         <th>Description</th>
-
                         <th>Actions</th>
 
                     </tr>
@@ -705,30 +542,27 @@
 
 
 
-    <!-- ==================================================
-         CUSTOMER ORDERS
-    ================================================== -->
+    <!-- =====================================================
+         ORDERS
+    ===================================================== -->
 
-    <section
-        class="recent-orders"
-        style="margin-top:50px;"
-    >
+    <section style="margin-top:50px;">
 
         <h2>
-            Customer Orders 📦
+            📦 Customer Orders
         </h2>
 
-        <div style="overflow-x:auto;">
+        <div class="table-wrapper">
 
-            <table
-                border="1"
-                width="100%"
-                cellpadding="10"
-            >
+            <table>
 
                 <thead>
 
                     <tr>
+
+                        <th>
+                            ID
+                        </th>
 
                         <th>
                             Order Number
@@ -770,12 +604,13 @@
 
                 </thead>
 
+
                 <tbody id="orders-table">
 
                     <tr>
 
-                        <td colspan="9">
-                            Please login to view orders.
+                        <td colspan="10">
+                            Loading orders...
                         </td>
 
                     </tr>
@@ -795,290 +630,12 @@
 
 
 
-<!-- ==================================================
-     EDIT PRODUCT MODAL
-================================================== -->
-
-<div
-    id="edit-product-modal"
-    class="edit-modal"
-    aria-hidden="true"
->
-
-    <div class="edit-modal-box">
-
-        <div class="edit-modal-header">
-
-            <div>
-
-                <h2>
-                    ✏️ Edit Product
-                </h2>
-
-                <p
-                    id="edit-product-title"
-                    style="margin:0;"
-                >
-                    Update product details
-                </p>
-
-            </div>
-
-            <button
-                type="button"
-                class="edit-close"
-                id="close-edit-product"
-                aria-label="Close"
-            >
-                ×
-            </button>
-
-        </div>
-
-
-        <form id="edit-product-form">
-
-            <input
-                type="hidden"
-                id="edit-product-id"
-            >
-
-
-            <!-- NAME -->
-
-            <div class="edit-field">
-
-                <label for="edit-product-name">
-                    Product Name
-                </label>
-
-                <input
-                    type="text"
-                    id="edit-product-name"
-                    required
-                >
-
-            </div>
-
-
-            <!-- PRICE -->
-
-            <div class="edit-field">
-
-                <label for="edit-product-price">
-                    Price (₦)
-                </label>
-
-                <input
-                    type="number"
-                    id="edit-product-price"
-                    min="0"
-                    step="0.01"
-                    required
-                >
-
-            </div>
-
-
-            <!-- CATEGORY -->
-
-            <div class="edit-field">
-
-                <label for="edit-product-category">
-                    Category
-                </label>
-
-                <div style="display:flex; gap:10px;">
-
-                    <select
-                        id="edit-product-category"
-                        required
-                    >
-
-                        <option value="">
-                            Select category
-                        </option>
-
-                    </select>
-
-                    <button
-                        type="button"
-                        id="edit-add-category-button"
-                    >
-                        ➕
-                    </button>
-
-                </div>
-
-            </div>
-
-
-            <!-- QUANTITY -->
-
-            <div class="edit-field">
-
-                <label for="edit-product-quantity">
-                    Quantity / Stock
-                </label>
-
-                <input
-                    type="number"
-                    id="edit-product-quantity"
-                    min="0"
-                    required
-                >
-
-            </div>
-
-
-            <!-- DESCRIPTION -->
-
-            <div class="edit-field">
-
-                <label for="edit-product-description">
-                    Description
-                </label>
-
-                <textarea
-                    id="edit-product-description"
-                    rows="7"
-                    required
-                ></textarea>
-
-            </div>
-
-
-            <!-- EXISTING IMAGES -->
-
-            <div class="edit-field">
-
-                <label>
-                    Existing Product Images
-                </label>
-
-                <small class="media-help">
-                    Untick an image if you want to remove it from this product.
-                </small>
-
-                <div
-                    id="edit-existing-images"
-                    class="existing-media"
-                ></div>
-
-            </div>
-
-
-            <!-- NEW IMAGES -->
-
-            <div class="edit-field">
-
-                <label for="edit-product-images">
-                    Add New Product Images
-                </label>
-
-                <input
-                    type="file"
-                    id="edit-product-images"
-                    accept="image/*"
-                    multiple
-                >
-
-                <small class="media-help">
-                    Select additional images from your phone.
-                </small>
-
-                <div
-                    id="edit-image-preview"
-                    class="media-preview"
-                ></div>
-
-            </div>
-
-
-            <!-- EXISTING VIDEOS -->
-
-            <div class="edit-field">
-
-                <label>
-                    Existing Product Videos
-                </label>
-
-                <small class="media-help">
-                    Untick a video if you want to remove it from this product.
-                </small>
-
-                <div
-                    id="edit-existing-videos"
-                    class="existing-media"
-                ></div>
-
-            </div>
-
-
-            <!-- NEW VIDEOS -->
-
-            <div class="edit-field">
-
-                <label for="edit-product-videos">
-                    Add New Product Videos
-                </label>
-
-                <input
-                    type="file"
-                    id="edit-product-videos"
-                    accept="video/*"
-                    multiple
-                >
-
-                <small class="media-help">
-                    Select additional videos from your phone.
-                </small>
-
-                <div
-                    id="edit-video-preview"
-                    class="media-preview"
-                ></div>
-
-            </div>
-
-
-            <p
-                id="edit-product-message"
-                class="edit-message"
-            ></p>
-
-
-            <div class="edit-buttons">
-
-                <button
-                    type="submit"
-                    id="save-edit-product"
-                >
-                    💾 Save Changes
-                </button>
-
-                <button
-                    type="button"
-                    id="cancel-edit-product"
-                >
-                    Cancel
-                </button>
-
-            </div>
-
-        </form>
-
-    </div>
-
-</div>
-
-
-
-<!-- ==================================================
+<!-- =====================================================
      SUPABASE
-================================================== -->
+===================================================== -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <script>
 
@@ -1097,10 +654,9 @@ const supabaseClient =
 </script>
 
 
-
-<!-- ==================================================
-     ADMIN JAVASCRIPT
-================================================== -->
+<!-- =====================================================
+     ADMIN JS
+===================================================== -->
 
 <script src="js/admin.js"></script>
 
