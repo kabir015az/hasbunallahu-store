@@ -14,9 +14,6 @@
         Product Details | Hasbunallahu Store
     </title>
 
-
-    <!-- CSS -->
-
     <link
         rel="stylesheet"
         href="css/style.css"
@@ -64,11 +61,258 @@
         src="js/product.js"
     ></script>
 
+
+    <style>
+
+        /* ==========================================
+           PRODUCT IMAGE GALLERY
+        ========================================== */
+
+        .product-gallery {
+
+            width: 100%;
+            max-width: 550px;
+            margin: 0 auto;
+
+        }
+
+
+        .main-image-container {
+
+            position: relative;
+
+            width: 100%;
+
+            background: #f8f8f8;
+
+            border-radius: 15px;
+
+            overflow: hidden;
+
+            text-align: center;
+
+        }
+
+
+        #product-image {
+
+            width: 100%;
+
+            max-height: 500px;
+
+            object-fit: contain;
+
+            display: block;
+
+            cursor: zoom-in;
+
+            border-radius: 15px;
+
+        }
+
+
+        /* ==========================================
+           IMAGE NAVIGATION
+        ========================================== */
+
+        .image-navigation {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-top: 12px;
+
+        }
+
+
+        .image-navigation button {
+
+            border: none;
+
+            padding: 10px 16px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-size: 14px;
+
+        }
+
+
+        #image-counter {
+
+            font-weight: bold;
+
+            font-size: 14px;
+
+        }
+
+
+        /* ==========================================
+           THUMBNAILS
+        ========================================== */
+
+        .product-thumbnails {
+
+            display: flex;
+
+            gap: 10px;
+
+            overflow-x: auto;
+
+            padding: 12px 2px;
+
+            margin-top: 5px;
+
+        }
+
+
+        .product-thumbnail {
+
+            width: 75px;
+
+            height: 75px;
+
+            min-width: 75px;
+
+            object-fit: cover;
+
+            border-radius: 8px;
+
+            border: 2px solid transparent;
+
+            cursor: pointer;
+
+            background: #eee;
+
+        }
+
+
+        .product-thumbnail.active {
+
+            border-color: #000;
+
+        }
+
+
+        .product-thumbnail:hover {
+
+            opacity: 0.8;
+
+        }
+
+
+        /* ==========================================
+           IMAGE ZOOM
+        ========================================== */
+
+        .image-zoom {
+
+            position: fixed;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.9);
+
+            display: none;
+
+            align-items: center;
+
+            justify-content: center;
+
+            z-index: 9999;
+
+            padding: 20px;
+
+        }
+
+
+        .image-zoom img {
+
+            max-width: 95%;
+
+            max-height: 90%;
+
+            object-fit: contain;
+
+        }
+
+
+        #close-zoom {
+
+            position: absolute;
+
+            top: 20px;
+
+            right: 25px;
+
+            color: white;
+
+            font-size: 40px;
+
+            cursor: pointer;
+
+            line-height: 1;
+
+        }
+
+
+        /* ==========================================
+           MOBILE
+        ========================================== */
+
+        @media (max-width: 600px) {
+
+            .product-gallery {
+
+                max-width: 100%;
+
+            }
+
+
+            #product-image {
+
+                max-height: 380px;
+
+            }
+
+
+            .product-thumbnail {
+
+                width: 65px;
+
+                height: 65px;
+
+                min-width: 65px;
+
+            }
+
+
+            .image-navigation button {
+
+                padding: 8px 12px;
+
+            }
+
+        }
+
+    </style>
+
 </head>
 
 
 <body>
 
+
+<!-- ==================================================
+     HEADER
+================================================== -->
 
 <header>
 
@@ -171,25 +415,78 @@
 
 
 
-<!-- PRODUCT -->
+<!-- ==================================================
+     PRODUCT DETAILS
+================================================== -->
 
 <main class="product-details">
 
 
-    <!-- IMAGE -->
+    <!-- ==================================================
+         PRODUCT GALLERY
+    ================================================== -->
 
-    <div class="product-image">
+    <div class="product-gallery">
 
-        <img
-            id="product-image"
-            src=""
-            alt="Product Image"
+
+        <!-- MAIN IMAGE -->
+
+        <div class="main-image-container">
+
+            <img
+                id="product-image"
+                src=""
+                alt="Product Image"
+            >
+
+        </div>
+
+
+        <!-- IMAGE NAVIGATION -->
+
+        <div
+            class="image-navigation"
+            id="image-navigation"
+            style="display:none;"
         >
+
+            <button
+                type="button"
+                id="previous-image"
+            >
+                ◀ Previous
+            </button>
+
+
+            <span id="image-counter">
+                1 / 1
+            </span>
+
+
+            <button
+                type="button"
+                id="next-image"
+            >
+                Next ▶
+            </button>
+
+        </div>
+
+
+        <!-- THUMBNAILS -->
+
+        <div
+            class="product-thumbnails"
+            id="product-thumbnails"
+        ></div>
 
     </div>
 
 
-    <!-- INFORMATION -->
+
+    <!-- ==================================================
+         PRODUCT INFORMATION
+    ================================================== -->
 
     <div class="product-info">
 
@@ -250,7 +547,9 @@
 
 
 
-<!-- IMAGE ZOOM -->
+<!-- ==================================================
+     IMAGE ZOOM
+================================================== -->
 
 <div
     id="image-zoom"
@@ -272,7 +571,9 @@
 
 
 
-<!-- REVIEWS -->
+<!-- ==================================================
+     REVIEWS
+================================================== -->
 
 <section class="reviews-section">
 
@@ -310,6 +611,7 @@
         </p>
 
     </div>
+
 
 
     <!-- REVIEW FORM -->
@@ -385,6 +687,7 @@
     </div>
 
 
+
     <!-- REVIEWS LIST -->
 
     <div class="reviews-list">
@@ -408,6 +711,10 @@
 </section>
 
 
+
+<!-- ==================================================
+     FOOTER
+================================================== -->
 
 <footer>
 
