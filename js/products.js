@@ -23,6 +23,76 @@ const productsContainer =
 
 
 // ==========================================
+// Get Product Image
+// Uses the first uploaded product image
+// ==========================================
+
+function getProductImage(product) {
+
+    // New format: images array
+    if (
+        Array.isArray(product.images) &&
+        product.images.length > 0
+    ) {
+
+        return product.images[0];
+
+    }
+
+
+    // Fallback: old single image field
+    if (
+        product.image &&
+        typeof product.image === "string"
+    ) {
+
+        return product.image;
+
+    }
+
+
+    // Final fallback
+    return "images/logo.png";
+
+}
+
+
+
+// ==========================================
+// Get Product Images
+// ==========================================
+
+function getProductImages(product) {
+
+    if (
+        Array.isArray(product.images) &&
+        product.images.length > 0
+    ) {
+
+        return product.images;
+
+    }
+
+
+    if (
+        product.image &&
+        typeof product.image === "string"
+    ) {
+
+        return [
+            product.image
+        ];
+
+    }
+
+
+    return [];
+
+}
+
+
+
+// ==========================================
 // Load Products From Supabase
 // ==========================================
 
@@ -174,6 +244,13 @@ function displayProducts(
                 ) || 0;
 
 
+            // Get first uploaded image
+            const productImage =
+                getProductImage(
+                    product
+                );
+
+
             productsContainer.innerHTML += `
 
                 <div class="product-card">
@@ -183,7 +260,7 @@ function displayProducts(
                     >
 
                         <img
-                            src="${product.image || "images/logo.png"}"
+                            src="${productImage}"
                             alt="${product.name || "Product"}"
                             onerror="
                                 this.src='images/logo.png'
@@ -207,13 +284,27 @@ function displayProducts(
                         </h3>
 
 
+                        <p class="product-price">
+
+                            ₦${price.toLocaleString(
+                                "en-NG",
+                                {
+                                    minimumFractionDigits: 2,
+                                    maximumFractionDigits: 2
+                                }
+                            )}
+
+                        </p>
+
+
                         <p class="product-stock">
-    ${
-        Number(product.quantity) > 0
-            ? "In stock: " + Number(product.quantity)
-            : "❌ Out of stock"
-    }
-</p>
+                            ${
+                                Number(product.quantity) > 0
+                                    ? "In stock: " +
+                                      Number(product.quantity)
+                                    : "❌ Out of stock"
+                            }
+                        </p>
 
 
                         ${createRatingHTML(product.id)}
@@ -367,29 +458,55 @@ async function addToCart(productId) {
 
     let cart = getCart();
 
-    const product = products.find(function (item) {
-        return String(item.id) === String(productId);
-    });
+
+    const product =
+        products.find(
+            function (item) {
+
+                return String(item.id) ===
+                    String(productId);
+
+            }
+        );
+
 
     if (!product) {
-        alert("Product not found.");
+
+        alert(
+            "Product not found."
+        );
+
         return;
+
     }
+
 
     // ==========================================
     // Check Real Stock From Supabase
     // ==========================================
 
-    if (typeof supabaseClient !== "undefined") {
+    if (
+        typeof supabaseClient !==
+        "undefined"
+    ) {
 
         try {
 
-            const { data: stockProduct, error } =
+            const {
+                data: stockProduct,
+                error
+            } =
                 await supabaseClient
                     .from("products")
-                    .select("id, name, quantity")
-                    .eq("id", productId)
+                    .select(
+                        "id, name, quantity"
+                    )
+                    .eq(
+                        "id",
+                        productId
+                    )
                     .single();
+
 
             if (error) {
 
@@ -403,10 +520,15 @@ async function addToCart(productId) {
                 );
 
                 return;
+
             }
 
+
             const stock =
-                Number(stockProduct.quantity) || 0;
+                Number(
+                    stockProduct.quantity
+                ) || 0;
+
 
             // ==========================================
             // Out Of Stock
@@ -421,40 +543,58 @@ async function addToCart(productId) {
                 );
 
                 return;
+
             }
+
 
             // ==========================================
             // Check Existing Cart Quantity
             // ==========================================
 
             const existingItem =
-                cart.find(function (item) {
-                    return String(item.id) === String(productId);
-                });
+                cart.find(
+                    function (item) {
+
+                        return String(item.id) ===
+                            String(productId);
+
+                    }
+                );
+
 
             const currentQuantity =
                 existingItem
-                    ? Number(existingItem.quantity) || 0
+                    ? Number(
+                        existingItem.quantity
+                    ) || 0
                     : 0;
+
 
             // ==========================================
             // Prevent More Than Available Stock
             // ==========================================
 
-            if (currentQuantity >= stock) {
+            if (
+                currentQuantity >=
+                stock
+            ) {
 
                 alert(
                     "❌ Only " +
                     stock +
                     " unit" +
-                    (stock === 1 ? "" : "s") +
+                    (stock === 1
+                        ? ""
+                        : "s") +
                     " of " +
                     stockProduct.name +
                     " available."
                 );
 
                 return;
+
             }
+
 
             // ==========================================
             // Add / Increase Cart Quantity
@@ -465,31 +605,52 @@ async function addToCart(productId) {
                 existingItem.quantity =
                     currentQuantity + 1;
 
-            } else {
+            }
+
+            else {
 
                 cart.push({
 
-                    id: product.id,
+                    id:
+                        product.id,
 
-                    name: product.name,
+                    name:
+                        product.name,
 
-                    price: product.price,
+                    price:
+                        product.price,
 
-                    image: product.image,
+                    // Use first uploaded image
+                    image:
+                        getProductImage(
+                            product
+                        ),
 
-                    quantity: 1
+                    // Keep all images available
+                    images:
+                        getProductImages(
+                            product
+                        ),
+
+                    quantity:
+                        1
 
                 });
 
             }
 
+
             // ==========================================
             // Save Cart
             // ==========================================
 
-            saveCart(cart);
+            saveCart(
+                cart
+            );
+
 
             updateCartCount();
+
 
             alert(
                 product.name +
@@ -511,43 +672,72 @@ async function addToCart(productId) {
 
         }
 
+
         return;
+
     }
+
+
 
     // ==========================================
     // Fallback If Supabase Is Not Loaded
     // ==========================================
 
     const existingItem =
-        cart.find(function (item) {
-            return String(item.id) === String(productId);
-        });
+        cart.find(
+            function (item) {
+
+                return String(item.id) ===
+                    String(productId);
+
+            }
+        );
+
 
     if (existingItem) {
 
         existingItem.quantity++;
 
-    } else {
+    }
+
+    else {
 
         cart.push({
 
-            id: product.id,
+            id:
+                product.id,
 
-            name: product.name,
+            name:
+                product.name,
 
-            price: product.price,
+            price:
+                product.price,
 
-            image: product.image,
+            image:
+                getProductImage(
+                    product
+                ),
 
-            quantity: 1
+            images:
+                getProductImages(
+                    product
+                ),
+
+            quantity:
+                1
 
         });
 
     }
 
-    saveCart(cart);
+
+    saveCart(
+        cart
+    );
+
 
     updateCartCount();
+
 
     alert(
         product.name +
@@ -632,8 +822,17 @@ function addToWishlist(
                 product.price
             ) || 0,
 
+        // Use first uploaded image
         image:
-            product.image,
+            getProductImage(
+                product
+            ),
+
+        // Keep all uploaded images
+        images:
+            getProductImages(
+                product
+            ),
 
         category:
             product.category
@@ -661,7 +860,7 @@ function addToWishlist(
 
     alert(
         product.name +
-        " added to wishlist!"
+        " added to wishlist."
     );
 
 }
@@ -694,16 +893,19 @@ function getProductRating(
 
         return {
 
-            average: 0,
+            average:
+                0,
 
-            count: 0
+            count:
+                0
 
         };
 
     }
 
 
-    let total = 0;
+    let total =
+        0;
 
 
     reviews.forEach(
@@ -778,7 +980,9 @@ function createRatingHTML(
 
         <p class="product-rating">
 
-            ${"★".repeat(rounded)}
+            ${"★".repeat(
+                rounded
+            )}
 
             ${"☆".repeat(
                 5 - rounded
