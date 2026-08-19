@@ -14,6 +14,7 @@
         Product Details | Hasbunallahu Store
     </title>
 
+
     <link
         rel="stylesheet"
         href="css/style.css"
@@ -25,281 +26,59 @@
     >
 
 
-    <!-- SUPABASE -->
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-    <script>
-
-        const SUPABASE_URL =
-            "https://qreliegujlmmsnyewtaq.supabase.co";
-
-        const SUPABASE_KEY =
-            "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
-
-        const supabaseClient =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
-            );
-
-    </script>
-
-
-    <!-- MAIN JS -->
-
-    <script
-        defer
-        src="js/main.js"
-    ></script>
-
-
-    <!-- PRODUCT JS -->
-
-    <script
-        defer
-        src="js/product.js"
-    ></script>
-
-
     <style>
 
-        /* ==========================================
-           PRODUCT IMAGE GALLERY
-        ========================================== */
-
         .product-gallery {
-
             width: 100%;
-            max-width: 550px;
-            margin: 0 auto;
-
         }
 
-
-        .main-image-container {
-
-            position: relative;
-
-            width: 100%;
-
-            background: #f8f8f8;
-
-            border-radius: 15px;
-
-            overflow: hidden;
-
+        .product-main-image-container {
             text-align: center;
-
         }
 
-
-        #product-image {
-
-            width: 100%;
-
-            max-height: 500px;
-
+        .product-main-image-display {
+            max-width: 100%;
+            width: 450px;
+            max-height: 450px;
             object-fit: contain;
-
-            display: block;
-
+            border-radius: 12px;
             cursor: zoom-in;
-
-            border-radius: 15px;
-
         }
-
-
-        /* ==========================================
-           IMAGE NAVIGATION
-        ========================================== */
-
-        .image-navigation {
-
-            display: flex;
-
-            justify-content: space-between;
-
-            align-items: center;
-
-            gap: 10px;
-
-            margin-top: 12px;
-
-        }
-
-
-        .image-navigation button {
-
-            border: none;
-
-            padding: 10px 16px;
-
-            border-radius: 8px;
-
-            cursor: pointer;
-
-            font-size: 14px;
-
-        }
-
-
-        #image-counter {
-
-            font-weight: bold;
-
-            font-size: 14px;
-
-        }
-
-
-        /* ==========================================
-           THUMBNAILS
-        ========================================== */
 
         .product-thumbnails {
-
             display: flex;
-
+            flex-wrap: wrap;
             gap: 10px;
-
-            overflow-x: auto;
-
-            padding: 12px 2px;
-
-            margin-top: 5px;
-
+            margin-top: 15px;
+            justify-content: center;
         }
-
 
         .product-thumbnail {
-
             width: 75px;
-
             height: 75px;
-
-            min-width: 75px;
-
             object-fit: cover;
-
             border-radius: 8px;
-
-            border: 2px solid transparent;
-
             cursor: pointer;
-
-            background: #eee;
-
+            border: 2px solid transparent;
         }
-
 
         .product-thumbnail.active {
-
-            border-color: #000;
-
+            border: 2px solid #000;
         }
 
-
-        .product-thumbnail:hover {
-
-            opacity: 0.8;
-
+        .product-videos {
+            margin-top: 30px;
         }
 
+        .product-video {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
 
-        /* ==========================================
-           IMAGE ZOOM
-        ========================================== */
-
-        .image-zoom {
-
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(0, 0, 0, 0.9);
-
+        .no-videos {
             display: none;
-
-            align-items: center;
-
-            justify-content: center;
-
-            z-index: 9999;
-
-            padding: 20px;
-
-        }
-
-
-        .image-zoom img {
-
-            max-width: 95%;
-
-            max-height: 90%;
-
-            object-fit: contain;
-
-        }
-
-
-        #close-zoom {
-
-            position: absolute;
-
-            top: 20px;
-
-            right: 25px;
-
-            color: white;
-
-            font-size: 40px;
-
-            cursor: pointer;
-
-            line-height: 1;
-
-        }
-
-
-        /* ==========================================
-           MOBILE
-        ========================================== */
-
-        @media (max-width: 600px) {
-
-            .product-gallery {
-
-                max-width: 100%;
-
-            }
-
-
-            #product-image {
-
-                max-height: 380px;
-
-            }
-
-
-            .product-thumbnail {
-
-                width: 65px;
-
-                height: 65px;
-
-                min-width: 65px;
-
-            }
-
-
-            .image-navigation button {
-
-                padding: 8px 12px;
-
-            }
-
         }
 
     </style>
@@ -309,10 +88,6 @@
 
 <body>
 
-
-<!-- ==================================================
-     HEADER
-================================================== -->
 
 <header>
 
@@ -343,68 +118,46 @@
                 </a>
             </li>
 
-
             <li>
                 <a href="products.html">
                     Products
                 </a>
             </li>
 
-
             <li>
-
                 <a href="wishlist.html">
-
                     Wishlist ❤️
-
                     <span id="wishlist-count">
                         0
                     </span>
-
                 </a>
-
             </li>
 
-
             <li>
-
                 <a href="cart.html">
-
                     Cart 🛒
-
                     <span id="cart-count">
                         0
                     </span>
-
                 </a>
-
             </li>
 
-
             <li>
-
                 <a href="order.html">
                     My Orders 📦
                 </a>
-
             </li>
 
-
             <li>
-
                 <a href="about.html">
                     About
                 </a>
-
             </li>
 
-
             <li>
-
                 <a href="contact.html">
                     Contact
                 </a>
-
             </li>
 
         </ul>
@@ -416,25 +169,24 @@
 
 
 <!-- ==================================================
-     PRODUCT DETAILS
+     PRODUCT
 ================================================== -->
 
 <main class="product-details">
 
 
     <!-- ==================================================
-         PRODUCT GALLERY
+         GALLERY
     ================================================== -->
 
     <div class="product-gallery">
 
 
-        <!-- MAIN IMAGE -->
-
-        <div class="main-image-container">
+        <div class="product-main-image-container">
 
             <img
                 id="product-image"
+                class="product-main-image-display"
                 src=""
                 alt="Product Image"
             >
@@ -442,50 +194,40 @@
         </div>
 
 
-        <!-- IMAGE NAVIGATION -->
+        <!-- IMAGE THUMBNAILS -->
 
         <div
-            class="image-navigation"
-            id="image-navigation"
-            style="display:none;"
+            id="product-thumbnails"
+            class="product-thumbnails"
+        ></div>
+
+
+        <!-- ==================================================
+             PRODUCT VIDEOS
+        ================================================== -->
+
+        <div
+            id="product-videos-section"
+            class="product-videos"
         >
 
-            <button
-                type="button"
-                id="previous-image"
-            >
-                ◀ Previous
-            </button>
+            <h2>
+                🎥 Product Video
+            </h2>
 
 
-            <span id="image-counter">
-                1 / 1
-            </span>
-
-
-            <button
-                type="button"
-                id="next-image"
-            >
-                Next ▶
-            </button>
+            <div
+                id="product-videos-container"
+            ></div>
 
         </div>
-
-
-        <!-- THUMBNAILS -->
-
-        <div
-            class="product-thumbnails"
-            id="product-thumbnails"
-        ></div>
 
     </div>
 
 
 
     <!-- ==================================================
-         PRODUCT INFORMATION
+         INFORMATION
     ================================================== -->
 
     <div class="product-info">
@@ -614,8 +356,6 @@
 
 
 
-    <!-- REVIEW FORM -->
-
     <div class="review-form">
 
         <h3>
@@ -627,7 +367,6 @@
             Your Name
         </label>
 
-
         <input
             type="text"
             id="review-name"
@@ -638,7 +377,6 @@
         <label for="review-rating">
             Rating
         </label>
-
 
         <select id="review-rating">
 
@@ -669,7 +407,6 @@
             Your Review
         </label>
 
-
         <textarea
             id="review-text"
             rows="5"
@@ -687,8 +424,6 @@
     </div>
 
 
-
-    <!-- REVIEWS LIST -->
 
     <div class="reviews-list">
 
@@ -712,10 +447,6 @@
 
 
 
-<!-- ==================================================
-     FOOTER
-================================================== -->
-
 <footer>
 
     <p>
@@ -724,6 +455,42 @@
     </p>
 
 </footer>
+
+
+
+<!-- ==================================================
+     SUPABASE
+================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+    "https://qreliegujlmmsnyewtaq.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_jg8JAA8WZfYAEsy7VY6DIQ_xyI_vtg5";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+</script>
+
+
+<script
+    defer
+    src="js/main.js"
+></script>
+
+
+<script
+    defer
+    src="js/product.js"
+></script>
 
 
 </body>

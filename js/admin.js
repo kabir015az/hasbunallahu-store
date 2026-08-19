@@ -1,23 +1,16 @@
 // ==========================================
 // HASBUNALLAHU STORE
 // ADMIN DASHBOARD
-// MULTIPLE PRODUCT IMAGES
+// MULTIPLE IMAGES + MULTIPLE VIDEOS
 // ==========================================
 
-
-// ==========================================
-// ADMIN EMAIL
-// ==========================================
 
 const ADMIN_EMAIL =
     "kabirabdulazeez45@gmail.com";
 
 
-// ==========================================
-// VARIABLES
-// ==========================================
-
 let currentAdmin = null;
+
 
 
 // ==========================================
@@ -29,6 +22,7 @@ function getElement(id) {
     return document.getElementById(id);
 
 }
+
 
 
 // ==========================================
@@ -49,6 +43,7 @@ function formatMoney(amount) {
 }
 
 
+
 // ==========================================
 // ESCAPE HTML
 // ==========================================
@@ -65,8 +60,9 @@ function escapeHtml(value) {
 }
 
 
+
 // ==========================================
-// SHOW LOGIN MESSAGE
+// LOGIN MESSAGE
 // ==========================================
 
 function showLoginMessage(
@@ -77,19 +73,16 @@ function showLoginMessage(
     const element =
         getElement("login-message");
 
-    if (!element) {
-        return;
-    }
+    if (!element) return;
 
     element.textContent =
         message;
 
     element.style.color =
-        success
-            ? "green"
-            : "red";
+        success ? "green" : "red";
 
 }
+
 
 
 // ==========================================
@@ -115,6 +108,7 @@ function showDashboard() {
 }
 
 
+
 // ==========================================
 // SHOW LOGIN
 // ==========================================
@@ -138,8 +132,9 @@ function showLogin() {
 }
 
 
+
 // ==========================================
-// CHECK ADMIN SESSION
+// CHECK SESSION
 // ==========================================
 
 async function checkAdminSession() {
@@ -155,16 +150,7 @@ async function checkAdminSession() {
                 .getSession();
 
         if (error) {
-
-            console.error(
-                "Session error:",
-                error
-            );
-
-            showLogin();
-
-            return;
-
+            throw error;
         }
 
         const session =
@@ -227,7 +213,7 @@ async function checkAdminSession() {
     catch (error) {
 
         console.error(
-            "Admin session error:",
+            "Session error:",
             error
         );
 
@@ -238,6 +224,7 @@ async function checkAdminSession() {
 }
 
 
+
 // ==========================================
 // ADMIN LOGIN
 // ==========================================
@@ -246,32 +233,15 @@ async function adminLogin(event) {
 
     event.preventDefault();
 
-    const emailInput =
-        getElement("admin-email");
-
-    const passwordInput =
-        getElement("admin-password");
-
-    if (
-        !emailInput ||
-        !passwordInput
-    ) {
-
-        showLoginMessage(
-            "❌ Login fields were not found."
-        );
-
-        return;
-
-    }
-
     const email =
-        emailInput.value
+        getElement("admin-email")
+            ?.value
             .trim()
             .toLowerCase();
 
     const password =
-        passwordInput.value;
+        getElement("admin-password")
+            ?.value;
 
     if (!email || !password) {
 
@@ -296,23 +266,16 @@ async function adminLogin(event) {
 
     }
 
-    const loginButton =
-        event.submitter ||
-        event.target.querySelector(
-            'button[type="submit"]'
-        );
+    const button =
+        event.submitter;
 
-    if (loginButton) {
+    if (button) {
 
-        loginButton.disabled = true;
-        loginButton.textContent =
+        button.disabled = true;
+        button.textContent =
             "Logging in...";
 
     }
-
-    showLoginMessage(
-        "Checking login..."
-    );
 
     try {
 
@@ -333,58 +296,19 @@ async function adminLogin(event) {
                 });
 
         if (error) {
-
-            console.error(
-                "Supabase login error:",
-                error
-            );
-
-            showLoginMessage(
-                "❌ Login failed: " +
-                error.message
-            );
-
-            return;
-
+            throw error;
         }
 
-        if (
-            !data ||
-            !data.user
-        ) {
+        if (!data.user) {
 
-            showLoginMessage(
-                "❌ Login failed. No user was returned."
+            throw new Error(
+                "No user returned."
             );
-
-            return;
-
-        }
-
-        if (
-            data.user.email.toLowerCase() !==
-            ADMIN_EMAIL.toLowerCase()
-        ) {
-
-            await supabaseClient
-                .auth
-                .signOut();
-
-            showLoginMessage(
-                "❌ This account is not authorized as admin."
-            );
-
-            return;
 
         }
 
         currentAdmin =
             data.user;
-
-        showLoginMessage(
-            "✅ Login successful!",
-            true
-        );
 
         showDashboard();
 
@@ -395,15 +319,15 @@ async function adminLogin(event) {
     catch (error) {
 
         console.error(
-            "Admin login error:",
+            "Login error:",
             error
         );
 
         showLoginMessage(
-            "❌ " +
+            "❌ Login failed: " +
             (
                 error.message ||
-                "Unable to login."
+                "Unknown error"
             )
         );
 
@@ -411,12 +335,10 @@ async function adminLogin(event) {
 
     finally {
 
-        if (loginButton) {
+        if (button) {
 
-            loginButton.disabled =
-                false;
-
-            loginButton.textContent =
+            button.disabled = false;
+            button.textContent =
                 "Login";
 
         }
@@ -426,40 +348,24 @@ async function adminLogin(event) {
 }
 
 
+
 // ==========================================
 // LOGOUT
 // ==========================================
 
 async function adminLogout() {
 
-    try {
+    await supabaseClient
+        .auth
+        .signOut();
 
-        await supabaseClient
-            .auth
-            .signOut();
+    currentAdmin =
+        null;
 
-        currentAdmin =
-            null;
-
-        showLogin();
-
-        showLoginMessage(
-            "You have been logged out.",
-            true
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Logout error:",
-            error
-        );
-
-    }
+    showLogin();
 
 }
+
 
 
 // ==========================================
@@ -483,8 +389,9 @@ async function loadDashboard() {
 }
 
 
+
 // ==========================================
-// LOAD STATISTICS
+// STATISTICS
 // ==========================================
 
 async function loadStatistics() {
@@ -493,7 +400,7 @@ async function loadStatistics() {
 
         const {
             data: orders,
-            error: ordersError
+            error
         } =
             await supabaseClient
                 .from("orders")
@@ -501,15 +408,12 @@ async function loadStatistics() {
                     "id,total,customer_email"
                 );
 
-        if (ordersError) {
-            throw ordersError;
+        if (error) {
+            throw error;
         }
 
         const orderList =
             orders || [];
-
-        const totalOrders =
-            orderList.length;
 
         let totalSales = 0;
 
@@ -517,16 +421,12 @@ async function loadStatistics() {
             new Set();
 
         orderList.forEach(
-            function(order) {
+            order => {
 
                 totalSales +=
-                    Number(
-                        order.total
-                    ) || 0;
+                    Number(order.total) || 0;
 
-                if (
-                    order.customer_email
-                ) {
+                if (order.customer_email) {
 
                     customers.add(
                         order.customer_email
@@ -538,34 +438,25 @@ async function loadStatistics() {
             }
         );
 
-        const totalOrdersElement =
-            getElement("total-orders");
+        getElement(
+            "total-orders"
+        ).textContent =
+            orderList.length;
 
-        const totalSalesElement =
-            getElement("total-sales");
+        getElement(
+            "total-sales"
+        ).textContent =
+            formatMoney(totalSales);
 
-        const totalCustomersElement =
-            getElement("total-customers");
-
-        if (totalOrdersElement) {
-            totalOrdersElement.textContent =
-                totalOrders;
-        }
-
-        if (totalSalesElement) {
-            totalSalesElement.textContent =
-                formatMoney(totalSales);
-        }
-
-        if (totalCustomersElement) {
-            totalCustomersElement.textContent =
-                customers.size;
-        }
+        getElement(
+            "total-customers"
+        ).textContent =
+            customers.size;
 
 
         const {
             count,
-            error: productsError
+            error: productError
         } =
             await supabaseClient
                 .from("products")
@@ -577,19 +468,14 @@ async function loadStatistics() {
                     }
                 );
 
-        if (productsError) {
-            throw productsError;
+        if (productError) {
+            throw productError;
         }
 
-        const totalProductsElement =
-            getElement("total-products");
-
-        if (totalProductsElement) {
-
-            totalProductsElement.textContent =
-                count || 0;
-
-        }
+        getElement(
+            "total-products"
+        ).textContent =
+            count || 0;
 
     }
 
@@ -605,33 +491,28 @@ async function loadStatistics() {
 }
 
 
+
 // ==========================================
-// GET PRODUCT IMAGES
+// PARSE MEDIA
 // ==========================================
 
-function getProductImages(imageValue) {
+function parseMedia(value) {
 
-    if (!imageValue) {
+    if (!value) {
         return [];
     }
 
-    // New multiple-image format
     try {
 
         const parsed =
-            JSON.parse(imageValue);
+            JSON.parse(value);
 
         if (Array.isArray(parsed)) {
 
             return parsed.filter(
-                function(url) {
-
-                    return (
-                        typeof url === "string" &&
-                        url.trim() !== ""
-                    );
-
-                }
+                item =>
+                    typeof item === "string" &&
+                    item.trim() !== ""
             );
 
         }
@@ -640,234 +521,16 @@ function getProductImages(imageValue) {
 
     catch (error) {
 
-        // Existing single image
-        // is not JSON.
+        // Old single URL format
 
     }
 
-    // Existing products
     return [
-        String(imageValue)
+        String(value)
     ];
 
 }
 
-
-// ==========================================
-// LOAD PRODUCTS
-// ==========================================
-
-async function loadProducts() {
-
-    const table =
-        getElement("products-table");
-
-    if (!table) {
-        return;
-    }
-
-    table.innerHTML = `
-
-        <tr>
-
-            <td colspan="8">
-                Loading products...
-            </td>
-
-        </tr>
-
-    `;
-
-    try {
-
-        const {
-            data: products,
-            error
-        } =
-            await supabaseClient
-                .from("products")
-                .select("*")
-                .order(
-                    "id",
-                    {
-                        ascending: true
-                    }
-                );
-
-        if (error) {
-            throw error;
-        }
-
-        if (
-            !products ||
-            products.length === 0
-        ) {
-
-            table.innerHTML = `
-
-                <tr>
-
-                    <td colspan="8">
-                        No products found.
-                    </td>
-
-                </tr>
-
-            `;
-
-            return;
-
-        }
-
-        table.innerHTML = "";
-
-        products.forEach(
-            function(product) {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-                const images =
-                    getProductImages(
-                        product.image
-                    );
-
-                const mainImage =
-                    images.length > 0
-                        ? images[0]
-                        : "";
-
-                row.innerHTML = `
-
-                    <td>
-                        ${escapeHtml(product.id)}
-                    </td>
-
-                    <td>
-
-                        ${
-                            mainImage
-                                ? `
-                                    <img
-                                        src="${escapeHtml(mainImage)}"
-                                        alt="${escapeHtml(
-                                            product.name ||
-                                            "Product"
-                                        )}"
-                                        class="product-main-image"
-                                        onerror="
-                                            this.style.display='none'
-                                        "
-                                    >
-                                  `
-                                : "No image"
-                        }
-
-                        ${
-                            images.length > 1
-                                ? `
-                                    <br>
-                                    <small>
-                                        ${images.length}
-                                        images
-                                    </small>
-                                  `
-                                : ""
-                        }
-
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            product.name || ""
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatMoney(
-                            product.price
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            product.category || ""
-                        )}
-                    </td>
-
-                    <td>
-                        ${
-                            Number(
-                                product.quantity
-                            ) || 0
-                        }
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            product.description || ""
-                        )}
-                    </td>
-
-                    <td>
-
-                        <button
-                            type="button"
-                            onclick="editProduct(${product.id})"
-                        >
-                            ✏️ Edit
-                        </button>
-
-                        <button
-                            type="button"
-                            onclick="deleteProduct(${product.id})"
-                        >
-                            🗑️ Delete
-                        </button>
-
-                    </td>
-
-                `;
-
-                table.appendChild(row);
-
-            }
-        );
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Products error:",
-            error
-        );
-
-        table.innerHTML = `
-
-            <tr>
-
-                <td colspan="8">
-
-                    ❌ Could not load products.
-
-                    <br><br>
-
-                    ${escapeHtml(
-                        error.message || ""
-                    )}
-
-                </td>
-
-            </tr>
-
-        `;
-
-    }
-
-}
 
 
 // ==========================================
@@ -876,20 +539,17 @@ async function loadProducts() {
 
 function setupImagePreview() {
 
-    const imageInput =
+    const input =
         getElement("product-image");
 
     const preview =
         getElement("image-preview");
 
-    if (
-        !imageInput ||
-        !preview
-    ) {
+    if (!input || !preview) {
         return;
     }
 
-    imageInput.addEventListener(
+    input.addEventListener(
         "change",
         function() {
 
@@ -901,7 +561,7 @@ function setupImagePreview() {
                 );
 
             files.forEach(
-                function(file) {
+                file => {
 
                     if (
                         !file.type.startsWith(
@@ -911,38 +571,34 @@ function setupImagePreview() {
                         return;
                     }
 
-                    const imageURL =
+                    const url =
                         URL.createObjectURL(
                             file
                         );
 
-                    const item =
+                    const div =
                         document.createElement(
                             "div"
                         );
 
-                    item.className =
+                    div.className =
                         "preview-item";
 
-                    item.innerHTML = `
+                    div.innerHTML = `
 
                         <img
-                            src="${imageURL}"
-                            alt="Preview"
+                            src="${url}"
+                            alt="Image preview"
                         >
 
-                        <br>
-
                         <small>
-                            ${escapeHtml(
-                                file.name
-                            )}
+                            ${escapeHtml(file.name)}
                         </small>
 
                     `;
 
                     preview.appendChild(
-                        item
+                        div
                     );
 
                 }
@@ -954,6 +610,161 @@ function setupImagePreview() {
 }
 
 
+
+// ==========================================
+// VIDEO PREVIEW
+// ==========================================
+
+function setupVideoPreview() {
+
+    const input =
+        getElement("product-video");
+
+    const preview =
+        getElement("video-preview");
+
+    if (!input || !preview) {
+        return;
+    }
+
+    input.addEventListener(
+        "change",
+        function() {
+
+            preview.innerHTML = "";
+
+            const files =
+                Array.from(
+                    this.files || []
+                );
+
+            files.forEach(
+                file => {
+
+                    if (
+                        !file.type.startsWith(
+                            "video/"
+                        )
+                    ) {
+                        return;
+                    }
+
+                    const url =
+                        URL.createObjectURL(
+                            file
+                        );
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+                    div.className =
+                        "preview-item";
+
+                    div.innerHTML = `
+
+                        <video
+                            src="${url}"
+                            controls
+                            muted
+                        ></video>
+
+                        <small>
+                            ${escapeHtml(file.name)}
+                        </small>
+
+                    `;
+
+                    preview.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+        }
+    );
+
+}
+
+
+
+// ==========================================
+// UPLOAD FILE
+// ==========================================
+
+async function uploadFile(
+    bucket,
+    folder,
+    file
+) {
+
+    const extension =
+        file.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+    const fileName =
+        `${Date.now()}-${Math.random()
+            .toString(36)
+            .substring(2, 10)}.${extension}`;
+
+    const filePath =
+        `${folder}/${fileName}`;
+
+
+    const {
+        error
+    } =
+        await supabaseClient
+            .storage
+            .from(bucket)
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl:
+                        "3600",
+
+                    contentType:
+                        file.type,
+
+                    upsert:
+                        false
+                }
+            );
+
+    if (error) {
+        throw error;
+    }
+
+
+    const {
+        data
+    } =
+        supabaseClient
+            .storage
+            .from(bucket)
+            .getPublicUrl(
+                filePath
+            );
+
+    if (!data?.publicUrl) {
+
+        throw new Error(
+            "Could not create public URL."
+        );
+
+    }
+
+    return data.publicUrl;
+
+}
+
+
+
 // ==========================================
 // ADD PRODUCT
 // ==========================================
@@ -963,38 +774,53 @@ async function addProduct(event) {
     event.preventDefault();
 
     const message =
-        getElement("product-message");
+        getElement(
+            "product-message"
+        );
 
     const name =
-        getElement("product-name")
-            ?.value.trim();
+        getElement(
+            "product-name"
+        ).value.trim();
 
     const price =
         Number(
-            getElement("product-price")
-                ?.value
+            getElement(
+                "product-price"
+            ).value
         );
 
     const category =
-        getElement("product-category")
-            ?.value.trim();
+        getElement(
+            "product-category"
+        ).value.trim();
 
     const description =
-        getElement("product-description")
-            ?.value.trim();
+        getElement(
+            "product-description"
+        ).value.trim();
 
     const quantity =
         Number(
-            getElement("product-quantity")
-                ?.value
+            getElement(
+                "product-quantity"
+            ).value
         );
 
-    const imageInput =
-        getElement("product-image");
 
     const imageFiles =
         Array.from(
-            imageInput?.files || []
+            getElement(
+                "product-image"
+            ).files || []
+        );
+
+
+    const videoFiles =
+        Array.from(
+            getElement(
+                "product-video"
+            ).files || []
         );
 
 
@@ -1010,15 +836,11 @@ async function addProduct(event) {
         Number.isNaN(quantity)
     ) {
 
-        if (message) {
+        message.textContent =
+            "❌ Please complete all product fields.";
 
-            message.textContent =
-                "❌ Please complete all product fields.";
-
-            message.style.color =
-                "red";
-
-        }
+        message.style.color =
+            "red";
 
         return;
 
@@ -1029,22 +851,18 @@ async function addProduct(event) {
         imageFiles.length === 0
     ) {
 
-        if (message) {
+        message.textContent =
+            "❌ Please select at least one image.";
 
-            message.textContent =
-                "❌ Please select at least one image.";
-
-            message.style.color =
-                "red";
-
-        }
+        message.style.color =
+            "red";
 
         return;
 
     }
 
 
-    const addButton =
+    const button =
         getElement(
             "add-product-button"
         );
@@ -1052,32 +870,15 @@ async function addProduct(event) {
 
     try {
 
-        if (addButton) {
-
-            addButton.disabled =
-                true;
-
-            addButton.textContent =
-                "⏳ Uploading...";
-
-        }
-
-        if (message) {
-
-            message.textContent =
-                "⏳ Uploading product images...";
-
-            message.style.color =
-                "blue";
-
-        }
+        button.disabled =
+            true;
 
 
         const imageURLs = [];
 
 
         // ==========================================
-        // UPLOAD ALL IMAGES
+        // UPLOAD IMAGES
         // ==========================================
 
         for (
@@ -1086,133 +887,66 @@ async function addProduct(event) {
             i++
         ) {
 
-            const imageFile =
-                imageFiles[i];
+            message.textContent =
+                `⏳ Uploading image ${i + 1} of ${imageFiles.length}...`;
 
-            if (
-                !imageFile.type.startsWith(
-                    "image/"
-                )
-            ) {
+            message.style.color =
+                "blue";
 
-                throw new Error(
-                    `${imageFile.name} is not an image.`
+
+            const url =
+                await uploadFile(
+                    "product-images",
+                    "products",
+                    imageFiles[i]
                 );
-
-            }
-
-
-            const extension =
-                imageFile.name
-                    .split(".")
-                    .pop()
-                    .toLowerCase();
-
-
-            const fileName =
-                `${Date.now()}-${Math.random()
-                    .toString(36)
-                    .substring(2, 10)}.${extension}`;
-
-
-            const filePath =
-                `products/${fileName}`;
-
-
-            if (message) {
-
-                message.textContent =
-                    `⏳ Uploading image ${
-                        i + 1
-                    } of ${
-                        imageFiles.length
-                    }...`;
-
-            }
-
-
-            const {
-                error: uploadError
-            } =
-                await supabaseClient
-                    .storage
-                    .from("product-images")
-                    .upload(
-                        filePath,
-                        imageFile,
-                        {
-                            cacheControl:
-                                "3600",
-
-                            contentType:
-                                imageFile.type,
-
-                            upsert:
-                                false
-                        }
-                    );
-
-
-            if (uploadError) {
-
-                console.error(
-                    "IMAGE UPLOAD ERROR:",
-                    uploadError
-                );
-
-                throw uploadError;
-
-            }
-
-
-            const {
-                data:
-                    publicURLData
-            } =
-                supabaseClient
-                    .storage
-                    .from("product-images")
-                    .getPublicUrl(
-                        filePath
-                    );
-
-
-            const imageURL =
-                publicURLData?.publicUrl;
-
-
-            if (!imageURL) {
-
-                throw new Error(
-                    "Could not get image URL."
-                );
-
-            }
 
 
             imageURLs.push(
-                imageURL
+                url
             );
 
         }
 
 
         // ==========================================
-        // SAVE IMAGE URLS
+        // UPLOAD VIDEOS
         // ==========================================
 
-        const imageValue =
-            JSON.stringify(
-                imageURLs
-            );
+        const videoURLs = [];
 
 
-        if (message) {
+        for (
+            let i = 0;
+            i < videoFiles.length;
+            i++
+        ) {
 
             message.textContent =
-                "⏳ Saving product...";
+                `⏳ Uploading video ${i + 1} of ${videoFiles.length}...`;
+
+
+            const url =
+                await uploadFile(
+                    "product-videos",
+                    "products",
+                    videoFiles[i]
+                );
+
+
+            videoURLs.push(
+                url
+            );
 
         }
+
+
+        // ==========================================
+        // SAVE PRODUCT
+        // ==========================================
+
+        message.textContent =
+            "⏳ Saving product...";
 
 
         const {
@@ -1234,7 +968,14 @@ async function addProduct(event) {
                             category,
 
                         image:
-                            imageValue,
+                            JSON.stringify(
+                                imageURLs
+                            ),
+
+                        videos:
+                            JSON.stringify(
+                                videoURLs
+                            ),
 
                         description:
                             description,
@@ -1248,14 +989,7 @@ async function addProduct(event) {
 
 
         if (error) {
-
-            console.error(
-                "PRODUCT SAVE ERROR:",
-                error
-            );
-
             throw error;
-
         }
 
 
@@ -1263,52 +997,37 @@ async function addProduct(event) {
         // SUCCESS
         // ==========================================
 
-        if (message) {
+        message.textContent =
+            `✅ Product added successfully!
+            
+Images: ${imageURLs.length}
+Videos: ${videoURLs.length}`;
 
-            message.textContent =
-                `✅ Product added successfully with ${
-                    imageURLs.length
-                } image${
-                    imageURLs.length === 1
-                        ? ""
-                        : "s"
-                }.`;
-
-            message.style.color =
-                "green";
-
-        }
+        message.style.color =
+            "green";
 
 
         getElement(
             "add-product-form"
-        )?.reset();
+        ).reset();
 
 
-        const quantityInput =
-            getElement(
-                "product-quantity"
-            );
-
-        if (quantityInput) {
-
-            quantityInput.value =
-                "30";
-
-        }
+        getElement(
+            "image-preview"
+        ).innerHTML =
+            "";
 
 
-        const preview =
-            getElement(
-                "image-preview"
-            );
+        getElement(
+            "video-preview"
+        ).innerHTML =
+            "";
 
-        if (preview) {
 
-            preview.innerHTML =
-                "";
-
-        }
+        getElement(
+            "product-quantity"
+        ).value =
+            "30";
 
 
         await loadProducts();
@@ -1326,37 +1045,266 @@ async function addProduct(event) {
             error
         );
 
-        if (message) {
+        message.textContent =
+            "❌ " +
+            (
+                error.message ||
+                "Could not add product."
+            );
 
-            message.textContent =
-                "❌ " +
-                (
-                    error.message ||
-                    "Could not add product."
-                );
-
-            message.style.color =
-                "red";
-
-        }
+        message.style.color =
+            "red";
 
     }
 
     finally {
 
-        if (addButton) {
+        button.disabled =
+            false;
 
-            addButton.disabled =
-                false;
-
-            addButton.textContent =
-                "➕ Add Product";
-
-        }
+        button.textContent =
+            "➕ Add Product";
 
     }
 
 }
+
+
+
+// ==========================================
+// LOAD PRODUCTS
+// ==========================================
+
+async function loadProducts() {
+
+    const table =
+        getElement(
+            "products-table"
+        );
+
+    if (!table) {
+        return;
+    }
+
+    try {
+
+        const {
+            data: products,
+            error
+        } =
+            await supabaseClient
+                .from("products")
+                .select("*")
+                .order(
+                    "id",
+                    {
+                        ascending: true
+                    }
+                );
+
+        if (error) {
+            throw error;
+        }
+
+
+        if (
+            !products ||
+            products.length === 0
+        ) {
+
+            table.innerHTML = `
+
+                <tr>
+
+                    <td colspan="9">
+                        No products found.
+                    </td>
+
+                </tr>
+
+            `;
+
+            return;
+
+        }
+
+
+        table.innerHTML =
+            "";
+
+
+        products.forEach(
+            product => {
+
+                const images =
+                    parseMedia(
+                        product.image
+                    );
+
+                const videos =
+                    parseMedia(
+                        product.videos
+                    );
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${escapeHtml(product.id)}
+                    </td>
+
+
+                    <td>
+
+                        ${
+                            images[0]
+                                ? `
+                                    <img
+                                        src="${escapeHtml(images[0])}"
+                                        class="product-main-image"
+                                        alt="Product"
+                                    >
+                                `
+                                : "No image"
+                        }
+
+                        <div class="media-count">
+
+                            ${images.length}
+                            image${images.length === 1 ? "" : "s"}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+
+                        ${
+                            videos[0]
+                                ? `
+                                    <video
+                                        src="${escapeHtml(videos[0])}"
+                                        controls
+                                        class="product-video-preview"
+                                    ></video>
+                                `
+                                : "No video"
+                        }
+
+                        <div class="media-count">
+
+                            ${videos.length}
+                            video${videos.length === 1 ? "" : "s"}
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+                        ${escapeHtml(
+                            product.name
+                        )}
+                    </td>
+
+
+                    <td>
+                        ${formatMoney(
+                            product.price
+                        )}
+                    </td>
+
+
+                    <td>
+                        ${escapeHtml(
+                            product.category
+                        )}
+                    </td>
+
+
+                    <td>
+                        ${Number(
+                            product.quantity
+                        ) || 0}
+                    </td>
+
+
+                    <td>
+                        ${escapeHtml(
+                            product.description
+                        )}
+                    </td>
+
+
+                    <td>
+
+                        <button
+                            type="button"
+                            onclick="editProduct(${product.id})"
+                        >
+                            ✏️ Edit
+                        </button>
+
+
+                        <button
+                            type="button"
+                            onclick="deleteProduct(${product.id})"
+                        >
+                            🗑️ Delete
+                        </button>
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(
+                    row
+                );
+
+            }
+        );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Products error:",
+            error
+        );
+
+        table.innerHTML = `
+
+            <tr>
+
+                <td colspan="9">
+
+                    ❌ Could not load products.
+
+                    <br><br>
+
+                    ${escapeHtml(
+                        error.message
+                    )}
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+}
+
 
 
 // ==========================================
@@ -1405,14 +1353,13 @@ async function loadCategories() {
 
 
     let categories =
-        [];
+        [...defaultCategories];
 
 
     try {
 
         const {
-            data: products,
-            error
+            data
         } =
             await supabaseClient
                 .from("products")
@@ -1421,42 +1368,33 @@ async function loadCategories() {
                 );
 
 
-        if (!error && products) {
+        (data || []).forEach(
+            product => {
 
-            products.forEach(
-                function(product) {
+                if (
+                    product.category
+                ) {
 
-                    if (
-                        product.category &&
+                    categories.push(
                         product.category.trim()
-                    ) {
-
-                        categories.push(
-                            product.category.trim()
-                        );
-
-                    }
+                    );
 
                 }
-            );
 
-        }
+            }
+        );
 
     }
 
     catch (error) {
 
         console.error(
-            "Category loading error:",
+            "Category error:",
             error
         );
 
     }
 
-
-    // ==========================================
-    // LOCAL CUSTOM CATEGORIES
-    // ==========================================
 
     try {
 
@@ -1467,53 +1405,25 @@ async function loadCategories() {
                 ) || "[]"
             );
 
-        if (Array.isArray(saved)) {
-
-            categories =
-                categories.concat(
-                    saved
-                );
-
-        }
+        categories =
+            categories.concat(
+                saved
+            );
 
     }
 
-    catch (error) {
-
-        console.error(
-            "Saved categories error:",
-            error
-        );
-
-    }
-
-
-    categories =
-        defaultCategories.concat(
-            categories
-        );
+    catch (error) {}
 
 
     categories =
         [...new Set(
-            categories
-                .map(
-                    function(category) {
-                        return category.trim();
-                    }
-                )
-                .filter(Boolean)
+            categories.filter(Boolean)
         )];
 
 
     categories.sort(
-        function(a, b) {
-
-            return a.localeCompare(
-                b
-            );
-
-        }
+        (a, b) =>
+            a.localeCompare(b)
     );
 
 
@@ -1527,7 +1437,7 @@ async function loadCategories() {
 
 
     categories.forEach(
-        function(category) {
+        category => {
 
             const option =
                 document.createElement(
@@ -1550,8 +1460,9 @@ async function loadCategories() {
 }
 
 
+
 // ==========================================
-// ADD NEW CATEGORY
+// ADD CATEGORY
 // ==========================================
 
 function addNewCategory() {
@@ -1562,9 +1473,7 @@ function addNewCategory() {
         );
 
 
-    if (
-        category === null
-    ) {
+    if (category === null) {
         return;
     }
 
@@ -1576,7 +1485,7 @@ function addNewCategory() {
     if (!newCategory) {
 
         alert(
-            "Please enter a category name."
+            "Please enter a category."
         );
 
         return;
@@ -1584,40 +1493,40 @@ function addNewCategory() {
     }
 
 
+    let saved = [];
+
+
     try {
 
-        const saved =
+        saved =
             JSON.parse(
                 localStorage.getItem(
                     "hasbunallahu_categories"
                 ) || "[]"
             );
 
-
-        if (
-            !saved.includes(
-                newCategory
-            )
-        ) {
-
-            saved.push(
-                newCategory
-            );
-
-            localStorage.setItem(
-                "hasbunallahu_categories",
-                JSON.stringify(saved)
-            );
-
-        }
-
     }
 
     catch (error) {
 
-        console.error(
-            "Save category error:",
-            error
+        saved = [];
+
+    }
+
+
+    if (
+        !saved.includes(
+            newCategory
+        )
+    ) {
+
+        saved.push(
+            newCategory
+        );
+
+        localStorage.setItem(
+            "hasbunallahu_categories",
+            JSON.stringify(saved)
         );
 
     }
@@ -1625,24 +1534,18 @@ function addNewCategory() {
 
     loadCategories()
         .then(
-            function() {
+            () => {
 
-                const select =
-                    getElement(
-                        "product-category"
-                    );
-
-                if (select) {
-
-                    select.value =
-                        newCategory;
-
-                }
+                getElement(
+                    "product-category"
+                ).value =
+                    newCategory;
 
             }
         );
 
 }
+
 
 
 // ==========================================
@@ -1653,53 +1556,29 @@ async function editProduct(
     productId
 ) {
 
-    const newName =
+    const name =
         prompt(
             "Enter new product name:"
         );
 
-
-    if (
-        newName === null
-    ) {
-        return;
-    }
-
-
-    const newPrice =
-        prompt(
-            "Enter new price:"
-        );
-
-
-    if (
-        newPrice === null
-    ) {
-        return;
-    }
-
-
-    const newQuantity =
-        prompt(
-            "Enter new quantity:"
-        );
-
-
-    if (
-        newQuantity === null
-    ) {
+    if (name === null) {
         return;
     }
 
 
     const price =
         Number(
-            newPrice
+            prompt(
+                "Enter new price:"
+            )
         );
+
 
     const quantity =
         Number(
-            newQuantity
+            prompt(
+                "Enter new quantity:"
+            )
         );
 
 
@@ -1727,7 +1606,7 @@ async function editProduct(
                 .update({
 
                     name:
-                        newName.trim(),
+                        name.trim(),
 
                     price:
                         price,
@@ -1760,23 +1639,15 @@ async function editProduct(
 
     catch (error) {
 
-        console.error(
-            "Edit product error:",
-            error
-        );
-
-
         alert(
             "❌ " +
-            (
-                error.message ||
-                "Could not update product."
-            )
+            error.message
         );
 
     }
 
 }
+
 
 
 // ==========================================
@@ -1787,13 +1658,11 @@ async function deleteProduct(
     productId
 ) {
 
-    const confirmed =
-        confirm(
+    if (
+        !confirm(
             "Are you sure you want to delete this product?"
-        );
-
-
-    if (!confirmed) {
+        )
+    ) {
         return;
     }
 
@@ -1830,23 +1699,15 @@ async function deleteProduct(
 
     catch (error) {
 
-        console.error(
-            "Delete product error:",
-            error
-        );
-
-
         alert(
             "❌ " +
-            (
-                error.message ||
-                "Could not delete product."
-            )
+            error.message
         );
 
     }
 
 }
+
 
 
 // ==========================================
@@ -1859,7 +1720,6 @@ async function loadOrders() {
         getElement(
             "orders-table"
         );
-
 
     if (!table) {
         return;
@@ -1923,11 +1783,12 @@ async function loadOrders() {
         }
 
 
-        table.innerHTML = "";
+        table.innerHTML =
+            "";
 
 
         orders.forEach(
-            function(order) {
+            order => {
 
                 const row =
                     document.createElement(
@@ -1939,25 +1800,25 @@ async function loadOrders() {
 
                     <td>
                         ${escapeHtml(
-                            order.order_number || ""
+                            order.order_number
                         )}
                     </td>
 
                     <td>
                         ${escapeHtml(
-                            order.customer_name || ""
+                            order.customer_name
                         )}
                     </td>
 
                     <td>
                         ${escapeHtml(
-                            order.customer_email || ""
+                            order.customer_email
                         )}
                     </td>
 
                     <td>
                         ${escapeHtml(
-                            order.phone || ""
+                            order.phone
                         )}
                     </td>
 
@@ -1986,12 +1847,12 @@ async function loadOrders() {
 
                         <input
                             type="text"
+                            class="tracking-input"
+                            data-order-id="${order.id}"
                             value="${escapeHtml(
                                 order.tracking_number || ""
                             )}"
                             placeholder="Tracking number"
-                            class="tracking-input"
-                            data-order-id="${order.id}"
                         >
 
                         <button
@@ -2007,12 +1868,12 @@ async function loadOrders() {
 
                         <input
                             type="text"
+                            class="delivery-note-input"
+                            data-order-id="${order.id}"
                             value="${escapeHtml(
                                 order.delivery_note || ""
                             )}"
                             placeholder="Delivery note"
-                            class="delivery-note-input"
-                            data-order-id="${order.id}"
                         >
 
                     </td>
@@ -2059,7 +1920,7 @@ async function loadOrders() {
                     <br><br>
 
                     ${escapeHtml(
-                        error.message || ""
+                        error.message
                     )}
 
                 </td>
@@ -2073,8 +1934,9 @@ async function loadOrders() {
 }
 
 
+
 // ==========================================
-// STATUS OPTIONS
+// ORDER STATUS
 // ==========================================
 
 function createStatusOptions(
@@ -2100,35 +1962,29 @@ function createStatusOptions(
     ];
 
 
-    return statuses
-        .map(
-            function(status) {
+    return statuses.map(
+        status => `
 
-                return `
+            <option
+                value="${escapeHtml(status)}"
+                ${
+                    status === currentStatus
+                        ? "selected"
+                        : ""
+                }
+            >
+                ${escapeHtml(status)}
+            </option>
 
-                    <option
-                        value="${escapeHtml(status)}"
-                        ${
-                            status ===
-                            currentStatus
-                                ? "selected"
-                                : ""
-                        }
-                    >
-                        ${escapeHtml(status)}
-                    </option>
-
-                `;
-
-            }
-        )
-        .join("");
+        `
+    ).join("");
 
 }
 
 
+
 // ==========================================
-// GENERATE TRACKING NUMBER
+// TRACKING
 // ==========================================
 
 function generateTrackingNumber() {
@@ -2136,42 +1992,24 @@ function generateTrackingNumber() {
     const now =
         new Date();
 
-
-    const year =
-        now.getFullYear();
-
-
-    const month =
+    const date =
+        now.getFullYear() +
         String(
             now.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
+        ).padStart(2, "0") +
         String(
             now.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
+        ).padStart(2, "0");
 
     const random =
         Math.floor(
             100000 +
-            Math.random() *
-            900000
+            Math.random() * 900000
         );
-
 
     return (
         "HST-" +
-        year +
-        month +
-        day +
+        date +
         "-" +
         random
     );
@@ -2179,9 +2017,6 @@ function generateTrackingNumber() {
 }
 
 
-// ==========================================
-// GENERATE TRACKING
-// ==========================================
 
 async function generateTracking(
     orderId
@@ -2198,12 +2033,12 @@ async function generateTracking(
     }
 
 
-    const trackingNumber =
+    const tracking =
         generateTrackingNumber();
 
 
     input.value =
-        trackingNumber;
+        tracking;
 
 
     try {
@@ -2216,7 +2051,7 @@ async function generateTracking(
                 .update({
 
                     tracking_number:
-                        trackingNumber
+                        tracking
 
                 })
                 .eq(
@@ -2231,22 +2066,17 @@ async function generateTracking(
 
 
         alert(
-            "✅ Tracking number generated:\n\n" +
-            trackingNumber
+            "✅ Tracking number saved:\n\n" +
+            tracking
         );
 
     }
 
     catch (error) {
 
-        console.error(
-            "Tracking error:",
-            error
-        );
-
-
         alert(
-            "❌ Could not save tracking number."
+            "❌ " +
+            error.message
         );
 
     }
@@ -2254,57 +2084,29 @@ async function generateTracking(
 }
 
 
+
 // ==========================================
-// SAVE ORDER UPDATE
+// SAVE ORDER
 // ==========================================
 
 async function saveOrderUpdate(
     orderId
 ) {
 
-    const statusInput =
+    const status =
         document.querySelector(
             `.order-status[data-order-id="${orderId}"]`
-        );
+        )?.value;
 
-
-    const trackingInput =
+    const tracking =
         document.querySelector(
             `.tracking-input[data-order-id="${orderId}"]`
-        );
+        )?.value.trim();
 
-
-    const deliveryInput =
+    const note =
         document.querySelector(
             `.delivery-note-input[data-order-id="${orderId}"]`
-        );
-
-
-    if (!statusInput) {
-
-        alert(
-            "Order status field not found."
-        );
-
-        return;
-
-    }
-
-
-    const status =
-        statusInput.value;
-
-
-    const trackingNumber =
-        trackingInput
-            ? trackingInput.value.trim()
-            : "";
-
-
-    const deliveryNote =
-        deliveryInput
-            ? deliveryInput.value.trim()
-            : "";
+        )?.value.trim();
 
 
     try {
@@ -2320,10 +2122,10 @@ async function saveOrderUpdate(
                         status,
 
                     tracking_number:
-                        trackingNumber,
+                        tracking,
 
                     delivery_note:
-                        deliveryNote
+                        note
 
                 })
                 .eq(
@@ -2348,18 +2150,9 @@ async function saveOrderUpdate(
 
     catch (error) {
 
-        console.error(
-            "Order update error:",
-            error
-        );
-
-
         alert(
-            "❌ Could not update order:\n\n" +
-            (
-                error.message ||
-                "Unknown error"
-            )
+            "❌ " +
+            error.message
         );
 
     }
@@ -2367,8 +2160,9 @@ async function saveOrderUpdate(
 }
 
 
+
 // ==========================================
-// INITIALIZE ADMIN
+// INITIALIZE
 // ==========================================
 
 document.addEventListener(
@@ -2376,26 +2170,19 @@ document.addEventListener(
     function() {
 
         console.log(
-            "ADMIN JS VERSION 3 LOADED"
+            "ADMIN JS VERSION 4 - IMAGES + VIDEOS LOADED"
         );
 
 
-        // ==========================================
-        // IMAGE PREVIEW
-        // ==========================================
-
         setupImagePreview();
 
+        setupVideoPreview();
 
-        // ==========================================
-        // LOGIN FORM
-        // ==========================================
 
         const loginForm =
             getElement(
                 "admin-login-form"
             );
-
 
         if (loginForm) {
 
@@ -2407,19 +2194,14 @@ document.addEventListener(
         }
 
 
-        // ==========================================
-        // LOGOUT
-        // ==========================================
-
-        const logoutButton =
+        const logout =
             getElement(
                 "admin-logout"
             );
 
+        if (logout) {
 
-        if (logoutButton) {
-
-            logoutButton.addEventListener(
+            logout.addEventListener(
                 "click",
                 adminLogout
             );
@@ -2427,15 +2209,10 @@ document.addEventListener(
         }
 
 
-        // ==========================================
-        // ADD PRODUCT
-        // ==========================================
-
         const productForm =
             getElement(
                 "add-product-form"
             );
-
 
         if (productForm) {
 
@@ -2447,19 +2224,14 @@ document.addEventListener(
         }
 
 
-        // ==========================================
-        // ADD CATEGORY
-        // ==========================================
-
-        const addCategoryButton =
+        const categoryButton =
             getElement(
                 "add-category-button"
             );
 
+        if (categoryButton) {
 
-        if (addCategoryButton) {
-
-            addCategoryButton.addEventListener(
+            categoryButton.addEventListener(
                 "click",
                 addNewCategory
             );
@@ -2467,16 +2239,7 @@ document.addEventListener(
         }
 
 
-        // ==========================================
-        // CHECK SESSION
-        // ==========================================
-
         checkAdminSession();
-
-
-        console.log(
-            "Hasbunallahu Store Admin loaded."
-        );
 
     }
 );

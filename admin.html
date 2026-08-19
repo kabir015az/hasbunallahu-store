@@ -21,84 +21,86 @@
 
     <style>
 
-        .admin-input,
-        .admin-select,
-        .admin-textarea {
+        .admin-container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .admin-form-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 12px;
+            background: #fff;
+        }
+
+        .admin-form-box input,
+        .admin-form-box select,
+        .admin-form-box textarea {
             width: 100%;
-            box-sizing: border-box;
             padding: 12px;
             margin-top: 6px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 15px;
+            box-sizing: border-box;
         }
 
-        .admin-form-group {
-            margin-bottom: 18px;
+        .admin-form-box label {
+            font-weight: bold;
         }
 
-        .image-preview {
+        .admin-form-box button {
+            padding: 12px 18px;
+            cursor: pointer;
+        }
+
+        .media-preview {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 12px;
+            gap: 15px;
+            margin-top: 15px;
         }
 
         .preview-item {
-            width: 110px;
+            width: 140px;
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 8px;
             text-align: center;
-            word-break: break-word;
         }
 
-        .preview-item img {
-            width: 100px;
+        .preview-item img,
+        .preview-item video {
+            width: 120px;
             height: 100px;
             object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .product-main-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
             border-radius: 8px;
-            border: 1px solid #ddd;
         }
 
-        .category-row {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .category-row select {
-            flex: 1;
-        }
-
-        .category-add-button {
-            padding: 10px 14px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 18px;
+        .product-video-preview {
+            width: 100px;
+            max-height: 80px;
         }
 
         .stats-container {
-            display: grid;
-            grid-template-columns:
-                repeat(auto-fit, minmax(180px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 15px;
         }
 
         .stat-card {
+            flex: 1;
+            min-width: 180px;
             padding: 20px;
             border: 1px solid #ddd;
             border-radius: 10px;
-        }
-
-        .stat-card p {
-            font-size: 25px;
-            font-weight: bold;
-        }
-
-        .product-main-image {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 6px;
+            text-align: center;
         }
 
         table {
@@ -107,7 +109,13 @@
 
         th,
         td {
-            vertical-align: middle;
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        .media-count {
+            font-size: 12px;
+            color: #555;
         }
 
     </style>
@@ -147,7 +155,6 @@
             id="admin-email"
             placeholder="Enter admin email"
             required
-            class="admin-input"
         >
 
         <br><br>
@@ -161,7 +168,6 @@
             id="admin-password"
             placeholder="Enter password"
             required
-            class="admin-input"
         >
 
         <br><br>
@@ -180,17 +186,18 @@
 </main>
 
 
+
 <!-- ==================================================
      ADMIN DASHBOARD
 ================================================== -->
 
 <main
     id="admin-dashboard"
-    style="
-        padding:20px;
-        display:none;
-    "
+    style="display:none;"
 >
+
+<div class="admin-container">
+
 
     <!-- HEADER -->
 
@@ -215,11 +222,12 @@
     </header>
 
 
+
     <!-- ==================================================
          STATISTICS
     ================================================== -->
 
-    <section class="admin-statistics">
+    <section>
 
         <h2>
             Store Statistics 📊
@@ -280,6 +288,7 @@
     </section>
 
 
+
     <!-- ==================================================
          PRODUCT MANAGEMENT
     ================================================== -->
@@ -294,20 +303,14 @@
         </h2>
 
         <p>
-            Add, edit, delete and manage products.
+            Add products with multiple images and videos.
         </p>
+
 
 
         <!-- ADD PRODUCT -->
 
-        <div
-            style="
-                border:1px solid #ddd;
-                padding:20px;
-                margin-bottom:30px;
-                border-radius:10px;
-            "
-        >
+        <div class="admin-form-box">
 
             <h3>
                 ➕ Add New Product
@@ -318,155 +321,161 @@
 
                 <!-- PRODUCT NAME -->
 
-                <div class="admin-form-group">
+                <label for="product-name">
+                    Product Name
+                </label>
 
-                    <label for="product-name">
-                        Product Name
-                    </label>
+                <input
+                    type="text"
+                    id="product-name"
+                    placeholder="Product name"
+                    required
+                >
 
-                    <input
-                        type="text"
-                        id="product-name"
-                        placeholder="Product name"
-                        required
-                        class="admin-input"
-                    >
+                <br><br>
 
-                </div>
 
 
                 <!-- PRICE -->
 
-                <div class="admin-form-group">
+                <label for="product-price">
+                    Price (₦)
+                </label>
 
-                    <label for="product-price">
-                        Price (₦)
-                    </label>
+                <input
+                    type="number"
+                    id="product-price"
+                    placeholder="Product price"
+                    min="0"
+                    required
+                >
 
-                    <input
-                        type="number"
-                        id="product-price"
-                        placeholder="Product price"
-                        min="0"
-                        required
-                        class="admin-input"
-                    >
+                <br><br>
 
-                </div>
 
 
                 <!-- CATEGORY -->
 
-                <div class="admin-form-group">
+                <label for="product-category">
+                    Category
+                </label>
 
-                    <label for="product-category">
-                        Category
-                    </label>
+                <div style="display:flex; gap:10px;">
 
-                    <div class="category-row">
-
-                        <select
-                            id="product-category"
-                            required
-                            class="admin-select"
-                        >
-
-                            <option value="">
-                                Select category
-                            </option>
-
-                        </select>
-
-                        <button
-                            type="button"
-                            id="add-category-button"
-                            class="category-add-button"
-                            title="Add category"
-                        >
-                            ➕
-                        </button>
-
-                    </div>
-
-                </div>
-
-
-                <!-- PRODUCT IMAGES -->
-
-                <div class="admin-form-group">
-
-                    <label for="product-image">
-                        Product Images
-                    </label>
-
-                    <input
-                        type="file"
-                        id="product-image"
-                        accept="image/*"
-                        multiple
+                    <select
+                        id="product-category"
                         required
-                        class="admin-input"
                     >
 
-                    <p
-                        style="
-                            font-size:14px;
-                            color:#666;
-                        "
-                    >
-                        Select one or multiple images
-                        from your Galaxy.
-                    </p>
+                        <option value="">
+                            Select category
+                        </option>
 
-                    <div
-                        id="image-preview"
-                        class="image-preview"
-                    ></div>
+                    </select>
+
+                    <button
+                        type="button"
+                        id="add-category-button"
+                    >
+                        ➕
+                    </button>
 
                 </div>
+
+                <br>
+
+
+
+                <!-- IMAGES -->
+
+                <label for="product-image">
+                    Product Images
+                </label>
+
+                <input
+                    type="file"
+                    id="product-image"
+                    accept="image/*"
+                    multiple
+                    required
+                >
+
+                <small>
+                    You can select multiple images.
+                </small>
+
+                <div
+                    id="image-preview"
+                    class="media-preview"
+                ></div>
+
+                <br>
+
+
+
+                <!-- VIDEOS -->
+
+                <label for="product-video">
+                    Product Videos
+                </label>
+
+                <input
+                    type="file"
+                    id="product-video"
+                    accept="video/*"
+                    multiple
+                >
+
+                <small>
+                    You can select multiple product videos.
+                </small>
+
+                <div
+                    id="video-preview"
+                    class="media-preview"
+                ></div>
+
+                <br>
+
 
 
                 <!-- DESCRIPTION -->
 
-                <div class="admin-form-group">
+                <label for="product-description">
+                    Description
+                </label>
 
-                    <label for="product-description">
-                        Description
-                    </label>
+                <textarea
+                    id="product-description"
+                    placeholder="Product description"
+                    rows="5"
+                    required
+                ></textarea>
 
-                    <textarea
-                        id="product-description"
-                        placeholder="Product description"
-                        rows="5"
-                        required
-                        class="admin-textarea"
-                    ></textarea>
+                <br><br>
 
-                </div>
 
 
                 <!-- QUANTITY -->
 
-                <div class="admin-form-group">
+                <label for="product-quantity">
+                    Quantity / Stock
+                </label>
 
-                    <label for="product-quantity">
-                        Quantity / Stock
-                    </label>
+                <input
+                    type="number"
+                    id="product-quantity"
+                    placeholder="30"
+                    min="0"
+                    value="30"
+                    required
+                >
 
-                    <input
-                        type="number"
-                        id="product-quantity"
-                        placeholder="30"
-                        min="0"
-                        value="30"
-                        required
-                        class="admin-input"
-                    >
-
-                </div>
+                <br><br>
 
 
-                <!-- ADD BUTTON -->
+
+                <!-- ADD -->
 
                 <button
                     type="submit"
@@ -477,16 +486,15 @@
 
             </form>
 
-
-            <p
-                id="product-message"
-                style="font-weight:bold;"
-            ></p>
+            <p id="product-message"></p>
 
         </div>
 
 
-        <!-- PRODUCT LIST -->
+
+        <!-- ==================================================
+             PRODUCTS TABLE
+        ================================================== -->
 
         <h3>
             📦 Products
@@ -508,6 +516,8 @@
 
                         <th>Image</th>
 
+                        <th>Videos</th>
+
                         <th>Product</th>
 
                         <th>Price</th>
@@ -528,7 +538,7 @@
 
                     <tr>
 
-                        <td colspan="8">
+                        <td colspan="9">
                             Loading products...
                         </td>
 
@@ -541,6 +551,7 @@
         </div>
 
     </section>
+
 
 
     <!-- ==================================================
@@ -626,7 +637,11 @@
 
     </section>
 
+
+</div>
+
 </main>
+
 
 
 <!-- ==================================================
@@ -650,6 +665,7 @@ const supabaseClient =
     );
 
 </script>
+
 
 
 <!-- ==================================================
