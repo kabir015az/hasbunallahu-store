@@ -66,6 +66,8 @@
             padding: 8px;
             border-radius: 8px;
             text-align: center;
+            background: #fafafa;
+            box-sizing: border-box;
         }
 
         .preview-item img,
@@ -74,6 +76,8 @@
             height: 100px;
             object-fit: cover;
             border-radius: 6px;
+            display: block;
+            margin: auto;
         }
 
         .product-main-image {
@@ -116,6 +120,174 @@
         .media-count {
             font-size: 12px;
             color: #555;
+        }
+
+        /* ==========================================
+           EDIT PRODUCT MODAL
+        ========================================== */
+
+        .edit-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            display: none;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 99999;
+            box-sizing: border-box;
+        }
+
+        .edit-modal.active {
+            display: flex;
+        }
+
+        .edit-modal-box {
+            width: 100%;
+            max-width: 850px;
+            background: #fff;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .edit-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .edit-close {
+            border: none;
+            background: #eee;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 22px;
+            cursor: pointer;
+        }
+
+        .edit-field {
+            margin-bottom: 18px;
+        }
+
+        .edit-field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .edit-field input,
+        .edit-field select,
+        .edit-field textarea {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+        }
+
+        .existing-media {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fill,
+                minmax(145px, 1fr)
+            );
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .existing-media-item {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 10px;
+            background: #fafafa;
+            text-align: center;
+        }
+
+        .existing-media-item img,
+        .existing-media-item video {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            border-radius: 7px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .existing-media-item label {
+            font-size: 13px;
+            cursor: pointer;
+            display: block;
+        }
+
+        .existing-media-item input[type="checkbox"] {
+            width: auto;
+            margin-right: 5px;
+        }
+
+        .edit-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .edit-buttons button {
+            padding: 13px 20px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+        #save-edit-product {
+            background: #198754;
+            color: white;
+        }
+
+        #cancel-edit-product {
+            background: #6c757d;
+            color: white;
+        }
+
+        .edit-message {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .media-help {
+            display: block;
+            color: #666;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+
+            .admin-container {
+                padding: 10px;
+            }
+
+            .edit-modal {
+                padding: 8px;
+            }
+
+            .edit-modal-box {
+                padding: 15px;
+                margin: 5px auto;
+            }
+
+            .existing-media {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
         }
 
     </style>
@@ -308,7 +480,9 @@
 
 
 
-        <!-- ADD PRODUCT -->
+        <!-- ==================================================
+             ADD PRODUCT
+        ================================================== -->
 
         <div class="admin-form-box">
 
@@ -318,8 +492,6 @@
 
             <form id="add-product-form">
 
-
-                <!-- PRODUCT NAME -->
 
                 <label for="product-name">
                     Product Name
@@ -335,9 +507,6 @@
                 <br><br>
 
 
-
-                <!-- PRICE -->
-
                 <label for="product-price">
                     Price (₦)
                 </label>
@@ -352,9 +521,6 @@
 
                 <br><br>
 
-
-
-                <!-- CATEGORY -->
 
                 <label for="product-category">
                     Category
@@ -385,9 +551,6 @@
                 <br>
 
 
-
-                <!-- IMAGES -->
-
                 <label for="product-image">
                     Product Images
                 </label>
@@ -412,9 +575,6 @@
                 <br>
 
 
-
-                <!-- VIDEOS -->
-
                 <label for="product-video">
                     Product Videos
                 </label>
@@ -438,9 +598,6 @@
                 <br>
 
 
-
-                <!-- DESCRIPTION -->
-
                 <label for="product-description">
                     Description
                 </label>
@@ -454,9 +611,6 @@
 
                 <br><br>
 
-
-
-                <!-- QUANTITY -->
 
                 <label for="product-quantity">
                     Quantity / Stock
@@ -473,9 +627,6 @@
 
                 <br><br>
 
-
-
-                <!-- ADD -->
 
                 <button
                     type="submit"
@@ -641,6 +792,285 @@
 </div>
 
 </main>
+
+
+
+<!-- ==================================================
+     EDIT PRODUCT MODAL
+================================================== -->
+
+<div
+    id="edit-product-modal"
+    class="edit-modal"
+    aria-hidden="true"
+>
+
+    <div class="edit-modal-box">
+
+        <div class="edit-modal-header">
+
+            <div>
+
+                <h2>
+                    ✏️ Edit Product
+                </h2>
+
+                <p
+                    id="edit-product-title"
+                    style="margin:0;"
+                >
+                    Update product details
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="edit-close"
+                id="close-edit-product"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="edit-product-form">
+
+            <input
+                type="hidden"
+                id="edit-product-id"
+            >
+
+
+            <!-- NAME -->
+
+            <div class="edit-field">
+
+                <label for="edit-product-name">
+                    Product Name
+                </label>
+
+                <input
+                    type="text"
+                    id="edit-product-name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- PRICE -->
+
+            <div class="edit-field">
+
+                <label for="edit-product-price">
+                    Price (₦)
+                </label>
+
+                <input
+                    type="number"
+                    id="edit-product-price"
+                    min="0"
+                    step="0.01"
+                    required
+                >
+
+            </div>
+
+
+            <!-- CATEGORY -->
+
+            <div class="edit-field">
+
+                <label for="edit-product-category">
+                    Category
+                </label>
+
+                <div style="display:flex; gap:10px;">
+
+                    <select
+                        id="edit-product-category"
+                        required
+                    >
+
+                        <option value="">
+                            Select category
+                        </option>
+
+                    </select>
+
+                    <button
+                        type="button"
+                        id="edit-add-category-button"
+                    >
+                        ➕
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- QUANTITY -->
+
+            <div class="edit-field">
+
+                <label for="edit-product-quantity">
+                    Quantity / Stock
+                </label>
+
+                <input
+                    type="number"
+                    id="edit-product-quantity"
+                    min="0"
+                    required
+                >
+
+            </div>
+
+
+            <!-- DESCRIPTION -->
+
+            <div class="edit-field">
+
+                <label for="edit-product-description">
+                    Description
+                </label>
+
+                <textarea
+                    id="edit-product-description"
+                    rows="7"
+                    required
+                ></textarea>
+
+            </div>
+
+
+            <!-- EXISTING IMAGES -->
+
+            <div class="edit-field">
+
+                <label>
+                    Existing Product Images
+                </label>
+
+                <small class="media-help">
+                    Untick an image if you want to remove it from this product.
+                </small>
+
+                <div
+                    id="edit-existing-images"
+                    class="existing-media"
+                ></div>
+
+            </div>
+
+
+            <!-- NEW IMAGES -->
+
+            <div class="edit-field">
+
+                <label for="edit-product-images">
+                    Add New Product Images
+                </label>
+
+                <input
+                    type="file"
+                    id="edit-product-images"
+                    accept="image/*"
+                    multiple
+                >
+
+                <small class="media-help">
+                    Select additional images from your phone.
+                </small>
+
+                <div
+                    id="edit-image-preview"
+                    class="media-preview"
+                ></div>
+
+            </div>
+
+
+            <!-- EXISTING VIDEOS -->
+
+            <div class="edit-field">
+
+                <label>
+                    Existing Product Videos
+                </label>
+
+                <small class="media-help">
+                    Untick a video if you want to remove it from this product.
+                </small>
+
+                <div
+                    id="edit-existing-videos"
+                    class="existing-media"
+                ></div>
+
+            </div>
+
+
+            <!-- NEW VIDEOS -->
+
+            <div class="edit-field">
+
+                <label for="edit-product-videos">
+                    Add New Product Videos
+                </label>
+
+                <input
+                    type="file"
+                    id="edit-product-videos"
+                    accept="video/*"
+                    multiple
+                >
+
+                <small class="media-help">
+                    Select additional videos from your phone.
+                </small>
+
+                <div
+                    id="edit-video-preview"
+                    class="media-preview"
+                ></div>
+
+            </div>
+
+
+            <p
+                id="edit-product-message"
+                class="edit-message"
+            ></p>
+
+
+            <div class="edit-buttons">
+
+                <button
+                    type="submit"
+                    id="save-edit-product"
+                >
+                    💾 Save Changes
+                </button>
+
+                <button
+                    type="button"
+                    id="cancel-edit-product"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
 
 
 
