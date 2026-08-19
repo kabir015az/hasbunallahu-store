@@ -13,6 +13,14 @@ const ADMIN_EMAIL =
 
 
 // ==========================================
+// STORAGE BUCKET
+// ==========================================
+
+const PRODUCT_IMAGE_BUCKET =
+    "product-images";
+
+
+// ==========================================
 // VARIABLES
 // ==========================================
 
@@ -89,18 +97,12 @@ function showDashboard() {
 
 
     if (login) {
-
-        login.style.display =
-            "none";
-
+        login.style.display = "none";
     }
 
 
     if (dashboard) {
-
-        dashboard.style.display =
-            "block";
-
+        dashboard.style.display = "block";
     }
 
 }
@@ -120,25 +122,19 @@ function showLogin() {
 
 
     if (login) {
-
-        login.style.display =
-            "block";
-
+        login.style.display = "block";
     }
 
 
     if (dashboard) {
-
-        dashboard.style.display =
-            "none";
-
+        dashboard.style.display = "none";
     }
 
 }
 
 
 // ==========================================
-// CHECK ADMIN
+// CHECK ADMIN SESSION
 // ==========================================
 
 async function checkAdminSession() {
@@ -169,7 +165,7 @@ async function checkAdminSession() {
 
 
         const session =
-            data.session;
+            data?.session;
 
 
         if (!session) {
@@ -201,10 +197,6 @@ async function checkAdminSession() {
         }
 
 
-        // ==========================================
-        // ONLY ALLOW ADMIN EMAIL
-        // ==========================================
-
         if (
             user.email.toLowerCase() !==
             ADMIN_EMAIL.toLowerCase()
@@ -214,14 +206,11 @@ async function checkAdminSession() {
                 .auth
                 .signOut();
 
-
             showLogin();
-
 
             showLoginMessage(
                 "❌ You are not authorized to access the admin dashboard."
             );
-
 
             return;
 
@@ -236,7 +225,6 @@ async function checkAdminSession() {
 
 
         await loadDashboard();
-
 
     }
 
@@ -258,9 +246,7 @@ async function checkAdminSession() {
 // ADMIN LOGIN
 // ==========================================
 
-async function adminLogin(
-    event
-) {
+async function adminLogin(event) {
 
     event.preventDefault();
 
@@ -365,19 +351,7 @@ async function adminLogin(
 
         if (error) {
 
-            console.error(
-                "Supabase login error:",
-                error
-            );
-
-
-            showLoginMessage(
-                "❌ Login failed: " +
-                error.message
-            );
-
-
-            return;
+            throw error;
 
         }
 
@@ -387,11 +361,9 @@ async function adminLogin(
             !data.user
         ) {
 
-            showLoginMessage(
-                "❌ Login failed. No user was returned."
+            throw new Error(
+                "No user was returned."
             );
-
-            return;
 
         }
 
@@ -406,13 +378,9 @@ async function adminLogin(
                 .auth
                 .signOut();
 
-
-            showLoginMessage(
-                "❌ This account is not authorized as admin."
+            throw new Error(
+                "This account is not authorized as admin."
             );
-
-
-            return;
 
         }
 
@@ -431,7 +399,6 @@ async function adminLogin(
 
 
         await loadDashboard();
-
 
     }
 
@@ -516,6 +483,8 @@ async function loadDashboard() {
 
         loadStatistics(),
 
+        loadCategories(),
+
         loadProducts(),
 
         loadOrders()
@@ -533,10 +502,6 @@ async function loadStatistics() {
 
     try {
 
-        // ==========================================
-        // ORDERS
-        // ==========================================
-
         const {
             data: orders,
             error: ordersError
@@ -549,9 +514,7 @@ async function loadStatistics() {
 
 
         if (ordersError) {
-
             throw ordersError;
-
         }
 
 
@@ -572,7 +535,7 @@ async function loadStatistics() {
 
 
         orderList.forEach(
-            function (order) {
+            function(order) {
 
                 totalSales +=
                     Number(
@@ -639,10 +602,6 @@ async function loadStatistics() {
         }
 
 
-        // ==========================================
-        // PRODUCTS
-        // ==========================================
-
         const {
             count,
             error: productsError
@@ -661,9 +620,7 @@ async function loadStatistics() {
 
 
         if (productsError) {
-
             throw productsError;
-
         }
 
 
@@ -690,6 +647,386 @@ async function loadStatistics() {
         );
 
     }
+
+}
+
+
+// ==========================================
+// CATEGORY STORAGE
+// ==========================================
+
+const DEFAULT_CATEGORIES = [
+
+    "School",
+
+    "Electronics",
+
+    "Fashion",
+
+    "Beauty",
+
+    "Home",
+
+    "Accessories",
+
+    "Food",
+
+    "Books",
+
+    "Other"
+
+];
+
+
+// ==========================================
+// GET SAVED LOCAL CATEGORIES
+// ==========================================
+
+function getLocalCategories() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "hasbunallahu_categories"
+            );
+
+
+        if (!saved) {
+
+            return [];
+
+        }
+
+
+        const categories =
+            JSON.parse(saved);
+
+
+        return Array.isArray(categories)
+            ? categories
+            : [];
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Category storage error:",
+            error
+        );
+
+        return [];
+
+    }
+
+}
+
+
+// ==========================================
+// SAVE LOCAL CATEGORY
+// ==========================================
+
+function saveLocalCategory(
+    category
+) {
+
+    const categories =
+        getLocalCategories();
+
+
+    const exists =
+        categories.some(
+            function(item) {
+
+                return item.toLowerCase() ===
+                    category.toLowerCase();
+
+            }
+        );
+
+
+    if (!exists) {
+
+        categories.push(
+            category
+        );
+
+        localStorage.setItem(
+            "hasbunallahu_categories",
+            JSON.stringify(categories)
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// LOAD CATEGORIES
+// ==========================================
+
+async function loadCategories() {
+
+    const select =
+        getElement(
+            "product-category"
+        );
+
+
+    if (!select) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("products")
+                .select(
+                    "category"
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Could not load categories:",
+                error
+            );
+
+        }
+
+
+        const categories =
+            new Set();
+
+
+        // Default categories
+
+        DEFAULT_CATEGORIES.forEach(
+            function(category) {
+
+                categories.add(
+                    category
+                );
+
+            }
+        );
+
+
+        // Categories already stored locally
+
+        getLocalCategories()
+            .forEach(
+                function(category) {
+
+                    categories.add(
+                        category
+                    );
+
+                }
+            );
+
+
+        // Categories already used by products
+
+        (data || []).forEach(
+            function(product) {
+
+                if (
+                    product.category &&
+                    product.category.trim()
+                ) {
+
+                    categories.add(
+                        product.category.trim()
+                    );
+
+                }
+
+            }
+        );
+
+
+        select.innerHTML = `
+
+            <option value="">
+                Select category
+            </option>
+
+        `;
+
+
+        Array.from(categories)
+            .sort(
+                function(a, b) {
+
+                    return a.localeCompare(b);
+
+                }
+            )
+            .forEach(
+                function(category) {
+
+                    const option =
+                        document.createElement(
+                            "option"
+                        );
+
+
+                    option.value =
+                        category;
+
+                    option.textContent =
+                        category;
+
+
+                    select.appendChild(
+                        option
+                    );
+
+                }
+            );
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Category loading error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================
+// ADD CATEGORY
+// ==========================================
+
+function addCategory() {
+
+    const categoryName =
+        prompt(
+            "Enter the new category name:"
+        );
+
+
+    if (
+        categoryName ===
+        null
+    ) {
+
+        return;
+
+    }
+
+
+    const category =
+        categoryName.trim();
+
+
+    if (!category) {
+
+        alert(
+            "Please enter a category name."
+        );
+
+        return;
+
+    }
+
+
+    const select =
+        getElement(
+            "product-category"
+        );
+
+
+    if (!select) {
+        return;
+    }
+
+
+    const existingOptions =
+        Array.from(
+            select.options
+        );
+
+
+    const exists =
+        existingOptions.some(
+            function(option) {
+
+                return option.value
+                    .toLowerCase() ===
+                    category.toLowerCase();
+
+            }
+        );
+
+
+    if (exists) {
+
+        select.value =
+            existingOptions.find(
+                function(option) {
+
+                    return option.value
+                        .toLowerCase() ===
+                        category.toLowerCase();
+
+                }
+            ).value;
+
+
+        alert(
+            "This category already exists."
+        );
+
+        return;
+
+    }
+
+
+    saveLocalCategory(
+        category
+    );
+
+
+    const option =
+        document.createElement(
+            "option"
+        );
+
+
+    option.value =
+        category;
+
+    option.textContent =
+        category;
+
+
+    select.appendChild(
+        option
+    );
+
+
+    select.value =
+        category;
+
+
+    alert(
+        "✅ Category added: " +
+        category
+    );
 
 }
 
@@ -743,9 +1080,7 @@ async function loadProducts() {
 
 
         if (error) {
-
             throw error;
-
         }
 
 
@@ -771,11 +1106,12 @@ async function loadProducts() {
         }
 
 
-        table.innerHTML = "";
+        table.innerHTML =
+            "";
 
 
         products.forEach(
-            function (product) {
+            function(product) {
 
                 const row =
                     document.createElement(
@@ -786,7 +1122,9 @@ async function loadProducts() {
                 row.innerHTML = `
 
                     <td>
-                        ${product.id}
+                        ${escapeHtml(
+                            product.id
+                        )}
                     </td>
 
                     <td>
@@ -798,11 +1136,7 @@ async function loadProducts() {
                             alt="${escapeHtml(
                                 product.name || "Product"
                             )}"
-                            style="
-                                width:60px;
-                                height:60px;
-                                object-fit:cover;
-                            "
+                            class="product-table-image"
                             onerror="
                                 this.style.display='none'
                             "
@@ -886,6 +1220,12 @@ async function loadProducts() {
 
                     ❌ Could not load products.
 
+                    <br><br>
+
+                    ${escapeHtml(
+                        error.message || ""
+                    )}
+
                 </td>
 
             </tr>
@@ -931,14 +1271,108 @@ function escapeHtml(value) {
 
 
 // ==========================================
+// IMAGE PREVIEW
+// ==========================================
+
+function setupImagePreview() {
+
+    const imageInput =
+        getElement(
+            "product-image"
+        );
+
+
+    const preview =
+        getElement(
+            "image-preview"
+        );
+
+
+    if (
+        !imageInput ||
+        !preview
+    ) {
+
+        return;
+
+    }
+
+
+    imageInput.addEventListener(
+        "change",
+        function() {
+
+            const file =
+                this.files?.[0];
+
+
+            preview.innerHTML =
+                "";
+
+
+            if (!file) {
+                return;
+            }
+
+
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                alert(
+                    "Please select a valid image."
+                );
+
+                this.value =
+                    "";
+
+                return;
+
+            }
+
+
+            const imageURL =
+                URL.createObjectURL(
+                    file
+                );
+
+
+            preview.innerHTML = `
+
+                <img
+                    src="${imageURL}"
+                    alt="Product preview"
+                >
+
+            `;
+
+        }
+    );
+
+}
+
+
+// ==========================================
 // ADD PRODUCT
 // ==========================================
 
-async function addProduct(
-    event
-) {
+async function addProduct(event) {
 
     event.preventDefault();
+
+
+    const form =
+        getElement(
+            "add-product-form"
+        );
+
+
+    const button =
+        getElement(
+            "add-product-button"
+        );
 
 
     const message =
@@ -967,10 +1401,14 @@ async function addProduct(
         )?.value.trim();
 
 
-    const image =
+    const imageInput =
         getElement(
             "product-image"
-        )?.value.trim();
+        );
+
+
+    const imageFile =
+        imageInput?.files?.[0];
 
 
     const description =
@@ -987,21 +1425,98 @@ async function addProduct(
         );
 
 
+    // ==========================================
+    // VALIDATION
+    // ==========================================
+
+    if (!name) {
+
+        showProductMessage(
+            "❌ Please enter the product name.",
+            false
+        );
+
+        return;
+
+    }
+
+
     if (
-        !name ||
-        !category ||
-        !image ||
-        !description ||
         Number.isNaN(price) ||
-        Number.isNaN(quantity)
+        price < 0
     ) {
 
-        if (message) {
+        showProductMessage(
+            "❌ Please enter a valid price.",
+            false
+        );
 
-            message.textContent =
-                "❌ Please complete all product fields.";
+        return;
 
-        }
+    }
+
+
+    if (!category) {
+
+        showProductMessage(
+            "❌ Please select a category.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    if (!imageFile) {
+
+        showProductMessage(
+            "❌ Please select a product image.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !imageFile.type.startsWith(
+            "image/"
+        )
+    ) {
+
+        showProductMessage(
+            "❌ Please select a valid image file.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    if (!description) {
+
+        showProductMessage(
+            "❌ Please enter a product description.",
+            false
+        );
+
+        return;
+
+    }
+
+
+    if (
+        Number.isNaN(quantity) ||
+        quantity < 0
+    ) {
+
+        showProductMessage(
+            "❌ Please enter a valid quantity.",
+            false
+        );
 
         return;
 
@@ -1010,7 +1525,159 @@ async function addProduct(
 
     try {
 
+        if (button) {
+
+            button.disabled =
+                true;
+
+            button.textContent =
+                "Uploading image...";
+
+        }
+
+
+        showProductMessage(
+            "⏳ Uploading product image...",
+            true
+        );
+
+
+        // ==========================================
+        // FILE EXTENSION
+        // ==========================================
+
+        let fileExtension =
+            imageFile.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+
+        if (!fileExtension) {
+
+            fileExtension =
+                "jpg";
+
+        }
+
+
+        // ==========================================
+        // UNIQUE FILE NAME
+        // ==========================================
+
+        const fileName =
+            `${Date.now()}-${Math.random()
+                .toString(36)
+                .substring(2, 10)}.${fileExtension}`;
+
+
+        const filePath =
+            `products/${fileName}`;
+
+
+        // ==========================================
+        // UPLOAD TO SUPABASE STORAGE
+        // ==========================================
+
         const {
+            data: uploadData,
+            error: uploadError
+        } =
+            await supabaseClient
+                .storage
+                .from(
+                    PRODUCT_IMAGE_BUCKET
+                )
+                .upload(
+                    filePath,
+                    imageFile,
+                    {
+                        cacheControl:
+                            "3600",
+
+                        contentType:
+                            imageFile.type,
+
+                        upsert:
+                            false
+                    }
+                );
+
+
+        if (uploadError) {
+
+            console.error(
+                "IMAGE UPLOAD ERROR:",
+                uploadError
+            );
+
+            throw uploadError;
+
+        }
+
+
+        console.log(
+            "Image uploaded:",
+            uploadData
+        );
+
+
+        // ==========================================
+        // GET PUBLIC URL
+        // ==========================================
+
+        const {
+            data: publicURLData
+        } =
+            supabaseClient
+                .storage
+                .from(
+                    PRODUCT_IMAGE_BUCKET
+                )
+                .getPublicUrl(
+                    filePath
+                );
+
+
+        const imageURL =
+            publicURLData?.publicUrl;
+
+
+        if (!imageURL) {
+
+            throw new Error(
+                "Could not get the public image URL."
+            );
+
+        }
+
+
+        console.log(
+            "Image URL:",
+            imageURL
+        );
+
+
+        if (button) {
+
+            button.textContent =
+                "Saving product...";
+
+        }
+
+
+        showProductMessage(
+            "⏳ Saving product...",
+            true
+        );
+
+
+        // ==========================================
+        // SAVE PRODUCT
+        // ==========================================
+
+        const {
+            data,
             error
         } =
             await supabaseClient
@@ -1029,7 +1696,7 @@ async function addProduct(
                             category,
 
                         image:
-                            image,
+                            imageURL,
 
                         description:
                             description,
@@ -1039,31 +1706,50 @@ async function addProduct(
 
                     }
 
-                ]);
+                ])
+                .select()
+                .single();
 
 
         if (error) {
+
+            console.error(
+                "PRODUCT SAVE ERROR:",
+                error
+            );
 
             throw error;
 
         }
 
 
-        if (message) {
+        console.log(
+            "Product saved:",
+            data
+        );
 
-            message.textContent =
-                "✅ Product added successfully.";
 
-            message.style.color =
-                "green";
+        // Save category locally
 
+        saveLocalCategory(
+            category
+        );
+
+
+        showProductMessage(
+            "✅ Product added successfully!",
+            true
+        );
+
+
+        // Reset form
+
+        if (form) {
+            form.reset();
         }
 
 
-        getElement(
-            "add-product-form"
-        )?.reset();
-
+        // Reset quantity
 
         const quantityInput =
             getElement(
@@ -1079,7 +1765,33 @@ async function addProduct(
         }
 
 
+        // Clear image preview
+
+        const preview =
+            getElement(
+                "image-preview"
+            );
+
+
+        if (preview) {
+
+            preview.innerHTML =
+                "";
+
+        }
+
+
+        // Reload categories
+
+        await loadCategories();
+
+
+        // Reload products
+
         await loadProducts();
+
+
+        // Reload statistics
 
         await loadStatistics();
 
@@ -1088,26 +1800,67 @@ async function addProduct(
     catch (error) {
 
         console.error(
-            "Add product error:",
+            "ADD PRODUCT ERROR:",
             error
         );
 
 
-        if (message) {
+        showProductMessage(
+            "❌ " +
+            (
+                error.message ||
+                "Could not add product."
+            ),
+            false
+        );
 
-            message.textContent =
-                "❌ " +
-                (
-                    error.message ||
-                    "Could not add product."
-                );
+    }
 
-            message.style.color =
-                "red";
+    finally {
+
+        if (button) {
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                "➕ Add Product";
 
         }
 
     }
+
+}
+
+
+// ==========================================
+// SHOW PRODUCT MESSAGE
+// ==========================================
+
+function showProductMessage(
+    message,
+    success
+) {
+
+    const element =
+        getElement(
+            "product-message"
+        );
+
+
+    if (!element) {
+        return;
+    }
+
+
+    element.textContent =
+        message;
+
+
+    element.style.color =
+        success
+            ? "green"
+            : "red";
 
 }
 
@@ -1220,9 +1973,7 @@ async function editProduct(
 
 
         if (error) {
-
             throw error;
-
         }
 
 
@@ -1273,9 +2024,7 @@ async function deleteProduct(
 
 
     if (!confirmed) {
-
         return;
-
     }
 
 
@@ -1294,9 +2043,7 @@ async function deleteProduct(
 
 
         if (error) {
-
             throw error;
-
         }
 
 
@@ -1308,6 +2055,8 @@ async function deleteProduct(
         await loadProducts();
 
         await loadStatistics();
+
+        await loadCategories();
 
     }
 
@@ -1381,9 +2130,7 @@ async function loadOrders() {
 
 
         if (error) {
-
             throw error;
-
         }
 
 
@@ -1409,11 +2156,12 @@ async function loadOrders() {
         }
 
 
-        table.innerHTML = "";
+        table.innerHTML =
+            "";
 
 
         orders.forEach(
-            function (order) {
+            function(order) {
 
                 const row =
                     document.createElement(
@@ -1524,33 +2272,6 @@ async function loadOrders() {
             }
         );
 
-
-        // ==========================================
-        // STATUS CHANGE
-        // ==========================================
-
-        document
-            .querySelectorAll(
-                ".order-status"
-            )
-            .forEach(
-                function (select) {
-
-                    select.addEventListener(
-                        "change",
-                        function () {
-
-                            console.log(
-                                "Status changed:",
-                                this.value
-                            );
-
-                        }
-                    );
-
-                }
-            );
-
     }
 
     catch (error) {
@@ -1587,7 +2308,7 @@ async function loadOrders() {
 
 
 // ==========================================
-// CREATE STATUS OPTIONS
+// STATUS OPTIONS
 // ==========================================
 
 function createStatusOptions(
@@ -1615,7 +2336,7 @@ function createStatusOptions(
 
     return statuses
         .map(
-            function (status) {
+            function(status) {
 
                 return `
 
@@ -1709,9 +2430,7 @@ async function generateTracking(
 
 
     if (!input) {
-
         return;
-
     }
 
 
@@ -1743,9 +2462,7 @@ async function generateTracking(
 
 
         if (error) {
-
             throw error;
-
         }
 
 
@@ -1753,7 +2470,6 @@ async function generateTracking(
             "✅ Tracking number generated:\n\n" +
             trackingNumber
         );
-
 
     }
 
@@ -1853,9 +2569,7 @@ async function saveOrderUpdate(
 
 
         if (error) {
-
             throw error;
-
         }
 
 
@@ -1890,99 +2604,14 @@ async function saveOrderUpdate(
 
 
 // ==========================================
-// PRODUCT IMAGE PREVIEW
-// ==========================================
-
-const productImageInput =
-    document.getElementById(
-        "product-image"
-    );
-
-const imagePreview =
-    document.getElementById(
-        "image-preview"
-    );
-
-
-if (
-    productImageInput &&
-    imagePreview
-) {
-
-    productImageInput.addEventListener(
-        "change",
-        function () {
-
-            const file =
-                this.files[0];
-
-
-            if (!file) {
-
-                imagePreview.innerHTML =
-                    "";
-
-                return;
-
-            }
-
-
-            if (
-                !file.type.startsWith(
-                    "image/"
-                )
-            ) {
-
-                imagePreview.innerHTML =
-                    "❌ Please select an image.";
-
-                this.value =
-                    "";
-
-                return;
-
-            }
-
-
-            const imageURL =
-                URL.createObjectURL(
-                    file
-                );
-
-
-            imagePreview.innerHTML = `
-
-                <img
-                    src="${imageURL}"
-                    alt="Product preview"
-                    style="
-                        width:150px;
-                        height:150px;
-                        object-fit:cover;
-                        border-radius:10px;
-                        border:1px solid #ddd;
-                    "
-                >
-
-            `;
-
-        }
-    );
-
-}
-
-// ==========================================
 // INITIALIZE ADMIN
 // ==========================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    function () {
+    function() {
 
-
-        // ==========================================
-        // LOGIN FORM
-        // ==========================================
+        // Login
 
         const loginForm =
             getElement(
@@ -2000,9 +2629,7 @@ document.addEventListener(
         }
 
 
-        // ==========================================
-        // LOGOUT
-        // ==========================================
+        // Logout
 
         const logoutButton =
             getElement(
@@ -2020,411 +2647,48 @@ document.addEventListener(
         }
 
 
-        // ==========================================
-// ADD PRODUCT
-// ==========================================
+        // Add product
 
-async function addProduct(
-    event
-) {
-
-    event.preventDefault();
-
-
-    const message =
-        getElement(
-            "product-message"
-        );
-
-
-    const name =
-        getElement(
-            "product-name"
-        )?.value.trim();
-
-
-    const price =
-        Number(
+        const productForm =
             getElement(
-                "product-price"
-            )?.value
-        );
-
-
-    const category =
-        getElement(
-            "product-category"
-        )?.value.trim();
-
-
-    // ==========================================
-    // GET IMAGE FILE
-    // ==========================================
-
-    const imageInput =
-        getElement(
-            "product-image"
-        );
-
-
-    const imageFile =
-        imageInput?.files?.[0];
-
-
-    const description =
-        getElement(
-            "product-description"
-        )?.value.trim();
-
-
-    const quantity =
-        Number(
-            getElement(
-                "product-quantity"
-            )?.value
-        );
-
-
-    // ==========================================
-    // VALIDATE PRODUCT FIELDS
-    // ==========================================
-
-    if (
-        !name ||
-        !category ||
-        !description ||
-        Number.isNaN(price) ||
-        Number.isNaN(quantity)
-    ) {
-
-        if (message) {
-
-            message.textContent =
-                "❌ Please complete all product fields.";
-
-            message.style.color =
-                "red";
-
-        }
-
-        return;
-
-    }
-
-
-    // ==========================================
-    // VALIDATE IMAGE
-    // ==========================================
-
-    if (!imageFile) {
-
-        if (message) {
-
-            message.textContent =
-                "❌ Please select a product image.";
-
-            message.style.color =
-                "red";
-
-        }
-
-        return;
-
-    }
-
-
-    if (
-        !imageFile.type.startsWith(
-            "image/"
-        )
-    ) {
-
-        if (message) {
-
-            message.textContent =
-                "❌ Please select a valid image file.";
-
-            message.style.color =
-                "red";
-
-        }
-
-        return;
-
-    }
-
-
-    try {
-
-        if (message) {
-
-            message.textContent =
-                "⏳ Uploading product image...";
-
-            message.style.color =
-                "orange";
-
-        }
-
-
-        // ==========================================
-        // CREATE UNIQUE FILE NAME
-        // ==========================================
-
-        const fileExtension =
-            imageFile.name
-                .split(".")
-                .pop()
-                .toLowerCase();
-
-
-        const fileName =
-            `${Date.now()}-${Math.random()
-                .toString(36)
-                .substring(2, 10)}.${fileExtension}`;
-
-
-        const filePath =
-            `products/${fileName}`;
-
-
-        console.log(
-            "Uploading image:",
-            filePath
-        );
-
-
-        // ==========================================
-        // UPLOAD IMAGE TO SUPABASE STORAGE
-        // ==========================================
-
-        const {
-            data: uploadData,
-            error: uploadError
-        } =
-            await supabaseClient
-                .storage
-                .from(
-                    "product-images"
-                )
-                .upload(
-                    filePath,
-                    imageFile,
-                    {
-                        cacheControl:
-                            "3600",
-
-                        contentType:
-                            imageFile.type,
-
-                        upsert:
-                            false
-                    }
-                );
-
-
-        if (uploadError) {
-
-            console.error(
-                "IMAGE UPLOAD ERROR:",
-                uploadError
+                "add-product-form"
             );
 
-            throw uploadError;
 
-        }
+        if (productForm) {
 
-
-        console.log(
-            "Image uploaded:",
-            uploadData
-        );
-
-
-        // ==========================================
-        // GET PUBLIC IMAGE URL
-        // ==========================================
-
-        const {
-            data: publicURLData
-        } =
-            supabaseClient
-                .storage
-                .from(
-                    "product-images"
-                )
-                .getPublicUrl(
-                    filePath
-                );
-
-
-        const imageURL =
-            publicURLData?.publicUrl;
-
-
-        if (!imageURL) {
-
-            throw new Error(
-                "Could not get the public image URL."
+            productForm.addEventListener(
+                "submit",
+                addProduct
             );
 
         }
 
 
-        console.log(
-            "Product image URL:",
-            imageURL
-        );
+        // Add category
 
-
-        if (message) {
-
-            message.textContent =
-                "⏳ Saving product...";
-
-            message.style.color =
-                "orange";
-
-        }
-
-
-        // ==========================================
-        // SAVE PRODUCT TO DATABASE
-        // ==========================================
-
-        const {
-            error
-        } =
-            await supabaseClient
-                .from(
-                    "products"
-                )
-                .insert([
-
-                    {
-
-                        name:
-                            name,
-
-                        price:
-                            price,
-
-                        category:
-                            category,
-
-                        image:
-                            imageURL,
-
-                        description:
-                            description,
-
-                        quantity:
-                            quantity
-
-                    }
-
-                ]);
-
-
-        if (error) {
-
-            throw error;
-
-        }
-
-
-        // ==========================================
-        // SUCCESS
-        // ==========================================
-
-        if (message) {
-
-            message.textContent =
-                "✅ Product added successfully.";
-
-            message.style.color =
-                "green";
-
-        }
-
-
-        // Reset form
-
-        getElement(
-            "add-product-form"
-        )?.reset();
-
-
-        // Reset quantity
-
-        const quantityInput =
+        const addCategoryButton =
             getElement(
-                "product-quantity"
+                "add-category-button"
             );
 
 
-        if (quantityInput) {
+        if (addCategoryButton) {
 
-            quantityInput.value =
-                "30";
-
-        }
-
-
-        // Clear image preview
-
-        const imagePreview =
-            getElement(
-                "image-preview"
+            addCategoryButton.addEventListener(
+                "click",
+                addCategory
             );
 
-
-        if (imagePreview) {
-
-            imagePreview.innerHTML =
-                "";
-
         }
 
 
-        // Reload dashboard
+        // Image preview
 
-        await loadProducts();
-
-        await loadStatistics();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Add product error:",
-            error
-        );
+        setupImagePreview();
 
 
-        if (message) {
-
-            message.textContent =
-                "❌ " +
-                (
-                    error.message ||
-                    "Could not add product."
-                );
-
-            message.style.color =
-                "red";
-
-        }
-
-    }
-
-}
-
-
-        // ==========================================
-        // CHECK SESSION
-        // ==========================================
+        // Check admin session
 
         checkAdminSession();
 
@@ -2435,5 +2699,3 @@ async function addProduct(
 
     }
 );
-console.log("ADMIN JS VERSION 2 LOADED");
-alert("Admin JavaScript is loaded");

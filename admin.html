@@ -19,6 +19,88 @@
         href="css/style.css"
     >
 
+    <style>
+
+        .admin-form-group {
+            margin-bottom: 18px;
+        }
+
+        .admin-form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        .admin-form-group input,
+        .admin-form-group select,
+        .admin-form-group textarea {
+            width: 100%;
+            max-width: 600px;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+
+        .category-row {
+            display: flex;
+            gap: 10px;
+            max-width: 600px;
+        }
+
+        .category-row select {
+            flex: 1;
+        }
+
+        .category-add-button {
+            white-space: nowrap;
+        }
+
+        #image-preview {
+            margin-top: 12px;
+        }
+
+        #image-preview img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+
+        #product-message {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .stats-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            min-width: 150px;
+        }
+
+        .admin-table-container {
+            overflow-x: auto;
+        }
+
+        .admin-table-container table {
+            min-width: 900px;
+        }
+
+        .product-table-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+    </style>
+
 </head>
 
 <body>
@@ -43,7 +125,6 @@
         Hasbunallahu Store
     </p>
 
-
     <form id="admin-login-form">
 
         <label for="admin-email">
@@ -53,13 +134,11 @@
         <input
             type="email"
             id="admin-email"
-            value="Enter admin email"
+            placeholder="Enter admin email"
             required
         >
 
-
         <br><br>
-
 
         <label for="admin-password">
             Password
@@ -72,14 +151,11 @@
             required
         >
 
-
         <br><br>
-
 
         <button type="submit">
             Login
         </button>
-
 
         <p
             id="login-message"
@@ -105,7 +181,9 @@
 >
 
 
-    <!-- HEADER -->
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
 
     <header>
 
@@ -117,7 +195,6 @@
         <p>
             Welcome, Admin
         </p>
-
 
         <button
             type="button"
@@ -140,9 +217,7 @@
             Store Statistics 📊
         </h2>
 
-
         <div class="stats-container">
-
 
             <div class="stat-card">
 
@@ -215,7 +290,7 @@
         </h2>
 
         <p>
-            Add, edit, delete and manage product quantities.
+            Add, edit, delete and manage products.
         </p>
 
 
@@ -242,121 +317,145 @@
 
                 <!-- PRODUCT NAME -->
 
-                <label for="product-name">
-                    Product Name
-                </label>
+                <div class="admin-form-group">
 
-                <input
-                    type="text"
-                    id="product-name"
-                    placeholder="Product name"
-                    required
-                >
+                    <label for="product-name">
+                        Product Name
+                    </label>
 
+                    <input
+                        type="text"
+                        id="product-name"
+                        placeholder="Product name"
+                        required
+                    >
 
-                <br><br>
-
-
-                <!-- PRODUCT PRICE -->
-
-                <label for="product-price">
-                    Price (₦)
-                </label>
-
-                <input
-                    type="number"
-                    id="product-price"
-                    placeholder="Product price"
-                    min="0"
-                    required
-                >
+                </div>
 
 
-                <br><br>
+
+                <!-- PRICE -->
+
+                <div class="admin-form-group">
+
+                    <label for="product-price">
+                        Price (₦)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="product-price"
+                        placeholder="Product price"
+                        min="0"
+                        step="0.01"
+                        required
+                    >
+
+                </div>
 
 
-                <!-- PRODUCT CATEGORY -->
 
-                <label for="product-category">
-                    Category
-                </label>
+                <!-- CATEGORY -->
 
-                <input
-                    type="text"
-                    id="product-category"
-                    placeholder="Example: School"
-                    required
-                >
+                <div class="admin-form-group">
+
+                    <label for="product-category">
+                        Category
+                    </label>
+
+                    <div class="category-row">
+
+                        <select
+                            id="product-category"
+                            required
+                        >
+
+                            <option value="">
+                                Select category
+                            </option>
+
+                        </select>
 
 
-                <br><br>
+                        <button
+                            type="button"
+                            id="add-category-button"
+                            class="category-add-button"
+                        >
+                            ➕ Add Category
+                        </button>
+
+                    </div>
+
+                </div>
+
 
 
                 <!-- PRODUCT IMAGE -->
 
-                <label for="product-image">
-                    Product Image
-                </label>
+                <div class="admin-form-group">
 
-                <input
-                    type="file"
-                    id="product-image"
-                    name="product-image"
-                    accept="image/*"
-                    required
-                >
+                    <label for="product-image">
+                        Product Image
+                    </label>
 
+                    <input
+                        type="file"
+                        id="product-image"
+                        name="product-image"
+                        accept="image/*"
+                        required
+                    >
 
-                <!-- IMAGE PREVIEW -->
+                    <div
+                        id="image-preview"
+                    ></div>
 
-                <div
-                    id="image-preview"
-                    style="
-                        margin-top:10px;
-                    "
-                ></div>
+                </div>
 
 
-                <br><br>
+
+                <!-- DESCRIPTION -->
+
+                <div class="admin-form-group">
+
+                    <label for="product-description">
+                        Description
+                    </label>
+
+                    <textarea
+                        id="product-description"
+                        placeholder="Product description"
+                        rows="4"
+                        required
+                    ></textarea>
+
+                </div>
 
 
-                <!-- PRODUCT DESCRIPTION -->
 
-                <label for="product-description">
-                    Description
-                </label>
+                <!-- QUANTITY -->
 
-                <textarea
-                    id="product-description"
-                    placeholder="Product description"
-                    rows="4"
-                    required
-                ></textarea>
+                <div class="admin-form-group">
 
+                    <label for="product-quantity">
+                        Quantity / Stock
+                    </label>
 
-                <br><br>
+                    <input
+                        type="number"
+                        id="product-quantity"
+                        placeholder="30"
+                        min="0"
+                        value="30"
+                        required
+                    >
 
-
-                <!-- PRODUCT QUANTITY -->
-
-                <label for="product-quantity">
-                    Quantity / Stock
-                </label>
-
-                <input
-                    type="number"
-                    id="product-quantity"
-                    placeholder="30"
-                    min="0"
-                    value="30"
-                    required
-                >
+                </div>
 
 
-                <br><br>
 
-
-                <!-- ADD PRODUCT BUTTON -->
+                <!-- BUTTON -->
 
                 <button
                     type="submit"
@@ -369,8 +468,6 @@
             </form>
 
 
-            <!-- PRODUCT MESSAGE -->
-
             <p id="product-message"></p>
 
         </div>
@@ -378,7 +475,7 @@
 
 
         <!-- ==================================================
-             PRODUCT LIST
+             PRODUCTS
         ================================================== -->
 
         <h3>
@@ -386,7 +483,7 @@
         </h3>
 
 
-        <div style="overflow-x:auto;">
+        <div class="admin-table-container">
 
             <table
                 border="1"
@@ -398,37 +495,21 @@
 
                     <tr>
 
-                        <th>
-                            ID
-                        </th>
+                        <th>ID</th>
 
-                        <th>
-                            Image
-                        </th>
+                        <th>Image</th>
 
-                        <th>
-                            Product
-                        </th>
+                        <th>Product</th>
 
-                        <th>
-                            Price
-                        </th>
+                        <th>Price</th>
 
-                        <th>
-                            Category
-                        </th>
+                        <th>Category</th>
 
-                        <th>
-                            Quantity
-                        </th>
+                        <th>Quantity</th>
 
-                        <th>
-                            Description
-                        </th>
+                        <th>Description</th>
 
-                        <th>
-                            Actions
-                        </th>
+                        <th>Actions</th>
 
                     </tr>
 
@@ -451,7 +532,6 @@
 
         </div>
 
-
     </section>
 
 
@@ -470,7 +550,7 @@
         </h2>
 
 
-        <div style="overflow-x:auto;">
+        <div class="admin-table-container">
 
             <table
                 border="1"
