@@ -1,7 +1,7 @@
 // ==========================================================
 // HASBUNALLAHU STORE
 // ADMIN DASHBOARD
-// COMPLETE VERSION
+// COMPLETE ADMIN.JS
 // ==========================================================
 
 
@@ -16,18 +16,16 @@ let currentAdmin = null;
 
 
 // ==========================================================
-// ELEMENT HELPER
+// HELPER
 // ==========================================================
 
 function getElement(id) {
-
     return document.getElementById(id);
-
 }
 
 
 // ==========================================================
-// FORMAT MONEY
+// MONEY FORMAT
 // ==========================================================
 
 function formatMoney(amount) {
@@ -61,6 +59,67 @@ function escapeHtml(value) {
 
 
 // ==========================================================
+// PARSE MEDIA
+// ==========================================================
+
+function parseMedia(value) {
+
+    if (!value) {
+        return [];
+    }
+
+    if (Array.isArray(value)) {
+        return value;
+    }
+
+    let result = value;
+
+    for (let i = 0; i < 3; i++) {
+
+        if (typeof result !== "string") {
+            break;
+        }
+
+        try {
+
+            const parsed =
+                JSON.parse(result);
+
+            result = parsed;
+
+        }
+
+        catch (error) {
+            break;
+        }
+
+    }
+
+    if (Array.isArray(result)) {
+
+        return result.filter(
+            item =>
+                typeof item === "string" &&
+                item.trim() !== ""
+        );
+
+    }
+
+    if (
+        typeof result === "string" &&
+        result.trim() !== ""
+    ) {
+
+        return [result];
+
+    }
+
+    return [];
+
+}
+
+
+// ==========================================================
 // LOGIN MESSAGE
 // ==========================================================
 
@@ -72,7 +131,9 @@ function showLoginMessage(
     const element =
         getElement("login-message");
 
-    if (!element) return;
+    if (!element) {
+        return;
+    }
 
     element.textContent =
         message;
@@ -96,17 +157,11 @@ function showDashboard() {
         getElement("admin-dashboard");
 
     if (login) {
-
-        login.style.display =
-            "none";
-
+        login.style.display = "none";
     }
 
     if (dashboard) {
-
-        dashboard.style.display =
-            "block";
-
+        dashboard.style.display = "block";
     }
 
 }
@@ -125,17 +180,11 @@ function showLogin() {
         getElement("admin-dashboard");
 
     if (login) {
-
-        login.style.display =
-            "block";
-
+        login.style.display = "block";
     }
 
     if (dashboard) {
-
-        dashboard.style.display =
-            "none";
-
+        dashboard.style.display = "none";
     }
 
 }
@@ -158,9 +207,7 @@ async function checkAdminSession() {
                 .getSession();
 
         if (error) {
-
             throw error;
-
         }
 
         const session =
@@ -243,16 +290,14 @@ async function adminLogin(event) {
     event.preventDefault();
 
     const email =
-        getElement(
-            "admin-email"
-        )?.value
+        getElement("admin-email")
+            ?.value
             .trim()
             .toLowerCase();
 
     const password =
-        getElement(
-            "admin-password"
-        )?.value;
+        getElement("admin-password")
+            ?.value;
 
     if (!email || !password) {
 
@@ -282,8 +327,7 @@ async function adminLogin(event) {
 
     if (button) {
 
-        button.disabled =
-            true;
+        button.disabled = true;
 
         button.textContent =
             "Logging in...";
@@ -309,9 +353,7 @@ async function adminLogin(event) {
                 });
 
         if (error) {
-
             throw error;
-
         }
 
         if (!data.user) {
@@ -352,8 +394,7 @@ async function adminLogin(event) {
 
         if (button) {
 
-            button.disabled =
-                false;
+            button.disabled = false;
 
             button.textContent =
                 "Login";
@@ -427,7 +468,7 @@ async function loadStatistics() {
 
         const {
             data: orders,
-            error
+            error: orderError
         } =
             await supabaseClient
                 .from("orders")
@@ -435,10 +476,8 @@ async function loadStatistics() {
                     "id,total,customer_email"
                 );
 
-        if (error) {
-
-            throw error;
-
+        if (orderError) {
+            throw orderError;
         }
 
         const orderList =
@@ -456,9 +495,7 @@ async function loadStatistics() {
                 totalSales +=
                     Number(order.total) || 0;
 
-                if (
-                    order.customer_email
-                ) {
+                if (order.customer_email) {
 
                     customers.add(
                         order.customer_email
@@ -470,42 +507,28 @@ async function loadStatistics() {
             }
         );
 
-        const totalOrdersElement =
-            getElement(
-                "total-orders"
-            );
+        const totalOrders =
+            getElement("total-orders");
 
         const totalSalesElement =
-            getElement(
-                "total-sales"
-            );
+            getElement("total-sales");
 
-        const totalCustomersElement =
-            getElement(
-                "total-customers"
-            );
+        const totalCustomers =
+            getElement("total-customers");
 
-        if (totalOrdersElement) {
-
-            totalOrdersElement.textContent =
+        if (totalOrders) {
+            totalOrders.textContent =
                 orderList.length;
-
         }
 
         if (totalSalesElement) {
-
             totalSalesElement.textContent =
-                formatMoney(
-                    totalSales
-                );
-
+                formatMoney(totalSales);
         }
 
-        if (totalCustomersElement) {
-
-            totalCustomersElement.textContent =
+        if (totalCustomers) {
+            totalCustomers.textContent =
                 customers.size;
-
         }
 
 
@@ -518,28 +541,21 @@ async function loadStatistics() {
                 .select(
                     "id",
                     {
-                        count:
-                            "exact",
-
-                        head:
-                            true
+                        count: "exact",
+                        head: true
                     }
                 );
 
         if (productError) {
-
             throw productError;
-
         }
 
-        const totalProductsElement =
-            getElement(
-                "total-products"
-            );
+        const totalProducts =
+            getElement("total-products");
 
-        if (totalProductsElement) {
+        if (totalProducts) {
 
-            totalProductsElement.textContent =
+            totalProducts.textContent =
                 count || 0;
 
         }
@@ -559,97 +575,24 @@ async function loadStatistics() {
 
 
 // ==========================================================
-// PARSE MEDIA
-// ==========================================================
-
-function parseMedia(value) {
-
-    if (!value) {
-
-        return [];
-
-    }
-
-    if (Array.isArray(value)) {
-
-        return value.filter(
-            item =>
-                typeof item === "string" &&
-                item.trim() !== ""
-        );
-
-    }
-
-    try {
-
-        let parsed =
-            JSON.parse(value);
-
-        if (
-            typeof parsed === "string"
-        ) {
-
-            try {
-
-                parsed =
-                    JSON.parse(parsed);
-
-            }
-
-            catch (error) {}
-
-        }
-
-        if (Array.isArray(parsed)) {
-
-            return parsed.filter(
-                item =>
-                    typeof item === "string" &&
-                    item.trim() !== ""
-            );
-
-        }
-
-    }
-
-    catch (error) {
-
-        // Continue to old URL format
-
-    }
-
-    return [
-        String(value)
-    ];
-
-}
-
-
-// ==========================================================
 // IMAGE PREVIEW
 // ==========================================================
 
 function setupImagePreview() {
 
     const input =
-        getElement(
-            "product-image"
-        );
+        getElement("product-image");
 
     const preview =
-        getElement(
-            "image-preview"
-        );
+        getElement("image-preview");
 
     if (!input || !preview) {
-
         return;
-
     }
 
     input.addEventListener(
         "change",
-        function() {
+        function () {
 
             preview.innerHTML =
                 "";
@@ -667,9 +610,7 @@ function setupImagePreview() {
                             "image/"
                         )
                     ) {
-
                         return;
-
                     }
 
                     const url =
@@ -718,24 +659,18 @@ function setupImagePreview() {
 function setupVideoPreview() {
 
     const input =
-        getElement(
-            "product-video"
-        );
+        getElement("product-video");
 
     const preview =
-        getElement(
-            "video-preview"
-        );
+        getElement("video-preview");
 
     if (!input || !preview) {
-
         return;
-
     }
 
     input.addEventListener(
         "change",
-        function() {
+        function () {
 
             preview.innerHTML =
                 "";
@@ -753,9 +688,7 @@ function setupVideoPreview() {
                             "video/"
                         )
                     ) {
-
                         return;
-
                     }
 
                     const url =
@@ -832,7 +765,6 @@ async function uploadFile(
                 filePath,
                 file,
                 {
-
                     cacheControl:
                         "3600",
 
@@ -841,14 +773,11 @@ async function uploadFile(
 
                     upsert:
                         false
-
                 }
             );
 
     if (error) {
-
         throw error;
-
     }
 
     const {
@@ -861,10 +790,7 @@ async function uploadFile(
                 filePath
             );
 
-    if (
-        !data ||
-        !data.publicUrl
-    ) {
+    if (!data?.publicUrl) {
 
         throw new Error(
             "Could not create public URL."
@@ -894,7 +820,7 @@ async function addProduct(event) {
         getElement(
             "product-name"
         )?.value
-            .trim();
+        .trim();
 
     const price =
         Number(
@@ -907,13 +833,13 @@ async function addProduct(event) {
         getElement(
             "product-category"
         )?.value
-            .trim();
+        .trim();
 
     const description =
         getElement(
             "product-description"
         )?.value
-            .trim();
+        .trim();
 
     const quantity =
         Number(
@@ -944,15 +870,11 @@ async function addProduct(event) {
         Number.isNaN(quantity)
     ) {
 
-        if (message) {
+        message.textContent =
+            "❌ Please complete all product fields.";
 
-            message.textContent =
-                "❌ Please complete all product fields.";
-
-            message.style.color =
-                "red";
-
-        }
+        message.style.color =
+            "red";
 
         return;
 
@@ -962,15 +884,11 @@ async function addProduct(event) {
         imageFiles.length === 0
     ) {
 
-        if (message) {
+        message.textContent =
+            "❌ Please select at least one image.";
 
-            message.textContent =
-                "❌ Please select at least one image.";
-
-            message.style.color =
-                "red";
-
-        }
+        message.style.color =
+            "red";
 
         return;
 
@@ -983,15 +901,10 @@ async function addProduct(event) {
 
     try {
 
-        if (button) {
+        button.disabled =
+            true;
 
-            button.disabled =
-                true;
-
-        }
-
-        const imageURLs =
-            [];
+        const imageURLs = [];
 
         for (
             let i = 0;
@@ -999,15 +912,11 @@ async function addProduct(event) {
             i++
         ) {
 
-            if (message) {
+            message.textContent =
+                `⏳ Uploading image ${i + 1} of ${imageFiles.length}...`;
 
-                message.textContent =
-                    `⏳ Uploading image ${i + 1} of ${imageFiles.length}...`;
-
-                message.style.color =
-                    "blue";
-
-            }
+            message.style.color =
+                "blue";
 
             const url =
                 await uploadFile(
@@ -1022,8 +931,7 @@ async function addProduct(event) {
 
         }
 
-        const videoURLs =
-            [];
+        const videoURLs = [];
 
         for (
             let i = 0;
@@ -1031,15 +939,8 @@ async function addProduct(event) {
             i++
         ) {
 
-            if (message) {
-
-                message.textContent =
-                    `⏳ Uploading video ${i + 1} of ${videoFiles.length}...`;
-
-                message.style.color =
-                    "blue";
-
-            }
+            message.textContent =
+                `⏳ Uploading video ${i + 1} of ${videoFiles.length}...`;
 
             const url =
                 await uploadFile(
@@ -1054,12 +955,8 @@ async function addProduct(event) {
 
         }
 
-        if (message) {
-
-            message.textContent =
-                "⏳ Saving product...";
-
-        }
+        message.textContent =
+            "⏳ Saving product...";
 
         const {
             error
@@ -1100,42 +997,53 @@ async function addProduct(event) {
                 ]);
 
         if (error) {
-
             throw error;
-
         }
 
-        if (message) {
+        message.textContent =
+            "✅ Product added successfully.";
 
-            message.textContent =
-                `✅ Product added successfully!
+        message.style.color =
+            "green";
 
-Images: ${imageURLs.length}
-Videos: ${videoURLs.length}`;
+        const form =
+            getElement(
+                "add-product-form"
+            );
 
-            message.style.color =
-                "green";
-
+        if (form) {
+            form.reset();
         }
 
-        getElement(
-            "add-product-form"
-        )?.reset();
+        const imagePreview =
+            getElement(
+                "image-preview"
+            );
 
-        getElement(
-            "image-preview"
-        ).innerHTML =
-            "";
+        const videoPreview =
+            getElement(
+                "video-preview"
+            );
 
-        getElement(
-            "video-preview"
-        ).innerHTML =
-            "";
+        if (imagePreview) {
+            imagePreview.innerHTML =
+                "";
+        }
 
-        getElement(
-            "product-quantity"
-        ).value =
-            "30";
+        if (videoPreview) {
+            videoPreview.innerHTML =
+                "";
+        }
+
+        const quantityInput =
+            getElement(
+                "product-quantity"
+            );
+
+        if (quantityInput) {
+            quantityInput.value =
+                "30";
+        }
 
         await loadProducts();
 
@@ -1152,33 +1060,25 @@ Videos: ${videoURLs.length}`;
             error
         );
 
-        if (message) {
+        message.textContent =
+            "❌ " +
+            (
+                error.message ||
+                "Could not add product."
+            );
 
-            message.textContent =
-                "❌ " +
-                (
-                    error.message ||
-                    "Could not add product."
-                );
-
-            message.style.color =
-                "red";
-
-        }
+        message.style.color =
+            "red";
 
     }
 
     finally {
 
-        if (button) {
+        button.disabled =
+            false;
 
-            button.disabled =
-                false;
-
-            button.textContent =
-                "➕ Add Product";
-
-        }
+        button.textContent =
+            "➕ Add Product";
 
     }
 
@@ -1197,9 +1097,7 @@ async function loadProducts() {
         );
 
     if (!table) {
-
         return;
-
     }
 
     try {
@@ -1220,9 +1118,7 @@ async function loadProducts() {
                 );
 
         if (error) {
-
             throw error;
-
         }
 
         if (
@@ -1290,10 +1186,8 @@ async function loadProducts() {
                         }
 
                         <div class="media-count">
-
                             ${images.length}
                             image${images.length === 1 ? "" : "s"}
-
                         </div>
 
                     </td>
@@ -1313,10 +1207,8 @@ async function loadProducts() {
                         }
 
                         <div class="media-count">
-
                             ${videos.length}
                             video${videos.length === 1 ? "" : "s"}
-
                         </div>
 
                     </td>
@@ -1359,6 +1251,8 @@ async function loadProducts() {
                         >
                             ✏️ Edit
                         </button>
+
+                        <br><br>
 
                         <button
                             type="button"
@@ -1424,9 +1318,7 @@ async function loadCategories() {
         );
 
     if (!select) {
-
         return;
-
     }
 
     const defaultCategories = [
@@ -1447,14 +1339,13 @@ async function loadCategories() {
     ];
 
     let categories =
-        [
-            ...defaultCategories
-        ];
+        [...defaultCategories];
 
     try {
 
         const {
-            data
+            data,
+            error
         } =
             await supabaseClient
                 .from("products")
@@ -1462,21 +1353,25 @@ async function loadCategories() {
                     "category"
                 );
 
-        (data || []).forEach(
-            product => {
+        if (!error) {
 
-                if (
-                    product.category
-                ) {
+            (data || []).forEach(
+                product => {
 
-                    categories.push(
-                        product.category.trim()
-                    );
+                    if (
+                        product.category
+                    ) {
+
+                        categories.push(
+                            product.category.trim()
+                        );
+
+                    }
 
                 }
+            );
 
-            }
-        );
+        }
 
     }
 
@@ -1505,18 +1400,12 @@ async function loadCategories() {
 
     }
 
-    catch (error) {
-
-        // Ignore
-
-    }
+    catch (error) {}
 
     categories =
         [
             ...new Set(
-                categories.filter(
-                    Boolean
-                )
+                categories.filter(Boolean)
             )
         ];
 
@@ -1568,12 +1457,8 @@ function addNewCategory() {
             "Enter the new category name:"
         );
 
-    if (
-        category === null
-    ) {
-
+    if (category === null) {
         return;
-
     }
 
     const newCategory =
@@ -1589,8 +1474,7 @@ function addNewCategory() {
 
     }
 
-    let saved =
-        [];
+    let saved = [];
 
     try {
 
@@ -1605,8 +1489,7 @@ function addNewCategory() {
 
     catch (error) {
 
-        saved =
-            [];
+        saved = [];
 
     }
 
@@ -1631,10 +1514,17 @@ function addNewCategory() {
         .then(
             () => {
 
-                getElement(
-                    "product-category"
-                ).value =
-                    newCategory;
+                const select =
+                    getElement(
+                        "product-category"
+                    );
+
+                if (select) {
+
+                    select.value =
+                        newCategory;
+
+                }
 
             }
         );
@@ -1665,15 +1555,16 @@ async function editProduct(
                     "id",
                     productId
                 )
-                .maybeSingle();
+                .limit(1);
 
         if (error) {
-
             throw error;
-
         }
 
-        if (!product) {
+        if (
+            !product ||
+            product.length === 0
+        ) {
 
             alert(
                 "❌ Product not found."
@@ -1683,85 +1574,64 @@ async function editProduct(
 
         }
 
+        const current =
+            product[0];
+
         const name =
             prompt(
                 "Product name:",
-                product.name || ""
+                current.name || ""
             );
 
-        if (
-            name === null
-        ) {
-
+        if (name === null) {
             return;
-
         }
 
-        const priceInput =
+        const priceText =
             prompt(
                 "Price:",
-                product.price || "0"
+                current.price || "0"
             );
 
-        if (
-            priceInput === null
-        ) {
-
+        if (priceText === null) {
             return;
-
         }
 
         const category =
             prompt(
                 "Category:",
-                product.category || ""
+                current.category || ""
             );
 
-        if (
-            category === null
-        ) {
-
+        if (category === null) {
             return;
-
         }
 
-        const quantityInput =
+        const quantityText =
             prompt(
-                "Quantity / Stock:",
-                product.quantity ?? "0"
+                "Quantity:",
+                current.quantity || "0"
             );
 
-        if (
-            quantityInput === null
-        ) {
-
+        if (quantityText === null) {
             return;
-
         }
 
         const description =
             prompt(
                 "Description:",
-                product.description || ""
+                current.description || ""
             );
 
-        if (
-            description === null
-        ) {
-
+        if (description === null) {
             return;
-
         }
 
         const price =
-            Number(
-                priceInput
-            );
+            Number(priceText);
 
         const quantity =
-            Number(
-                quantityInput
-            );
+            Number(quantityText);
 
         if (
             Number.isNaN(price) ||
@@ -1769,7 +1639,7 @@ async function editProduct(
         ) {
 
             alert(
-                "❌ Price and quantity must be valid numbers."
+                "❌ Price and quantity must be numbers."
             );
 
             return;
@@ -1805,9 +1675,7 @@ async function editProduct(
                 );
 
         if (updateError) {
-
             throw updateError;
-
         }
 
         alert(
@@ -1830,7 +1698,7 @@ async function editProduct(
         );
 
         alert(
-            "❌ Could not edit product.\n\n" +
+            "❌ Could not update product.\n\n" +
             (
                 error.message ||
                 "Unknown error"
@@ -1850,14 +1718,13 @@ async function deleteProduct(
     productId
 ) {
 
-    if (
-        !confirm(
+    const confirmed =
+        confirm(
             "Are you sure you want to delete this product?"
-        )
-    ) {
+        );
 
+    if (!confirmed) {
         return;
-
     }
 
     try {
@@ -1874,9 +1741,7 @@ async function deleteProduct(
                 );
 
         if (error) {
-
             throw error;
-
         }
 
         alert(
@@ -1910,71 +1775,45 @@ async function deleteProduct(
 
 
 // ==========================================================
-// ORDER STATUS MAPPING
+// DATABASE STATUS VALUES
 // ==========================================================
 //
-// DATABASE VALUE        ADMIN DISPLAY
-//
-// pending               Pending Payment
-// paid                  Paid
-// processing            Processing
-// shipping              Shipping
-// shipping              Out for Delivery
-// delivered             Delivered
-// cancelled             Cancelled
-//
 // IMPORTANT:
-// The database receives "shipping", NOT "Out for Delivery".
+// These values MUST match the values stored in
+// the orders.status column.
+//
 // ==========================================================
 
 const ORDER_STATUSES = [
 
     {
-        database:
-            "pending",
-
-        label:
-            "Pending Payment"
+        value: "pending",
+        label: "Pending Payment"
     },
 
     {
-        database:
-            "paid",
-
-        label:
-            "Paid"
+        value: "paid",
+        label: "Paid"
     },
 
     {
-        database:
-            "processing",
-
-        label:
-            "Processing"
+        value: "processing",
+        label: "Processing"
     },
 
     {
-        database:
-            "shipping",
-
-        label:
-            "Shipping"
+        value: "shipping",
+        label: "Shipping"
     },
 
     {
-        database:
-            "delivered",
-
-        label:
-            "Delivered"
+        value: "delivered",
+        label: "Delivered"
     },
 
     {
-        database:
-            "cancelled",
-
-        label:
-            "Cancelled"
+        value: "cancelled",
+        label: "Cancelled"
     }
 
 ];
@@ -1988,84 +1827,14 @@ function normalizeOrderStatus(
     status
 ) {
 
+    if (!status) {
+        return "pending";
+    }
+
     const value =
-        String(
-            status || ""
-        )
+        String(status)
             .trim()
             .toLowerCase();
-
-    if (
-        value ===
-        "out for delivery"
-    ) {
-
-        return "shipping";
-
-    }
-
-    if (
-        value ===
-        "shipped"
-    ) {
-
-        return "shipping";
-
-    }
-
-    if (
-        value ===
-        "shipping"
-    ) {
-
-        return "shipping";
-
-    }
-
-    if (
-        value ===
-        "pending payment"
-    ) {
-
-        return "pending";
-
-    }
-
-    if (
-        value ===
-        "paid"
-    ) {
-
-        return "paid";
-
-    }
-
-    if (
-        value ===
-        "processing"
-    ) {
-
-        return "processing";
-
-    }
-
-    if (
-        value ===
-        "delivered"
-    ) {
-
-        return "delivered";
-
-    }
-
-    if (
-        value ===
-        "cancelled"
-    ) {
-
-        return "cancelled";
-
-    }
 
     return value;
 
@@ -2080,61 +1849,29 @@ function createStatusOptions(
     currentStatus
 ) {
 
-    const databaseStatus =
+    const current =
         normalizeOrderStatus(
             currentStatus
         );
 
     return ORDER_STATUSES
         .map(
-            status => {
+            item => `
 
-                return `
+                <option
+                    value="${escapeHtml(item.value)}"
+                    ${
+                        item.value === current
+                            ? "selected"
+                            : ""
+                    }
+                >
+                    ${escapeHtml(item.label)}
+                </option>
 
-                    <option
-                        value="${escapeHtml(status.database)}"
-                        ${
-                            status.database ===
-                            databaseStatus
-                                ? "selected"
-                                : ""
-                        }
-                    >
-                        ${escapeHtml(status.label)}
-                    </option>
-
-                `;
-
-            }
+            `
         )
         .join("");
-
-}
-
-
-// ==========================================================
-// GET STATUS LABEL
-// ==========================================================
-
-function getStatusLabel(
-    databaseStatus
-) {
-
-    const normalized =
-        normalizeOrderStatus(
-            databaseStatus
-        );
-
-    const found =
-        ORDER_STATUSES.find(
-            status =>
-                status.database ===
-                normalized
-        );
-
-    return found
-        ? found.label
-        : databaseStatus || "";
 
 }
 
@@ -2151,16 +1888,14 @@ async function loadOrders() {
         );
 
     if (!table) {
-
         return;
-
     }
 
     table.innerHTML = `
 
         <tr>
 
-            <td colspan="9">
+            <td colspan="10">
                 Loading orders...
             </td>
 
@@ -2186,9 +1921,7 @@ async function loadOrders() {
                 );
 
         if (error) {
-
             throw error;
-
         }
 
         if (
@@ -2200,7 +1933,7 @@ async function loadOrders() {
 
                 <tr>
 
-                    <td colspan="9">
+                    <td colspan="10">
                         No orders found.
                     </td>
 
@@ -2229,6 +1962,12 @@ async function loadOrders() {
                     );
 
                 row.innerHTML = `
+
+                    <td>
+                        ${escapeHtml(
+                            order.id
+                        )}
+                    </td>
 
                     <td>
                         ${escapeHtml(
@@ -2264,7 +2003,7 @@ async function loadOrders() {
 
                         <select
                             class="order-status"
-                            data-order-id="${Number(order.id)}"
+                            data-order-id="${escapeHtml(order.id)}"
                         >
 
                             ${createStatusOptions(
@@ -2273,17 +2012,13 @@ async function loadOrders() {
 
                         </select>
 
-                        <small
-                            style="
-                                display:block;
-                                margin-top:5px;
-                                color:#666;
-                            "
-                        >
+                        <br>
+
+                        <small>
                             Database:
-                            ${escapeHtml(
-                                databaseStatus
-                            )}
+                            <strong class="database-status-display">
+                                ${escapeHtml(databaseStatus)}
+                            </strong>
                         </small>
 
                     </td>
@@ -2293,7 +2028,7 @@ async function loadOrders() {
                         <input
                             type="text"
                             class="tracking-input"
-                            data-order-id="${Number(order.id)}"
+                            data-order-id="${escapeHtml(order.id)}"
                             value="${escapeHtml(
                                 order.tracking_number || ""
                             )}"
@@ -2316,7 +2051,7 @@ async function loadOrders() {
                         <input
                             type="text"
                             class="delivery-note-input"
-                            data-order-id="${Number(order.id)}"
+                            data-order-id="${escapeHtml(order.id)}"
                             value="${escapeHtml(
                                 order.delivery_note || ""
                             )}"
@@ -2329,6 +2064,7 @@ async function loadOrders() {
 
                         <button
                             type="button"
+                            class="save-order-button"
                             onclick="saveOrderUpdate(${Number(order.id)})"
                         >
                             💾 Save
@@ -2350,7 +2086,7 @@ async function loadOrders() {
     catch (error) {
 
         console.error(
-            "Orders error:",
+            "Load orders error:",
             error
         );
 
@@ -2358,7 +2094,7 @@ async function loadOrders() {
 
             <tr>
 
-                <td colspan="9">
+                <td colspan="10">
 
                     ❌ Could not load orders.
 
@@ -2392,22 +2128,16 @@ function generateTrackingNumber() {
         now.getFullYear() +
         String(
             now.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        ) +
+        ).padStart(2, "0") +
         String(
             now.getDate()
-        ).padStart(
-            2,
-            "0"
+        ).padStart(2, "0"
         );
 
     const random =
         Math.floor(
             100000 +
-            Math.random() *
-            900000
+            Math.random() * 900000
         );
 
     return (
@@ -2468,9 +2198,7 @@ async function generateTracking(
                 );
 
         if (error) {
-
             throw error;
-
         }
 
         alert(
@@ -2506,28 +2234,44 @@ async function generateTracking(
 // SAVE ORDER UPDATE
 // ==========================================================
 //
-// IMPORTANT:
+// VERY IMPORTANT:
 //
-// The SELECTED VALUE is already the database value.
+// This function sends the selected database value directly.
 //
 // Example:
 //
-// Admin selects:
-// "Shipping"
+// Selecting "Delivered"
+// sends:
 //
-// JavaScript sends:
-// "shipping"
+// status: "delivered"
 //
-// Database:
-// shipping
+// Selecting "Shipping"
+// sends:
 //
-// No .single()
-// No .select()
+// status: "shipping"
+//
+// There is NO conversion from delivered -> shipping.
+//
+// There is NO .single().
+//
 // ==========================================================
 
 async function saveOrderUpdate(
     orderId
 ) {
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "SAVE ORDER STARTED"
+    );
+
+    console.log(
+        "Order ID:",
+        orderId
+    );
 
     const statusElement =
         document.querySelector(
@@ -2547,17 +2291,20 @@ async function saveOrderUpdate(
     if (!statusElement) {
 
         alert(
-            "❌ Could not find order status."
+            "❌ Could not find the status selector for order " +
+            orderId
         );
 
         return;
 
     }
 
-    const status =
-        normalizeOrderStatus(
-            statusElement.value
-        );
+    // ------------------------------------------------------
+    // GET EXACT SELECTED DATABASE VALUE
+    // ------------------------------------------------------
+
+    const selectedStatus =
+        statusElement.value;
 
     const tracking =
         trackingElement
@@ -2570,40 +2317,36 @@ async function saveOrderUpdate(
             : "";
 
     console.log(
-        "ORDER UPDATE",
-        {
-            orderId:
-                orderId,
-
-            selectedStatus:
-                statusElement.value,
-
-            databaseStatus:
-                status,
-
-            tracking:
-                tracking,
-
-            note:
-                note
-        }
+        "Selected status:",
+        selectedStatus
     );
 
-    // Make sure the status is one of the allowed
-    // database values.
+    console.log(
+        "Tracking:",
+        tracking
+    );
+
+    console.log(
+        "Note:",
+        note
+    );
+
+    // ------------------------------------------------------
+    // VALIDATE STATUS
+    // ------------------------------------------------------
 
     const validStatus =
         ORDER_STATUSES.some(
             item =>
-                item.database ===
-                status
+                item.value ===
+                selectedStatus
         );
 
     if (!validStatus) {
 
         alert(
             "❌ Invalid order status:\n\n" +
-            status
+            selectedStatus
         );
 
         return;
@@ -2612,18 +2355,20 @@ async function saveOrderUpdate(
 
     try {
 
+        // --------------------------------------------------
+        // UPDATE DATABASE
+        // --------------------------------------------------
+
         console.log(
-            "Saving to database:",
+            "Updating Supabase..."
+        );
+
+        console.log(
             {
-                id:
-                    orderId,
-
-                status:
-                    status,
-
+                id: orderId,
+                status: selectedStatus,
                 tracking_number:
                     tracking || null,
-
                 delivery_note:
                     note || null
             }
@@ -2637,7 +2382,7 @@ async function saveOrderUpdate(
                 .update({
 
                     status:
-                        status,
+                        selectedStatus,
 
                     tracking_number:
                         tracking || null,
@@ -2654,7 +2399,7 @@ async function saveOrderUpdate(
         if (error) {
 
             console.error(
-                "Supabase order update error:",
+                "SUPABASE UPDATE ERROR:",
                 error
             );
 
@@ -2663,14 +2408,120 @@ async function saveOrderUpdate(
         }
 
         console.log(
-            "Order update successful."
+            "Supabase update completed."
         );
+
+
+        // --------------------------------------------------
+        // READ THE ORDER AGAIN
+        // --------------------------------------------------
+
+        console.log(
+            "Checking database..."
+        );
+
+        const {
+            data: checkOrders,
+            error: checkError
+        } =
+            await supabaseClient
+                .from("orders")
+                .select(
+                    "id,status,tracking_number,delivery_note"
+                )
+                .eq(
+                    "id",
+                    orderId
+                );
+
+        if (checkError) {
+
+            console.error(
+                "Verification error:",
+                checkError
+            );
+
+            throw checkError;
+
+        }
+
+        if (
+            !checkOrders ||
+            checkOrders.length === 0
+        ) {
+
+            throw new Error(
+                "Order was not found after update."
+            );
+
+        }
+
+        const savedOrder =
+            checkOrders[0];
+
+        const savedStatus =
+            normalizeOrderStatus(
+                savedOrder.status
+            );
+
+        console.log(
+            "DATABASE STATUS AFTER UPDATE:",
+            savedStatus
+        );
+
+
+        // --------------------------------------------------
+        // CHECK WHETHER DATABASE REALLY SAVED IT
+        // --------------------------------------------------
+
+        if (
+            savedStatus !==
+            selectedStatus
+        ) {
+
+            console.error(
+                "STATUS MISMATCH",
+                {
+                    selected:
+                        selectedStatus,
+
+                    database:
+                        savedStatus
+                }
+            );
+
+            alert(
+                "⚠️ The database returned a different status.\n\n" +
+                "Selected: " +
+                selectedStatus +
+                "\n\n" +
+                "Database: " +
+                savedStatus +
+                "\n\n" +
+                "This means something outside this status selector is changing the order."
+            );
+
+            await loadOrders();
+
+            return;
+
+        }
+
+
+        // --------------------------------------------------
+        // SUCCESS
+        // --------------------------------------------------
 
         alert(
             "✅ Order updated successfully.\n\n" +
             "Status saved as: " +
-            status
+            savedStatus
         );
+
+
+        // --------------------------------------------------
+        // RELOAD FROM DATABASE
+        // --------------------------------------------------
 
         await loadOrders();
 
@@ -2679,7 +2530,7 @@ async function saveOrderUpdate(
     catch (error) {
 
         console.error(
-            "SAVE ORDER ERROR:",
+            "ORDER UPDATE FAILED:",
             error
         );
 
@@ -2697,20 +2548,79 @@ async function saveOrderUpdate(
 
 
 // ==========================================================
-// INITIALIZE ADMIN
+// LOAD ORDERS SAFELY
+// ==========================================================
+
+window.saveOrderUpdate =
+    saveOrderUpdate;
+
+window.generateTracking =
+    generateTracking;
+
+window.editProduct =
+    editProduct;
+
+window.deleteProduct =
+    deleteProduct;
+
+
+// ==========================================================
+// INITIALIZE
 // ==========================================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
+    function () {
 
         console.log(
-            "HASBUNALLAHU STORE ADMIN JS - STATUS MAPPING VERSION"
+            "=========================================="
         );
+
+        console.log(
+            "HASBUNALLAHU ADMIN JS LOADED"
+        );
+
+        console.log(
+            "STATUS SYSTEM:"
+        );
+
+        console.log(
+            "pending → Pending Payment"
+        );
+
+        console.log(
+            "paid → Paid"
+        );
+
+        console.log(
+            "processing → Processing"
+        );
+
+        console.log(
+            "shipping → Shipping"
+        );
+
+        console.log(
+            "delivered → Delivered"
+        );
+
+        console.log(
+            "cancelled → Cancelled"
+        );
+
+        console.log(
+            "=========================================="
+        );
+
 
         setupImagePreview();
 
         setupVideoPreview();
+
+
+        // --------------------------------------------------
+        // LOGIN
+        // --------------------------------------------------
 
         const loginForm =
             getElement(
@@ -2726,19 +2636,29 @@ document.addEventListener(
 
         }
 
-        const logoutButton =
+
+        // --------------------------------------------------
+        // LOGOUT
+        // --------------------------------------------------
+
+        const logout =
             getElement(
                 "admin-logout"
             );
 
-        if (logoutButton) {
+        if (logout) {
 
-            logoutButton.addEventListener(
+            logout.addEventListener(
                 "click",
                 adminLogout
             );
 
         }
+
+
+        // --------------------------------------------------
+        // ADD PRODUCT
+        // --------------------------------------------------
 
         const productForm =
             getElement(
@@ -2754,6 +2674,11 @@ document.addEventListener(
 
         }
 
+
+        // --------------------------------------------------
+        // ADD CATEGORY
+        // --------------------------------------------------
+
         const categoryButton =
             getElement(
                 "add-category-button"
@@ -2767,6 +2692,11 @@ document.addEventListener(
             );
 
         }
+
+
+        // --------------------------------------------------
+        // CHECK LOGIN
+        // --------------------------------------------------
 
         checkAdminSession();
 
