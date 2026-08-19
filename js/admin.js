@@ -1,18 +1,18 @@
 // ==========================================
 // HASBUNALLAHU STORE
 // ADMIN DASHBOARD
-// MULTIPLE IMAGES + MULTIPLE VIDEOS
-// FULL PRODUCT EDITING
+// COMPLETE VERSION
 // ==========================================
 
+
+// ==========================================
+// ADMIN SETTINGS
+// ==========================================
 
 const ADMIN_EMAIL =
     "kabirabdulazeez45@gmail.com";
 
-
 let currentAdmin = null;
-
-let editingProduct = null;
 
 
 // ==========================================
@@ -20,11 +20,8 @@ let editingProduct = null;
 // ==========================================
 
 function getElement(id) {
-
     return document.getElementById(id);
-
 }
-
 
 
 // ==========================================
@@ -45,7 +42,6 @@ function formatMoney(amount) {
 }
 
 
-
 // ==========================================
 // ESCAPE HTML
 // ==========================================
@@ -62,144 +58,6 @@ function escapeHtml(value) {
 }
 
 
-
-// ==========================================
-// PARSE MEDIA
-// Handles:
-// ["url1","url2"]
-// "[\"url1\",\"url2\"]"
-// ["url"]
-// single URL
-// ==========================================
-
-function parseMedia(value) {
-
-    if (
-        value === null ||
-        value === undefined ||
-        value === ""
-    ) {
-        return [];
-    }
-
-
-    // Already an array
-
-    if (Array.isArray(value)) {
-
-        return value
-            .flat(Infinity)
-            .filter(
-                item =>
-                    typeof item === "string" &&
-                    item.trim() !== ""
-            );
-
-    }
-
-
-    let current =
-        value;
-
-
-    // Try multiple levels because
-    // some existing rows are double encoded.
-
-    for (
-        let attempt = 0;
-        attempt < 4;
-        attempt++
-    ) {
-
-        if (Array.isArray(current)) {
-
-            return current
-                .flat(Infinity)
-                .filter(
-                    item =>
-                        typeof item === "string" &&
-                        item.trim() !== ""
-                );
-
-        }
-
-
-        if (
-            typeof current !== "string"
-        ) {
-            break;
-        }
-
-
-        const text =
-            current.trim();
-
-
-        if (!text) {
-            return [];
-        }
-
-
-        try {
-
-            const parsed =
-                JSON.parse(text);
-
-            current =
-                parsed;
-
-        }
-
-        catch (error) {
-
-            // If it looks like a plain URL,
-            // use it directly.
-
-            if (
-                text.startsWith("http://") ||
-                text.startsWith("https://")
-            ) {
-
-                return [text];
-
-            }
-
-            break;
-
-        }
-
-    }
-
-
-    if (Array.isArray(current)) {
-
-        return current
-            .flat(Infinity)
-            .filter(
-                item =>
-                    typeof item === "string" &&
-                    item.trim() !== ""
-            );
-
-    }
-
-
-    if (
-        typeof current === "string" &&
-        current.trim()
-    ) {
-
-        return [current.trim()];
-
-    }
-
-
-    return [];
-
-}
-
-
-
 // ==========================================
 // LOGIN MESSAGE
 // ==========================================
@@ -214,14 +72,12 @@ function showLoginMessage(
 
     if (!element) return;
 
-    element.textContent =
-        message;
+    element.textContent = message;
 
     element.style.color =
         success ? "green" : "red";
 
 }
-
 
 
 // ==========================================
@@ -247,7 +103,6 @@ function showDashboard() {
 }
 
 
-
 // ==========================================
 // SHOW LOGIN
 // ==========================================
@@ -271,9 +126,8 @@ function showLogin() {
 }
 
 
-
 // ==========================================
-// CHECK SESSION
+// CHECK ADMIN SESSION
 // ==========================================
 
 async function checkAdminSession() {
@@ -361,7 +215,6 @@ async function checkAdminSession() {
     }
 
 }
-
 
 
 // ==========================================
@@ -489,16 +342,28 @@ async function adminLogin(event) {
 }
 
 
-
 // ==========================================
 // LOGOUT
 // ==========================================
 
 async function adminLogout() {
 
-    await supabaseClient
-        .auth
-        .signOut();
+    try {
+
+        await supabaseClient
+            .auth
+            .signOut();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+    }
 
     currentAdmin =
         null;
@@ -506,7 +371,6 @@ async function adminLogout() {
     showLogin();
 
 }
-
 
 
 // ==========================================
@@ -528,7 +392,6 @@ async function loadDashboard() {
     ]);
 
 }
-
 
 
 // ==========================================
@@ -579,19 +442,18 @@ async function loadStatistics() {
             }
         );
 
-        const totalOrders =
+        const totalOrdersElement =
             getElement("total-orders");
 
         const totalSalesElement =
             getElement("total-sales");
 
-        const totalCustomers =
+        const totalCustomersElement =
             getElement("total-customers");
 
+        if (totalOrdersElement) {
 
-        if (totalOrders) {
-
-            totalOrders.textContent =
+            totalOrdersElement.textContent =
                 orderList.length;
 
         }
@@ -603,9 +465,9 @@ async function loadStatistics() {
 
         }
 
-        if (totalCustomers) {
+        if (totalCustomersElement) {
 
-            totalCustomers.textContent =
+            totalCustomersElement.textContent =
                 customers.size;
 
         }
@@ -629,13 +491,12 @@ async function loadStatistics() {
             throw productError;
         }
 
-
-        const totalProducts =
+        const totalProductsElement =
             getElement("total-products");
 
-        if (totalProducts) {
+        if (totalProductsElement) {
 
-            totalProducts.textContent =
+            totalProductsElement.textContent =
                 count || 0;
 
         }
@@ -654,9 +515,107 @@ async function loadStatistics() {
 }
 
 
+// ==========================================
+// PARSE MEDIA
+// Handles JSON arrays and old formats
+// ==========================================
+
+function parseMedia(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return [];
+
+    }
+
+    if (Array.isArray(value)) {
+
+        return value.filter(
+            item =>
+                typeof item === "string" &&
+                item.trim() !== ""
+        );
+
+    }
+
+    let current =
+        value;
+
+    // Try several times because some old
+    // records may have been JSON-stringified
+    // more than once.
+
+    for (
+        let i = 0;
+        i < 4;
+        i++
+    ) {
+
+        if (
+            typeof current !== "string"
+        ) {
+
+            break;
+
+        }
+
+        const trimmed =
+            current.trim();
+
+        if (!trimmed) {
+            return [];
+        }
+
+        try {
+
+            const parsed =
+                JSON.parse(trimmed);
+
+            if (Array.isArray(parsed)) {
+
+                return parsed.filter(
+                    item =>
+                        typeof item === "string" &&
+                        item.trim() !== ""
+                );
+
+            }
+
+            current =
+                parsed;
+
+        }
+
+        catch (error) {
+
+            break;
+
+        }
+
+    }
+
+    if (
+        typeof current === "string" &&
+        current.trim() !== ""
+    ) {
+
+        return [
+            current.trim()
+        ];
+
+    }
+
+    return [];
+
+}
+
 
 // ==========================================
-// IMAGE PREVIEW - ADD PRODUCT
+// IMAGE PREVIEW
 // ==========================================
 
 function setupImagePreview() {
@@ -673,7 +632,7 @@ function setupImagePreview() {
 
     input.addEventListener(
         "change",
-        function() {
+        function () {
 
             preview.innerHTML = "";
 
@@ -690,7 +649,9 @@ function setupImagePreview() {
                             "image/"
                         )
                     ) {
+
                         return;
+
                     }
 
                     const url =
@@ -732,9 +693,8 @@ function setupImagePreview() {
 }
 
 
-
 // ==========================================
-// VIDEO PREVIEW - ADD PRODUCT
+// VIDEO PREVIEW
 // ==========================================
 
 function setupVideoPreview() {
@@ -751,7 +711,7 @@ function setupVideoPreview() {
 
     input.addEventListener(
         "change",
-        function() {
+        function () {
 
             preview.innerHTML = "";
 
@@ -768,7 +728,9 @@ function setupVideoPreview() {
                             "video/"
                         )
                     ) {
+
                         return;
+
                     }
 
                     const url =
@@ -809,172 +771,6 @@ function setupVideoPreview() {
     );
 
 }
-
-
-
-// ==========================================
-// EDIT IMAGE PREVIEW
-// ==========================================
-
-function setupEditImagePreview() {
-
-    const input =
-        getElement(
-            "edit-product-images"
-        );
-
-    const preview =
-        getElement(
-            "edit-image-preview"
-        );
-
-    if (!input || !preview) {
-        return;
-    }
-
-    input.addEventListener(
-        "change",
-        function() {
-
-            preview.innerHTML = "";
-
-            const files =
-                Array.from(
-                    this.files || []
-                );
-
-            files.forEach(
-                file => {
-
-                    if (
-                        !file.type.startsWith(
-                            "image/"
-                        )
-                    ) {
-                        return;
-                    }
-
-                    const url =
-                        URL.createObjectURL(
-                            file
-                        );
-
-                    const div =
-                        document.createElement(
-                            "div"
-                        );
-
-                    div.className =
-                        "preview-item";
-
-                    div.innerHTML = `
-
-                        <img
-                            src="${url}"
-                            alt="New image"
-                        >
-
-                        <small>
-                            ${escapeHtml(file.name)}
-                        </small>
-
-                    `;
-
-                    preview.appendChild(
-                        div
-                    );
-
-                }
-            );
-
-        }
-    );
-
-}
-
-
-
-// ==========================================
-// EDIT VIDEO PREVIEW
-// ==========================================
-
-function setupEditVideoPreview() {
-
-    const input =
-        getElement(
-            "edit-product-videos"
-        );
-
-    const preview =
-        getElement(
-            "edit-video-preview"
-        );
-
-    if (!input || !preview) {
-        return;
-    }
-
-    input.addEventListener(
-        "change",
-        function() {
-
-            preview.innerHTML = "";
-
-            const files =
-                Array.from(
-                    this.files || []
-                );
-
-            files.forEach(
-                file => {
-
-                    if (
-                        !file.type.startsWith(
-                            "video/"
-                        )
-                    ) {
-                        return;
-                    }
-
-                    const url =
-                        URL.createObjectURL(
-                            file
-                        );
-
-                    const div =
-                        document.createElement(
-                            "div"
-                        );
-
-                    div.className =
-                        "preview-item";
-
-                    div.innerHTML = `
-
-                        <video
-                            src="${url}"
-                            controls
-                            muted
-                        ></video>
-
-                        <small>
-                            ${escapeHtml(file.name)}
-                        </small>
-
-                    `;
-
-                    preview.appendChild(
-                        div
-                    );
-
-                }
-            );
-
-        }
-    );
-
-}
-
 
 
 // ==========================================
@@ -1001,7 +797,6 @@ async function uploadFile(
     const filePath =
         `${folder}/${fileName}`;
 
-
     const {
         error
     } =
@@ -1027,7 +822,6 @@ async function uploadFile(
         throw error;
     }
 
-
     const {
         data
     } =
@@ -1038,7 +832,6 @@ async function uploadFile(
                 filePath
             );
 
-
     if (!data?.publicUrl) {
 
         throw new Error(
@@ -1047,11 +840,9 @@ async function uploadFile(
 
     }
 
-
     return data.publicUrl;
 
 }
-
 
 
 // ==========================================
@@ -1096,14 +887,12 @@ async function addProduct(event) {
             ).value
         );
 
-
     const imageFiles =
         Array.from(
             getElement(
                 "product-image"
             ).files || []
         );
-
 
     const videoFiles =
         Array.from(
@@ -1152,19 +941,17 @@ async function addProduct(event) {
             "add-product-button"
         );
 
-
     try {
 
         button.disabled =
             true;
 
-
-        button.textContent =
-            "Adding...";
-
-
         const imageURLs = [];
 
+
+        // ==========================================
+        // UPLOAD IMAGES
+        // ==========================================
 
         for (
             let i = 0;
@@ -1178,14 +965,12 @@ async function addProduct(event) {
             message.style.color =
                 "blue";
 
-
             const url =
                 await uploadFile(
                     "product-images",
                     "products",
                     imageFiles[i]
                 );
-
 
             imageURLs.push(
                 url
@@ -1194,8 +979,11 @@ async function addProduct(event) {
         }
 
 
-        const videoURLs = [];
+        // ==========================================
+        // UPLOAD VIDEOS
+        // ==========================================
 
+        const videoURLs = [];
 
         for (
             let i = 0;
@@ -1213,7 +1001,6 @@ async function addProduct(event) {
                     videoFiles[i]
                 );
 
-
             videoURLs.push(
                 url
             );
@@ -1221,9 +1008,12 @@ async function addProduct(event) {
         }
 
 
+        // ==========================================
+        // SAVE PRODUCT
+        // ==========================================
+
         message.textContent =
             "⏳ Saving product...";
-
 
         const {
             error
@@ -1233,7 +1023,6 @@ async function addProduct(event) {
                 .insert([
 
                     {
-
                         name:
                             name,
 
@@ -1258,20 +1047,21 @@ async function addProduct(event) {
 
                         quantity:
                             quantity
-
                     }
 
                 ]);
-
 
         if (error) {
             throw error;
         }
 
 
+        // ==========================================
+        // SUCCESS
+        // ==========================================
+
         message.textContent =
             `✅ Product added successfully!
-
 Images: ${imageURLs.length}
 Videos: ${videoURLs.length}`;
 
@@ -1283,18 +1073,15 @@ Videos: ${videoURLs.length}`;
             "add-product-form"
         ).reset();
 
-
         getElement(
             "image-preview"
         ).innerHTML =
             "";
 
-
         getElement(
             "video-preview"
         ).innerHTML =
             "";
-
 
         getElement(
             "product-quantity"
@@ -1342,7 +1129,6 @@ Videos: ${videoURLs.length}`;
 }
 
 
-
 // ==========================================
 // LOAD PRODUCTS
 // ==========================================
@@ -1357,7 +1143,6 @@ async function loadProducts() {
     if (!table) {
         return;
     }
-
 
     try {
 
@@ -1374,7 +1159,6 @@ async function loadProducts() {
                         ascending: true
                     }
                 );
-
 
         if (error) {
             throw error;
@@ -1420,7 +1204,6 @@ async function loadProducts() {
                         product.videos
                     );
 
-
                 const row =
                     document.createElement(
                         "tr"
@@ -1433,7 +1216,6 @@ async function loadProducts() {
                         ${escapeHtml(product.id)}
                     </td>
 
-
                     <td>
 
                         ${
@@ -1443,21 +1225,17 @@ async function loadProducts() {
                                         src="${escapeHtml(images[0])}"
                                         class="product-main-image"
                                         alt="Product"
-                                        onerror="this.style.display='none'"
                                     >
                                 `
                                 : "No image"
                         }
 
                         <div class="media-count">
-
                             ${images.length}
                             image${images.length === 1 ? "" : "s"}
-
                         </div>
 
                     </td>
-
 
                     <td>
 
@@ -1474,14 +1252,11 @@ async function loadProducts() {
                         }
 
                         <div class="media-count">
-
                             ${videos.length}
                             video${videos.length === 1 ? "" : "s"}
-
                         </div>
 
                     </td>
-
 
                     <td>
                         ${escapeHtml(
@@ -1489,13 +1264,11 @@ async function loadProducts() {
                         )}
                     </td>
 
-
                     <td>
                         ${formatMoney(
                             product.price
                         )}
                     </td>
-
 
                     <td>
                         ${escapeHtml(
@@ -1503,20 +1276,17 @@ async function loadProducts() {
                         )}
                     </td>
 
-
                     <td>
                         ${Number(
                             product.quantity
                         ) || 0}
                     </td>
 
-
                     <td>
                         ${escapeHtml(
                             product.description
                         )}
                     </td>
-
 
                     <td>
 
@@ -1526,8 +1296,6 @@ async function loadProducts() {
                         >
                             ✏️ Edit
                         </button>
-
-                        <br><br>
 
                         <button
                             type="button"
@@ -1539,7 +1307,6 @@ async function loadProducts() {
                     </td>
 
                 `;
-
 
                 table.appendChild(
                     row
@@ -1582,29 +1349,18 @@ async function loadProducts() {
 }
 
 
-
 // ==========================================
 // LOAD CATEGORIES
 // ==========================================
 
 async function loadCategories() {
 
-    const selects = [
-
+    const select =
         getElement(
             "product-category"
-        ),
+        );
 
-        getElement(
-            "edit-product-category"
-        )
-
-    ].filter(Boolean);
-
-
-    if (
-        selects.length === 0
-    ) {
+    if (!select) {
         return;
     }
 
@@ -1612,27 +1368,16 @@ async function loadCategories() {
     const defaultCategories = [
 
         "Electronics",
-
         "Phones & Accessories",
-
         "Computers",
-
         "Fashion",
-
         "Shoes",
-
         "Bags",
-
         "Beauty",
-
         "Home & Kitchen",
-
         "School",
-
         "Books",
-
         "Sports",
-
         "Other"
 
     ];
@@ -1652,7 +1397,6 @@ async function loadCategories() {
                 .select(
                     "category"
                 );
-
 
         (data || []).forEach(
             product => {
@@ -1691,7 +1435,6 @@ async function loadCategories() {
                 ) || "[]"
             );
 
-
         categories =
             categories.concat(
                 saved
@@ -1716,50 +1459,32 @@ async function loadCategories() {
     );
 
 
-    selects.forEach(
-        select => {
+    select.innerHTML = `
 
-            const currentValue =
-                select.value;
+        <option value="">
+            Select category
+        </option>
 
-
-            select.innerHTML = `
-
-                <option value="">
-                    Select category
-                </option>
-
-            `;
+    `;
 
 
-            categories.forEach(
-                category => {
+    categories.forEach(
+        category => {
 
-                    const option =
-                        document.createElement(
-                            "option"
-                        );
+            const option =
+                document.createElement(
+                    "option"
+                );
 
-                    option.value =
-                        category;
+            option.value =
+                category;
 
-                    option.textContent =
-                        category;
+            option.textContent =
+                category;
 
-                    select.appendChild(
-                        option
-                    );
-
-                }
+            select.appendChild(
+                option
             );
-
-
-            if (currentValue) {
-
-                select.value =
-                    currentValue;
-
-            }
 
         }
     );
@@ -1767,29 +1492,23 @@ async function loadCategories() {
 }
 
 
-
 // ==========================================
 // ADD CATEGORY
 // ==========================================
 
-function addNewCategory(
-    target = "product-category"
-) {
+function addNewCategory() {
 
     const category =
         prompt(
             "Enter the new category name:"
         );
 
-
     if (category === null) {
         return;
     }
 
-
     const newCategory =
         category.trim();
-
 
     if (!newCategory) {
 
@@ -1803,7 +1522,6 @@ function addNewCategory(
 
 
     let saved = [];
-
 
     try {
 
@@ -1845,15 +1563,10 @@ function addNewCategory(
         .then(
             () => {
 
-                const select =
-                    getElement(target);
-
-                if (select) {
-
-                    select.value =
-                        newCategory;
-
-                }
+                getElement(
+                    "product-category"
+                ).value =
+                    newCategory;
 
             }
         );
@@ -1861,9 +1574,13 @@ function addNewCategory(
 }
 
 
-
 // ==========================================
-// OPEN EDIT PRODUCT
+// EDIT PRODUCT
+// Name
+// Price
+// Category
+// Quantity
+// Description
 // ==========================================
 
 async function editProduct(
@@ -1872,24 +1589,28 @@ async function editProduct(
 
     try {
 
+        // ==========================================
+        // GET CURRENT PRODUCT
+        // ==========================================
+
         const {
             data: product,
             error
         } =
             await supabaseClient
                 .from("products")
-                .select("*")
+                .select(
+                    "id,name,price,category,quantity,description"
+                )
                 .eq(
                     "id",
                     productId
                 )
                 .single();
 
-
         if (error) {
             throw error;
         }
-
 
         if (!product) {
 
@@ -1902,731 +1623,167 @@ async function editProduct(
         }
 
 
-        editingProduct =
-            product;
+        // ==========================================
+        // PRODUCT NAME
+        // ==========================================
+
+        const name =
+            prompt(
+                "Product Name:",
+                product.name || ""
+            );
+
+        if (name === null) {
+            return;
+        }
 
 
         // ==========================================
-        // BASIC DETAILS
+        // PRICE
         // ==========================================
 
-        getElement(
-            "edit-product-id"
-        ).value =
-            product.id;
+        const priceInput =
+            prompt(
+                "Price (₦):",
+                product.price || 0
+            );
 
+        if (priceInput === null) {
+            return;
+        }
 
-        getElement(
-            "edit-product-name"
-        ).value =
-            product.name || "";
-
-
-        getElement(
-            "edit-product-price"
-        ).value =
+        const price =
             Number(
-                product.price
-            ) || 0;
+                priceInput
+            );
 
+        if (
+            Number.isNaN(price) ||
+            price < 0
+        ) {
 
-        getElement(
-            "edit-product-quantity"
-        ).value =
-            Number(
-                product.quantity
-            ) || 0;
+            alert(
+                "❌ Invalid price."
+            );
 
+            return;
 
-        getElement(
-            "edit-product-description"
-        ).value =
-            product.description || "";
+        }
 
 
         // ==========================================
         // CATEGORY
         // ==========================================
 
-        await loadCategories();
-
-
-        const categorySelect =
-            getElement(
-                "edit-product-category"
+        const category =
+            prompt(
+                "Category:",
+                product.category || ""
             );
 
-
-        categorySelect.value =
-            product.category || "";
-
-
-        // ==========================================
-        // MEDIA
-        // ==========================================
-
-        const images =
-            parseMedia(
-                product.image
-            );
-
-
-        const videos =
-            parseMedia(
-                product.videos
-            );
-
-
-        renderExistingImages(
-            images
-        );
-
-
-        renderExistingVideos(
-            videos
-        );
-
-
-        // Clear new file selections
-
-        const imageInput =
-            getElement(
-                "edit-product-images"
-            );
-
-        const videoInput =
-            getElement(
-                "edit-product-videos"
-            );
-
-
-        if (imageInput) {
-            imageInput.value = "";
-        }
-
-        if (videoInput) {
-            videoInput.value = "";
+        if (category === null) {
+            return;
         }
 
 
-        getElement(
-            "edit-image-preview"
-        ).innerHTML =
-            "";
-
-
-        getElement(
-            "edit-video-preview"
-        ).innerHTML =
-            "";
-
-
-        getElement(
-            "edit-product-message"
-        ).textContent =
-            "";
-
-
-        getElement(
-            "edit-product-title"
-        ).textContent =
-            "Editing: " +
-            (
-                product.name ||
-                "Product"
-            );
-
-
-        openEditModal();
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "Edit product loading error:",
-            error
-        );
-
-        alert(
-            "❌ Could not load product:\n\n" +
-            error.message
-        );
-
-    }
-
-}
-
-
-
-// ==========================================
-// RENDER EXISTING IMAGES
-// ==========================================
-
-function renderExistingImages(
-    images
-) {
-
-    const container =
-        getElement(
-            "edit-existing-images"
-        );
-
-
-    if (!container) {
-        return;
-    }
-
-
-    container.innerHTML =
-        "";
-
-
-    if (
-        !images ||
-        images.length === 0
-    ) {
-
-        container.innerHTML = `
-
-            <p>
-                No existing images.
-            </p>
-
-        `;
-
-        return;
-
-    }
-
-
-    images.forEach(
-        (url, index) => {
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-
-            item.className =
-                "existing-media-item";
-
-
-            item.innerHTML = `
-
-                <img
-                    src="${escapeHtml(url)}"
-                    alt="Product image ${index + 1}"
-                    onerror="
-                        this.style.opacity='0.4';
-                    "
-                >
-
-                <label>
-
-                    <input
-                        type="checkbox"
-                        class="keep-existing-image"
-                        value="${escapeHtml(url)}"
-                        checked
-                    >
-
-                    Keep image ${index + 1}
-
-                </label>
-
-            `;
-
-
-            container.appendChild(
-                item
-            );
-
-        }
-    );
-
-}
-
-
-
-// ==========================================
-// RENDER EXISTING VIDEOS
-// ==========================================
-
-function renderExistingVideos(
-    videos
-) {
-
-    const container =
-        getElement(
-            "edit-existing-videos"
-        );
-
-
-    if (!container) {
-        return;
-    }
-
-
-    container.innerHTML =
-        "";
-
-
-    if (
-        !videos ||
-        videos.length === 0
-    ) {
-
-        container.innerHTML = `
-
-            <p>
-                No existing videos.
-            </p>
-
-        `;
-
-        return;
-
-    }
-
-
-    videos.forEach(
-        (url, index) => {
-
-            const item =
-                document.createElement(
-                    "div"
-                );
-
-
-            item.className =
-                "existing-media-item";
-
-
-            item.innerHTML = `
-
-                <video
-                    src="${escapeHtml(url)}"
-                    controls
-                    muted
-                ></video>
-
-                <label>
-
-                    <input
-                        type="checkbox"
-                        class="keep-existing-video"
-                        value="${escapeHtml(url)}"
-                        checked
-                    >
-
-                    Keep video ${index + 1}
-
-                </label>
-
-            `;
-
-
-            container.appendChild(
-                item
-            );
-
-        }
-    );
-
-}
-
-
-
-// ==========================================
-// OPEN EDIT MODAL
-// ==========================================
-
-function openEditModal() {
-
-    const modal =
-        getElement(
-            "edit-product-modal"
-        );
-
-
-    if (!modal) {
-        return;
-    }
-
-
-    modal.classList.add(
-        "active"
-    );
-
-
-    modal.setAttribute(
-        "aria-hidden",
-        "false"
-    );
-
-
-    document.body.style.overflow =
-        "hidden";
-
-}
-
-
-
-// ==========================================
-// CLOSE EDIT MODAL
-// ==========================================
-
-function closeEditModal() {
-
-    const modal =
-        getElement(
-            "edit-product-modal"
-        );
-
-
-    if (!modal) {
-        return;
-    }
-
-
-    modal.classList.remove(
-        "active"
-    );
-
-
-    modal.setAttribute(
-        "aria-hidden",
-        "true"
-    );
-
-
-    document.body.style.overflow =
-        "";
-
-
-    editingProduct =
-        null;
-
-}
-
-
-
-// ==========================================
-// SAVE EDITED PRODUCT
-// ==========================================
-
-async function saveEditedProduct(
-    event
-) {
-
-    event.preventDefault();
-
-
-    const message =
-        getElement(
-            "edit-product-message"
-        );
-
-
-    const button =
-        getElement(
-            "save-edit-product"
-        );
-
-
-    const productId =
-        getElement(
-            "edit-product-id"
-        ).value;
-
-
-    const name =
-        getElement(
-            "edit-product-name"
-        ).value.trim();
-
-
-    const price =
-        Number(
-            getElement(
-                "edit-product-price"
-            ).value
-        );
-
-
-    const category =
-        getElement(
-            "edit-product-category"
-        ).value.trim();
-
-
-    const quantity =
-        Number(
-            getElement(
-                "edit-product-quantity"
-            ).value
-        );
-
-
-    const description =
-        getElement(
-            "edit-product-description"
-        ).value.trim();
-
-
-    // ==========================================
-    // VALIDATION
-    // ==========================================
-
-    if (
-        !productId ||
-        !name ||
-        !category ||
-        !description ||
-        Number.isNaN(price) ||
-        Number.isNaN(quantity) ||
-        price < 0 ||
-        quantity < 0
-    ) {
-
-        message.textContent =
-            "❌ Please complete all product fields correctly.";
-
-        message.style.color =
-            "red";
-
-        return;
-
-    }
-
-
-    // ==========================================
-    // EXISTING MEDIA TO KEEP
-    // ==========================================
-
-    const keptImages =
-        Array.from(
-            document.querySelectorAll(
-                ".keep-existing-image:checked"
-            )
-        ).map(
-            checkbox =>
-                checkbox.value
-        );
-
-
-    const keptVideos =
-        Array.from(
-            document.querySelectorAll(
-                ".keep-existing-video:checked"
-            )
-        ).map(
-            checkbox =>
-                checkbox.value
-        );
-
-
-    // ==========================================
-    // NEW FILES
-    // ==========================================
-
-    const newImageFiles =
-        Array.from(
-            getElement(
-                "edit-product-images"
-            ).files || []
-        );
-
-
-    const newVideoFiles =
-        Array.from(
-            getElement(
-                "edit-product-videos"
-            ).files || []
-        );
-
-
-    // ==========================================
-    // PREVENT NO IMAGE
-    // ==========================================
-
-    if (
-        keptImages.length === 0 &&
-        newImageFiles.length === 0
-    ) {
-
-        message.textContent =
-            "❌ A product must have at least one image.";
-
-        message.style.color =
-            "red";
-
-        return;
-
-    }
-
-
-    try {
-
-        button.disabled =
-            true;
-
-
-        button.textContent =
-            "Saving...";
-
-
         // ==========================================
-        // UPLOAD NEW IMAGES
+        // QUANTITY
         // ==========================================
 
-        const newImageURLs = [];
+        const quantityInput =
+            prompt(
+                "Quantity / Stock:",
+                product.quantity ?? 0
+            );
 
+        if (quantityInput === null) {
+            return;
+        }
 
-        for (
-            let i = 0;
-            i < newImageFiles.length;
-            i++
+        const quantity =
+            Number(
+                quantityInput
+            );
+
+        if (
+            Number.isNaN(quantity) ||
+            quantity < 0
         ) {
 
-            message.textContent =
-                `⏳ Uploading new image ${i + 1} of ${newImageFiles.length}...`;
-
-            message.style.color =
-                "blue";
-
-
-            const url =
-                await uploadFile(
-                    "product-images",
-                    "products",
-                    newImageFiles[i]
-                );
-
-
-            newImageURLs.push(
-                url
+            alert(
+                "❌ Invalid quantity."
             );
+
+            return;
 
         }
 
 
         // ==========================================
-        // UPLOAD NEW VIDEOS
+        // DESCRIPTION
         // ==========================================
 
-        const newVideoURLs = [];
-
-
-        for (
-            let i = 0;
-            i < newVideoFiles.length;
-            i++
-        ) {
-
-            message.textContent =
-                `⏳ Uploading new video ${i + 1} of ${newVideoFiles.length}...`;
-
-
-            const url =
-                await uploadFile(
-                    "product-videos",
-                    "products",
-                    newVideoFiles[i]
-                );
-
-
-            newVideoURLs.push(
-                url
+        const description =
+            prompt(
+                "Description:",
+                product.description || ""
             );
 
+        if (description === null) {
+            return;
         }
 
 
         // ==========================================
-        // FINAL MEDIA ARRAYS
+        // UPDATE
         // ==========================================
-
-        const finalImages =
-            [
-                ...keptImages,
-                ...newImageURLs
-            ];
-
-
-        const finalVideos =
-            [
-                ...keptVideos,
-                ...newVideoURLs
-            ];
-
-
-        // ==========================================
-        // UPDATE SUPABASE
-        // ==========================================
-
-        message.textContent =
-            "⏳ Updating product...";
-
 
         const {
-            error
+            data: updatedProduct,
+            error: updateError
         } =
             await supabaseClient
                 .from("products")
                 .update({
 
                     name:
-                        name,
+                        name.trim(),
 
                     price:
                         price,
 
                     category:
-                        category,
+                        category.trim(),
 
                     quantity:
                         quantity,
 
                     description:
-                        description,
-
-                    image:
-                        JSON.stringify(
-                            finalImages
-                        ),
-
-                    videos:
-                        JSON.stringify(
-                            finalVideos
-                        )
+                        description.trim()
 
                 })
                 .eq(
                     "id",
                     productId
-                );
+                )
+                .select()
+                .single();
 
 
-        if (error) {
-            throw error;
+        if (updateError) {
+            throw updateError;
         }
 
 
-        // ==========================================
-        // SUCCESS
-        // ==========================================
+        console.log(
+            "Updated product:",
+            updatedProduct
+        );
 
-        message.textContent =
-            `✅ Product updated successfully!
 
-Images: ${finalImages.length}
-Videos: ${finalVideos.length}`;
-
-        message.style.color =
-            "green";
+        alert(
+            "✅ Product updated successfully."
+        );
 
 
         await loadProducts();
@@ -2635,54 +1792,26 @@ Videos: ${finalVideos.length}`;
 
         await loadCategories();
 
-
-        // Wait briefly so success message
-        // can be seen before closing.
-
-        setTimeout(
-            () => {
-
-                closeEditModal();
-
-            },
-            900
-        );
-
     }
 
     catch (error) {
 
         console.error(
-            "Save edited product error:",
+            "Edit product error:",
             error
         );
 
-
-        message.textContent =
-            "❌ " +
+        alert(
+            "❌ Could not update product.\n\n" +
             (
                 error.message ||
-                "Could not update product."
-            );
-
-
-        message.style.color =
-            "red";
-
-    }
-
-    finally {
-
-        button.disabled =
-            false;
-
-        button.textContent =
-            "💾 Save Changes";
+                "Unknown error"
+            )
+        );
 
     }
 
 }
-
 
 
 // ==========================================
@@ -2698,7 +1827,9 @@ async function deleteProduct(
             "Are you sure you want to delete this product?"
         )
     ) {
+
         return;
+
     }
 
 
@@ -2714,7 +1845,6 @@ async function deleteProduct(
                     "id",
                     productId
                 );
-
 
         if (error) {
             throw error;
@@ -2734,6 +1864,11 @@ async function deleteProduct(
 
     catch (error) {
 
+        console.error(
+            "Delete product error:",
+            error
+        );
+
         alert(
             "❌ " +
             error.message
@@ -2742,7 +1877,6 @@ async function deleteProduct(
     }
 
 }
-
 
 
 // ==========================================
@@ -2755,7 +1889,6 @@ async function loadOrders() {
         getElement(
             "orders-table"
         );
-
 
     if (!table) {
         return;
@@ -2790,7 +1923,6 @@ async function loadOrders() {
                         ascending: false
                     }
                 );
-
 
         if (error) {
             throw error;
@@ -2970,9 +2102,8 @@ async function loadOrders() {
 }
 
 
-
 // ==========================================
-// ORDER STATUS
+// ORDER STATUS OPTIONS
 // ==========================================
 
 function createStatusOptions(
@@ -3004,7 +2135,8 @@ function createStatusOptions(
             <option
                 value="${escapeHtml(status)}"
                 ${
-                    status === currentStatus
+                    String(status).toLowerCase() ===
+                    String(currentStatus || "").toLowerCase()
                         ? "selected"
                         : ""
                 }
@@ -3018,16 +2150,14 @@ function createStatusOptions(
 }
 
 
-
 // ==========================================
-// TRACKING NUMBER
+// GENERATE TRACKING NUMBER
 // ==========================================
 
 function generateTrackingNumber() {
 
     const now =
         new Date();
-
 
     const date =
         now.getFullYear() +
@@ -3038,13 +2168,11 @@ function generateTrackingNumber() {
             now.getDate()
         ).padStart(2, "0");
 
-
     const random =
         Math.floor(
             100000 +
             Math.random() * 900000
         );
-
 
     return (
         "HST-" +
@@ -3056,9 +2184,8 @@ function generateTrackingNumber() {
 }
 
 
-
 // ==========================================
-// GENERATE TRACKING
+// GENERATE AND SAVE TRACKING
 // ==========================================
 
 async function generateTracking(
@@ -3070,7 +2197,6 @@ async function generateTracking(
             `.tracking-input[data-order-id="${orderId}"]`
         );
 
-
     if (!input) {
         return;
     }
@@ -3079,7 +2205,6 @@ async function generateTracking(
     const tracking =
         generateTrackingNumber();
 
-
     input.value =
         tracking;
 
@@ -3087,6 +2212,7 @@ async function generateTracking(
     try {
 
         const {
+            data,
             error
         } =
             await supabaseClient
@@ -3100,12 +2226,22 @@ async function generateTracking(
                 .eq(
                     "id",
                     orderId
-                );
+                )
+                .select(
+                    "id,order_number,tracking_number"
+                )
+                .single();
 
 
         if (error) {
             throw error;
         }
+
+
+        console.log(
+            "Tracking saved:",
+            data
+        );
 
 
         alert(
@@ -3117,6 +2253,11 @@ async function generateTracking(
 
     catch (error) {
 
+        console.error(
+            "Tracking error:",
+            error
+        );
+
         alert(
             "❌ " +
             error.message
@@ -3127,36 +2268,71 @@ async function generateTracking(
 }
 
 
-
 // ==========================================
-// SAVE ORDER
+// SAVE ORDER UPDATE
+// FIXED VERSION
 // ==========================================
 
 async function saveOrderUpdate(
     orderId
 ) {
 
-    const status =
+    const statusElement =
         document.querySelector(
             `.order-status[data-order-id="${orderId}"]`
-        )?.value;
+        );
 
-
-    const tracking =
+    const trackingElement =
         document.querySelector(
             `.tracking-input[data-order-id="${orderId}"]`
-        )?.value.trim();
+        );
 
-
-    const note =
+    const noteElement =
         document.querySelector(
             `.delivery-note-input[data-order-id="${orderId}"]`
-        )?.value.trim();
+        );
+
+
+    if (!statusElement) {
+
+        alert(
+            "❌ Could not find the order status."
+        );
+
+        return;
+
+    }
+
+
+    const status =
+        statusElement.value;
+
+    const tracking =
+        trackingElement
+            ? trackingElement.value.trim()
+            : "";
+
+    const note =
+        noteElement
+            ? noteElement.value.trim()
+            : "";
+
+
+    console.log(
+        "Saving order:",
+        {
+            orderId,
+            status,
+            tracking,
+            note
+        }
+    );
 
 
     try {
 
         const {
+            data,
             error
         } =
             await supabaseClient
@@ -3176,18 +2352,76 @@ async function saveOrderUpdate(
                 .eq(
                     "id",
                     orderId
-                );
+                )
+                .select(
+                    "id,order_number,status,tracking_number,delivery_note"
+                )
+                .single();
 
 
         if (error) {
+
+            console.error(
+                "Order update error:",
+                error
+            );
+
             throw error;
+
+        }
+
+
+        if (!data) {
+
+            throw new Error(
+                "Supabase did not return the updated order."
+            );
+
+        }
+
+
+        console.log(
+            "Updated order returned by Supabase:",
+            data
+        );
+
+
+        // Make sure the dropdown immediately
+        // reflects what was actually saved.
+
+        statusElement.value =
+            data.status;
+
+
+        if (trackingElement) {
+
+            trackingElement.value =
+                data.tracking_number || "";
+
+        }
+
+
+        if (noteElement) {
+
+            noteElement.value =
+                data.delivery_note || "";
+
         }
 
 
         alert(
-            "✅ Order updated successfully."
+            "✅ Order updated successfully!\n\n" +
+            "Order: " +
+            (
+                data.order_number ||
+                orderId
+            ) +
+            "\nStatus: " +
+            data.status
         );
 
+
+        // Reload from database
 
         await loadOrders();
 
@@ -3195,15 +2429,22 @@ async function saveOrderUpdate(
 
     catch (error) {
 
+        console.error(
+            "Save order error:",
+            error
+        );
+
         alert(
-            "❌ " +
-            error.message
+            "❌ Could not update order.\n\n" +
+            (
+                error.message ||
+                "Unknown error"
+            )
         );
 
     }
 
 }
-
 
 
 // ==========================================
@@ -3212,40 +2453,35 @@ async function saveOrderUpdate(
 
 document.addEventListener(
     "DOMContentLoaded",
-    function() {
+    function () {
 
         console.log(
-            "ADMIN JS VERSION 5 - FULL PRODUCT EDITING"
+            "ADMIN JS VERSION 5 - PRODUCT EDIT + ORDER STATUS FIX LOADED"
         );
 
 
         // ==========================================
-        // ADD PRODUCT MEDIA
+        // IMAGE PREVIEW
         // ==========================================
 
         setupImagePreview();
+
+
+        // ==========================================
+        // VIDEO PREVIEW
+        // ==========================================
 
         setupVideoPreview();
 
 
         // ==========================================
-        // EDIT PRODUCT MEDIA
-        // ==========================================
-
-        setupEditImagePreview();
-
-        setupEditVideoPreview();
-
-
-        // ==========================================
-        // LOGIN
+        // LOGIN FORM
         // ==========================================
 
         const loginForm =
             getElement(
                 "admin-login-form"
             );
-
 
         if (loginForm) {
 
@@ -3266,7 +2502,6 @@ document.addEventListener(
                 "admin-logout"
             );
 
-
         if (logout) {
 
             logout.addEventListener(
@@ -3278,14 +2513,13 @@ document.addEventListener(
 
 
         // ==========================================
-        // ADD PRODUCT
+        // ADD PRODUCT FORM
         // ==========================================
 
         const productForm =
             getElement(
                 "add-product-form"
             );
-
 
         if (productForm) {
 
@@ -3306,158 +2540,18 @@ document.addEventListener(
                 "add-category-button"
             );
 
-
         if (categoryButton) {
 
             categoryButton.addEventListener(
                 "click",
-                function() {
-
-                    addNewCategory(
-                        "product-category"
-                    );
-
-                }
+                addNewCategory
             );
 
         }
 
 
         // ==========================================
-        // EDIT CATEGORY
-        // ==========================================
-
-        const editCategoryButton =
-            getElement(
-                "edit-add-category-button"
-            );
-
-
-        if (editCategoryButton) {
-
-            editCategoryButton.addEventListener(
-                "click",
-                function() {
-
-                    addNewCategory(
-                        "edit-product-category"
-                    );
-
-                }
-            );
-
-        }
-
-
-        // ==========================================
-        // EDIT FORM
-        // ==========================================
-
-        const editForm =
-            getElement(
-                "edit-product-form"
-            );
-
-
-        if (editForm) {
-
-            editForm.addEventListener(
-                "submit",
-                saveEditedProduct
-            );
-
-        }
-
-
-        // ==========================================
-        // CLOSE EDIT
-        // ==========================================
-
-        const closeButton =
-            getElement(
-                "close-edit-product"
-            );
-
-
-        if (closeButton) {
-
-            closeButton.addEventListener(
-                "click",
-                closeEditModal
-            );
-
-        }
-
-
-        const cancelButton =
-            getElement(
-                "cancel-edit-product"
-            );
-
-
-        if (cancelButton) {
-
-            cancelButton.addEventListener(
-                "click",
-                closeEditModal
-            );
-
-        }
-
-
-        // ==========================================
-        // CLICK OUTSIDE MODAL
-        // ==========================================
-
-        const modal =
-            getElement(
-                "edit-product-modal"
-            );
-
-
-        if (modal) {
-
-            modal.addEventListener(
-                "click",
-                function(event) {
-
-                    if (
-                        event.target ===
-                        modal
-                    ) {
-
-                        closeEditModal();
-
-                    }
-
-                }
-            );
-
-        }
-
-
-        // ==========================================
-        // ESCAPE KEY
-        // ==========================================
-
-        document.addEventListener(
-            "keydown",
-            function(event) {
-
-                if (
-                    event.key === "Escape"
-                ) {
-
-                    closeEditModal();
-
-                }
-
-            }
-        );
-
-
-        // ==========================================
-        // START ADMIN
+        // CHECK ADMIN SESSION
         // ==========================================
 
         checkAdminSession();
