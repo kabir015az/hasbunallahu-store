@@ -2421,18 +2421,128 @@ async function saveOrderUpdate(
         );
 
 
-        // Reload from database
+// ==========================================
+// SAVE ORDER UPDATE
+// ==========================================
+
+async function saveOrderUpdate(orderId) {
+
+    const statusElement =
+        document.querySelector(
+            `.order-status[data-order-id="${orderId}"]`
+        );
+
+    const trackingElement =
+        document.querySelector(
+            `.tracking-input[data-order-id="${orderId}"]`
+        );
+
+    const noteElement =
+        document.querySelector(
+            `.delivery-note-input[data-order-id="${orderId}"]`
+        );
+
+
+    if (!statusElement) {
+
+        alert("❌ Could not find order status.");
+
+        return;
+
+    }
+
+
+    const status =
+        statusElement.value.trim();
+
+
+    const tracking =
+        trackingElement
+            ? trackingElement.value.trim()
+            : "";
+
+
+    const note =
+        noteElement
+            ? noteElement.value.trim()
+            : "";
+
+
+    console.log("Updating order:", {
+        orderId,
+        status,
+        tracking,
+        note
+    });
+
+
+    try {
+
+        // ==========================================
+        // UPDATE ORDER
+        // ==========================================
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("orders")
+                .update({
+
+                    status: status,
+
+                    tracking_number:
+                        tracking || null,
+
+                    delivery_note:
+                        note || null
+
+                })
+                .eq(
+                    "id",
+                    orderId
+                );
+
+
+        // ==========================================
+        // CHECK ERROR
+        // ==========================================
+
+        if (error) {
+
+            console.error(
+                "Order update error:",
+                error
+            );
+
+            throw error;
+
+        }
+
+
+        // ==========================================
+        // SUCCESS
+        // ==========================================
+
+        alert(
+            "✅ Order updated successfully."
+        );
+
+
+        // Reload orders from Supabase
 
         await loadOrders();
+
 
     }
 
     catch (error) {
 
         console.error(
-            "Save order error:",
+            "Save order update error:",
             error
         );
+
 
         alert(
             "❌ Could not update order.\n\n" +
