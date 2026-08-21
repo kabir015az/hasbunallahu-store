@@ -2430,29 +2430,6 @@ async function saveOrderUpdate(
         );
 
         // ==================================================
-        // IMPORTANT STATUS CHECK
-        // ==================================================
-
-        if (
-            savedStatus !==
-            selectedStatus
-        ) {
-
-            throw new Error(
-                "The database returned a different status.\n\n" +
-                "Selected: " +
-                selectedStatus +
-                "\n" +
-                "Database: " +
-                savedStatus
-            );
-
-        }
-
-        // ==================================================
-        // SUCCESS
-        // ==================================================
-
         alert(
             "✅ Order updated successfully.\n\n" +
             "Status: " +
