@@ -2181,79 +2181,74 @@ function generateTrackingNumber() {
 // GENERATE + SAVE TRACKING
 // ==========================================================
 
-async function generateTracking(
-    orderId
-) {
+async function saveOrderUpdate(orderId) {
 
-    const input =
-        document.querySelector(
-            `.tracking-input[data-order-id="${orderId}"]`
-        );
+    const statusElement = document.querySelector(
+        `.order-status[data-order-id="${orderId}"]`
+    );
 
-    if (!input) {
+    const trackingElement = document.querySelector(
+        `.tracking-input[data-order-id="${orderId}"]`
+    );
 
-        alert(
-            "❌ Tracking input not found."
-        );
+    const noteElement = document.querySelector(
+        `.delivery-note-input[data-order-id="${orderId}"]`
+    );
 
+    if (!statusElement) {
+        alert("❌ Could not find order status.");
         return;
-
     }
 
-    const tracking =
-        generateTrackingNumber();
+    const status = statusElement.value.trim();
 
-    input.value =
-        tracking;
+    const tracking = trackingElement
+        ? trackingElement.value.trim()
+        : "";
+
+    const note = noteElement
+        ? noteElement.value.trim()
+        : "";
+
+    console.log("Saving order:", {
+        orderId,
+        status,
+        tracking,
+        note
+    });
 
     try {
 
-        const {
-            error
-        } =
-            await supabaseClient
-                .from("orders")
-                .update({
-
-                    tracking_number:
-                        tracking
-
-                })
-                .eq(
-                    "id",
-                    orderId
-                );
+        const { error } = await supabaseClient
+            .from("orders")
+            .update({
+                status: status,
+                tracking_number: tracking || null,
+                delivery_note: note || null
+            })
+            .eq("id", orderId);
 
         if (error) {
+            console.error("Supabase update error:", error);
             throw error;
         }
 
         alert(
-            "✅ Tracking number saved:\n\n" +
-            tracking
+            "✅ Order updated successfully.\n\n" +
+            "Status: " + status
         );
 
         await loadOrders();
 
-    }
+    } catch (error) {
 
-    catch (error) {
-
-        console.error(
-            "Tracking update error:",
-            error
-        );
+        console.error("Order update failed:", error);
 
         alert(
-            "❌ Could not save tracking number.\n\n" +
-            (
-                error.message ||
-                "Unknown error"
-            )
+            "❌ Could not update order.\n\n" +
+            (error.message || "Unknown error")
         );
-
     }
-
 }
 
 
